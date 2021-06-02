@@ -7,5 +7,6 @@ int main(int argc, char *argv[])
     Dialog w;
     w.show();
 //test pull
+    //push test
     return a.exec();
 }
