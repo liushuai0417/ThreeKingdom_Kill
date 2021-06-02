@@ -10,6 +10,5 @@ Dialog::Dialog(QWidget *parent) :
 
 Dialog::~Dialog()
 {
-    //git@github.com:liushuai0417/ThreeKingdom_Kill.git
     delete ui;
 }
