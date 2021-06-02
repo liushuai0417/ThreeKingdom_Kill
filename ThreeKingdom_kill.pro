@@ -19,3 +19,7 @@ HEADERS  += dialog.h \
     packdef.h
 
 FORMS    += dialog.ui
+
+RESOURCES += \
+    resource.qrc
+CONFIG+=resources_big
