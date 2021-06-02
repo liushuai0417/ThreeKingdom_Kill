@@ -15,6 +15,7 @@ TEMPLATE = app
 SOURCES += main.cpp\
         dialog.cpp
 
-HEADERS  += dialog.h
+HEADERS  += dialog.h \
+    packdef.h
 
 FORMS    += dialog.ui
