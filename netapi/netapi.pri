@@ -4,8 +4,7 @@ LIBS += -lpthread libMswsock libMswsock
 
 HEADERS += \
     $$PWD/qmytcpclient.h \
-    $$PWD/TCPNet.h \
-    $$PWD/Packdef.h
+    $$PWD/TCPNet.h
 
 SOURCES += \
     $$PWD/qmytcpclient.cpp \
