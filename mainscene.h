@@ -12,7 +12,7 @@ class MainScene : public QMainWindow
     Q_OBJECT
 
 public:
-    explicit MainScene(QWidget *parent = 0);
+    MainScene(QWidget *parent = 0);
     ~MainScene();
 
 private:

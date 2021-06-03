@@ -3,22 +3,24 @@
 #include<QDebug>
 #include<QMessageBox>
 #include<QLatin1String>
+#include<QThread>
 #define NetPackMap(a) m_NetPackMap[(a)-DEF_PACK_BASE]
 CKernel::CKernel(QObject *parent) : QObject(parent)
 {
     //初始化指针
-    setNetPackMap();//初始化映射数组
 
+    qDebug()<<__func__<<QThread::currentThreadId();
     m_tcpClient = new QMyTcpClient;//网络指针
-
     m_Dialog = new Dialog;//登录注册指针
     m_Dialog->setWindowIcon(QIcon(":/res/icon/icon.png"));
     m_Dialog->setWindowTitle("三国Kill");
     m_Dialog->show();
+    m_MainScene = new MainScene;//大厅指针
+
     connect(m_Dialog,&Dialog::SIG_CLOSE,[=](){
         DestoryInstance();
     });
-
+    setNetPackMap();//初始化映射数组
     //初始化IP 端口号
     m_tcpClient->setIpAndPort(DEF_SERVER_IP,8000);
     //函数指针
@@ -51,7 +53,7 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
         //通过kernel类发送包
         m_tcpClient->SendData((char*)&rq,sizeof(rq));
     });
-
+    //MainSceneShow();
     //登录槽函数
     connect(m_Dialog,LoginSignal,[=](QString username,QString password){
         qDebug()<<username<<password;
@@ -63,7 +65,9 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
         m_tcpClient->SendData((char*)&rq,sizeof(rq));
     });
 
+//    connect(this,&CKernel::SIG_MainSceneShow,[=](){
 
+//    });
 }
 
 void CKernel::DestoryInstance(){
@@ -72,19 +76,28 @@ void CKernel::DestoryInstance(){
         delete m_Dialog;
         m_Dialog = NULL;
     }
-    if(m_MainScene){
-        m_MainScene->hide();
-        delete m_MainScene;
-        m_MainScene = NULL;
-    }
+//    if(m_MainScene){
+//        m_MainScene->hide();
+//        delete m_MainScene;
+//        m_MainScene = NULL;
+//    }
     if(m_tcpClient){
         delete m_tcpClient;
         m_tcpClient = NULL;
     }
 }
 
+void CKernel::MainSceneShow(){
+    m_Dialog->hide();
+    m_MainScene = new MainScene;//大厅指针
+    //m_MainScene->setParent(m_Dialog);
+    //m_MainScene->setGeometry(m_Dialog->geometry());
+    m_MainScene->show();
+}
+
 //设置协议映射表
 void CKernel::setNetPackMap(){
+
     //清空数组
     memset(m_NetPackMap,0,sizeof(m_NetPackMap));
     m_NetPackMap[DEF_PACK_REGISTER_RS-DEF_PACK_BASE] = &CKernel::SLOT_DealRegisterRs;
@@ -94,6 +107,7 @@ void CKernel::setNetPackMap(){
 
 //处理登录回复槽函数
 void CKernel::SLOT_DealLoginRs(char *buf,int nlen){
+    qDebug()<<__func__<<QThread::currentThreadId();
     //拆包
     STRU_LOGIN_RS *rs = (STRU_LOGIN_RS *)buf;
     //判断请求包的结果
@@ -110,14 +124,12 @@ void CKernel::SLOT_DealLoginRs(char *buf,int nlen){
             qDebug()<<__func__;
             qDebug()<<m_id<<m_iconID<<m_szName<<m_feeling<<m_state;
             //转到游戏大厅
-            //m_Dialog->hide();
-            m_MainScene = new MainScene;//大厅指针
-            //m_MainScene->setParent(m_Dialog);
-            //m_MainScene->setGeometry(m_Dialog->geometry());
-            m_MainScene->show();
+            m_Dialog->~Dialog();
+            m_MainScene ->show();//大厅指针
+
         break;
         default:
-            QMessageBox::about(m_Dialog,"提示","用户名或密码错误");
+            //QMessageBox::about(m_Dialog,"提示","用户名或密码错误");
         break;
     }
 }
