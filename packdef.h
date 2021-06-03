@@ -115,10 +115,8 @@ typedef struct STRU_REGISTER_RS
     {
         m_nType= DEF_PACK_REGISTER_RS;
         m_lResult = 0;
-        m_userid = 0;
     }
     PackType m_nType;   //包类型
-    int m_userid;
     int  m_lResult ; //注册结果
 
 }STRU_REGISTER_RS;
@@ -139,7 +137,23 @@ typedef struct STRU_LOGIN_RQ
     char     m_szPassword[MAX_SIZE];  //密码
 }STRU_LOGIN_RQ;
 
+        //用户信息
+        typedef struct STRU_USER_INFO
+        {
+            STRU_FRIEND_INFO()
+            {
+                m_iconID = 0;
+                m_state = 0;
 
+                memset(m_szName,0,MAX_SIZE);
+                memset(m_feeling,0,MAX_SIZE);
+            }
+            int m_iconID;
+            int m_state;
+            char m_szName[MAX_SIZE];
+            char m_feeling[MAX_SIZE];
+
+        }STRU_USER_INFO;
 //登录回复
 typedef struct STRU_LOGIN_RS
 {
@@ -152,6 +166,7 @@ typedef struct STRU_LOGIN_RS
     PackType m_nType;   //包类型
     int  m_lResult ; //注册结果
     int m_userid;
+    STRU_USER_INFO m_userInfo;
 
 }STRU_LOGIN_RS;
 
