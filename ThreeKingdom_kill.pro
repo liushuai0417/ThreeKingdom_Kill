@@ -10,15 +10,19 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
 TARGET = ThreeKingdom_kill
 TEMPLATE = app
-
+include(./netapi/netapi.pri)
 
 SOURCES += main.cpp\
         dialog.cpp \
-    mainscene.cpp
+    mainscene.cpp \
+    mypushbutton.cpp \
+    ckernel.cpp
 
 HEADERS  += dialog.h \
     packdef.h \
-    mainscene.h
+    mainscene.h \
+    mypushbutton.h \
+    ckernel.h
 
 FORMS    += dialog.ui \
     mainscene.ui
