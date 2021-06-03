@@ -72,7 +72,9 @@ Dialog::Dialog(QWidget *parent) :
         }
 
         //转到游戏大厅
-
+        mainScene = new MainScene;
+        mainScene->setGeometry((this->geometry()));
+        mainScene->show();
     });
 
 
@@ -96,18 +98,18 @@ void Dialog::paintEvent(QPaintEvent *event){
                                  "QTabBar::tab::selected{background: transparent;color:white;border:2px groove gray;border-radius:10px;padding:2px 4px;border-style:outset;font:12pt '华文行楷'}"
                                  "QTabBar::tab{background: white;color:black;border-style:outset;border:2px groove gray;border-radius:10px;padding:2px 4px;font:12pt '华文行楷'}");
     //设置lineedit透明 无边框
-    ui->le_email->setStyleSheet("QLineEdit{background-color:transparent}"
-                                         "QLineEdit{border-width:0;border-style:outset}");
-    ui->le_password->setStyleSheet("QLineEdit{background-color:transparent}"
-                                         "QLineEdit{border-width:0;border-style:outset}");
-    ui->le_password1->setStyleSheet("QLineEdit{background-color:transparent}"
-                                         "QLineEdit{border-width:0;border-style:outset}");
-    ui->le_username->setStyleSheet("QLineEdit{background-color:transparent}"
-                                         "QLineEdit{border-width:0;border-style:outset}");
-    ui->le_password_login->setStyleSheet("QLineEdit{background-color:transparent}"
-                                         "QLineEdit{border-width:0;border-style:outset}");
-    ui->le_username_login->setStyleSheet("QLineEdit{background-color:transparent}"
-                                         "QLineEdit{border-width:0;border-style:outset}");
+    ui->le_email->setStyleSheet("QLineEdit{background-color: rgba(96, 96, 96, 0.4)}"
+                                "QLineEdit{border-width:2;border-style:outset;border : 2px solid white;}");
+    ui->le_password->setStyleSheet("QLineEdit{background-color: rgba(96, 96, 96, 0.4)}"
+                                   "QLineEdit{border-width:2;border-style:outset;border : 2px solid white;}");
+    ui->le_password1->setStyleSheet("QLineEdit{background-color: rgba(96, 96, 96, 0.4)}"
+                                    "QLineEdit{border-width:2;border-style:outset;border : 2px solid white;}");
+    ui->le_username->setStyleSheet("QLineEdit{background-color: rgba(96, 96, 96, 0.4)}"
+                                   "QLineEdit{border-width:2;border-style:outset;border : 2px solid white;}");
+    ui->le_password_login->setStyleSheet("QLineEdit{background-color: rgba(96, 96, 96, 0.4)}"
+                                         "QLineEdit{border-width:2;border-style:outset;border : 2px solid white;}");
+    ui->le_username_login->setStyleSheet("QLineEdit{background-color: rgba(96, 96, 96, 0.4)}"
+                                         "QLineEdit{border-width:2;border-style:outset;border : 2px solid white;}");
     //设置字体颜色
     QPalette pe;
     pe.setColor(QPalette::WindowText, Qt::white);

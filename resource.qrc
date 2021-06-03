@@ -153,5 +153,9 @@
         <file>res/YX/张飞.png</file>
         <file>res/YX/张辽.png</file>
         <file>res/YX/赵云.png</file>
+        <file>res/icon/loginbtn1.png</file>
+        <file>res/icon/loginbtn2.png</file>
+        <file>res/icon/startbtn1.png</file>
+        <file>res/icon/startbtn2.png</file>
     </qresource>
 </RCC>

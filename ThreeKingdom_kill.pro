@@ -13,12 +13,15 @@ TEMPLATE = app
 
 
 SOURCES += main.cpp\
-        dialog.cpp
+        dialog.cpp \
+    mainscene.cpp
 
 HEADERS  += dialog.h \
-    packdef.h
+    packdef.h \
+    mainscene.h
 
-FORMS    += dialog.ui
+FORMS    += dialog.ui \
+    mainscene.ui
 
 RESOURCES += \
     resource.qrc
