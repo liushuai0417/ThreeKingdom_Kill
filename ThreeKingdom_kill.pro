@@ -11,7 +11,7 @@ greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 TARGET = ThreeKingdom_kill
 TEMPLATE = app
 include(./netapi/netapi.pri)
-
+INCLUDEPATH += ./netapi/
 SOURCES += main.cpp\
         dialog.cpp \
     mainscene.cpp \

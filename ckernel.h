@@ -4,6 +4,7 @@
 #include <QObject>
 #include"mainscene.h"
 #include"dialog.h"
+#include"qmytcpclient.h"
 #include"packdef.h"
 class CKernel : public QObject
 {
@@ -24,6 +25,7 @@ signals:
 private:
     Dialog *m_Dialog;//登录窗口指针
     MainScene *m_MainScene;//大厅指针
+    QMyTcpClient *m_tcpClient;//网络指针
 public slots:
 };
 
