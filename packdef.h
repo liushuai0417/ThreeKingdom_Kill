@@ -140,7 +140,7 @@ typedef struct STRU_LOGIN_RQ
         //用户信息
         typedef struct STRU_USER_INFO
         {
-            STRU_FRIEND_INFO()
+            STRU_USER_INFO()
             {
                 m_iconID = 0;
                 m_state = 0;
