@@ -47,7 +47,7 @@
     </font>
    </property>
    <property name="currentIndex">
-    <number>1</number>
+    <number>0</number>
    </property>
    <widget class="QWidget" name="tab_register">
     <attribute name="title">
@@ -217,56 +217,6 @@
       </item>
      </layout>
     </widget>
-    <widget class="QPushButton" name="pb_register">
-     <property name="geometry">
-      <rect>
-       <x>360</x>
-       <y>480</y>
-       <width>120</width>
-       <height>50</height>
-      </rect>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>120</width>
-       <height>50</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>120</width>
-       <height>50</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>注册</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pb_register_clear">
-     <property name="geometry">
-      <rect>
-       <x>500</x>
-       <y>480</y>
-       <width>180</width>
-       <height>50</height>
-      </rect>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>180</width>
-       <height>50</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>180</width>
-       <height>50</height>
-      </size>
-     </property>
-     <property name="text">
-      <string> 清空内容</string>
-     </property>
-    </widget>
    </widget>
    <widget class="QWidget" name="tab_login">
     <attribute name="title">
@@ -359,56 +309,6 @@
        </widget>
       </item>
      </layout>
-    </widget>
-    <widget class="QPushButton" name="pb_login">
-     <property name="geometry">
-      <rect>
-       <x>360</x>
-       <y>480</y>
-       <width>120</width>
-       <height>50</height>
-      </rect>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>120</width>
-       <height>50</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>120</width>
-       <height>50</height>
-      </size>
-     </property>
-     <property name="text">
-      <string> 登录</string>
-     </property>
-    </widget>
-    <widget class="QPushButton" name="pb_login_clear">
-     <property name="geometry">
-      <rect>
-       <x>490</x>
-       <y>480</y>
-       <width>180</width>
-       <height>50</height>
-      </rect>
-     </property>
-     <property name="minimumSize">
-      <size>
-       <width>180</width>
-       <height>50</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>180</width>
-       <height>50</height>
-      </size>
-     </property>
-     <property name="text">
-      <string>清空内容</string>
-     </property>
     </widget>
    </widget>
   </widget>

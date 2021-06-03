@@ -18,6 +18,9 @@ public:
 private:
     Ui::Dialog *ui;
     MainScene *mainScene = NULL;//游戏大厅的指针
+signals:
+    void SIG_CLOSE();//关闭的信号
+    void SIG_RegisterCommit(QString username,QString email,QString password);
 };
 
 #endif // DIALOG_H

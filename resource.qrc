@@ -157,5 +157,9 @@
         <file>res/icon/loginbtn2.png</file>
         <file>res/icon/startbtn1.png</file>
         <file>res/icon/startbtn2.png</file>
+        <file>res/icon/register1.png</file>
+        <file>res/icon/register2.png</file>
+        <file>res/icon/register_1.png</file>
+        <file>res/icon/register_2.png</file>
     </qresource>
 </RCC>

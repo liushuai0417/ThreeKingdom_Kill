@@ -7,26 +7,45 @@
 #include<QMessageBox>
 #include<QTabBar>
 #include<QRegExp>
+#include<QIcon>
+#include<mypushbutton.h>
+//登录窗口
 Dialog::Dialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::Dialog)
 {
     ui->setupUi(this);
     ui->tabWidget->setCurrentIndex(0);
-    //注册清空按钮点击事件
-    connect(ui->pb_register_clear,&QPushButton::clicked,[=](){
-        ui->le_email->clear();
-        ui->le_password->clear();
-        ui->le_password1->clear();
-        ui->le_username->clear();
+
+
+    //登录按钮
+    MyPushButton *login = new MyPushButton(":/res/icon/loginbtn1.png",":/res/icon/loginbtn2.png");
+    login->setParent(ui->tab_login);
+    login->move(this->width()*0.5-login->width()*0.5,this->height()*0.8);
+
+    //注册按钮
+    MyPushButton *regis = new MyPushButton(":/res/icon/register_1.png",":/res/icon/register_2.png");
+    regis->setParent(ui->tab_register);
+    regis->move(this->width()*0.5-login->width()*0.5,this->height()*0.8);
+    //注册按钮
+    //登录按钮点击事件
+    connect(login,&MyPushButton::clicked,[=](){
+        //获取字符串
+        QString username = ui->le_username_login->text();
+        QString password = ui->le_password_login->text();
+        //验证输入账户密码是否为空
+        if(username.isEmpty() || password.isEmpty()){
+            QMessageBox::about(this,"提示","用户名或密码不能为空");
+            return;
+        }
+        qDebug()<<username<<password;
+        //转到游戏大厅
+//        mainScene = new MainScene;
+//        mainScene->setGeometry((this->geometry()));
+//        mainScene->show();
     });
 
-    connect(ui->pb_login_clear,&QPushButton::clicked,[=](){
-        ui->le_password_login->clear();
-        ui->le_username_login->clear();
-    });
-    //注册按钮点击事件
-    connect(ui->pb_register,&QPushButton::clicked,[=](){
+    connect(regis,&MyPushButton::clicked,[=](){
         //获取lineedit的内容
         QString username = ui->le_username->text();
         QString email = ui->le_email->text();
@@ -53,31 +72,12 @@ Dialog::Dialog(QWidget *parent) :
         }
 
         //向kernel发送信号
-
+        Q_EMIT SIG_RegisterCommit(username,email,password);
         //返回登录结果
 
         //跳转到登录页
         ui->tabWidget->setCurrentIndex(1);
     });
-
-    //登录按钮点击事件
-    connect(ui->pb_login,&QPushButton::clicked,[=](){
-        //获取字符串
-        QString username = ui->le_username_login->text();
-        QString password = ui->le_password_login->text();
-        //验证输入账户密码是否为空
-        if(username.isEmpty() || password.isEmpty()){
-            QMessageBox::about(this,"提示","用户名或密码不能为空");
-            return;
-        }
-
-        //转到游戏大厅
-        mainScene = new MainScene;
-        mainScene->setGeometry((this->geometry()));
-        mainScene->show();
-    });
-
-
 }
 
 Dialog::~Dialog()
@@ -137,9 +137,5 @@ void Dialog::paintEvent(QPaintEvent *event){
     ui->le_password_login->setFont(QFont("华文行楷",15,QFont::Bold));
     ui->le_username_login->setFont(QFont("华文行楷",20,QFont::Bold));
 
-    //设置登录按钮透明
-    ui->pb_register->setStyleSheet( "QPushButton{background:rgba(0,0,0,0);color:white;font:25pt '华文行楷';border:1px solid rgba(0,0,0,0);}");
-    ui->pb_login->setStyleSheet( "QPushButton{background:rgba(0,0,0,0);color:white;font:25pt '华文行楷';border:1px solid rgba(0,0,0,0);}");
-    ui->pb_register_clear->setStyleSheet( "QPushButton{background:rgba(0,0,0,0);color:white;font:25pt '华文行楷';border:1px solid rgba(0,0,0,0);}");
-    ui->pb_login_clear->setStyleSheet( "QPushButton{background:rgba(0,0,0,0);color:white;font:25pt '华文行楷';border:1px solid rgba(0,0,0,0);}");
+
 }
