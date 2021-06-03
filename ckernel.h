@@ -6,6 +6,8 @@
 #include"dialog.h"
 #include"qmytcpclient.h"
 #include"packdef.h"
+class CKernel;
+typedef void (CKernel::*PFUN)(char*,int);
 class CKernel : public QObject
 {
     Q_OBJECT
@@ -20,13 +22,23 @@ private:
     explicit CKernel(QObject *parent = 0);
     ~CKernel(){}
     CKernel(const CKernel &kernel){}
-    //void setNetPackMap();//设置协议映射表
+    void setNetPackMap();//设置协议映射表
 signals:
+
 private:
     Dialog *m_Dialog;//登录窗口指针
-    MainScene *m_MainScene;//大厅指针
+    MainScene *m_MainScene = NULL;//大厅指针
     QMyTcpClient *m_tcpClient;//网络指针
+    PFUN m_NetPackMap[DEF_PACK_COUNT];//协议映射数组
+    int m_id;//用户id 唯一标识
+    int m_iconID;//用户头像id
+    int m_state;//用户状态
+    QString m_szName;//用户名
+    QString m_feeling;//个性签名
 public slots:
+    void SLOT_DealLoginRs(char *buf,int nlen);//处理登录回复槽函数
+    void SLOT_DealRegisterRs(char *buf,int nlen);//处理注册回复槽函数
+    //void SLOT_DealData(char *buf,int nlen);//接收数据槽函数
 };
 
 #endif // CKERNEL_H

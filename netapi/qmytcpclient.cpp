@@ -1,7 +1,7 @@
 #include "QMyTcpClient.h"
 #include<QThread>
 #include<QDebug>
-
+#include"packdef.h"
 QMyTcpClient::QMyTcpClient(QObject *parent) : QObject(parent)
 {
     m_pTcp = new TCPNet(this);
@@ -64,6 +64,8 @@ int QMyTcpClient::ConnectToServer( char* szBufIP)
 void QMyTcpClient::DealData(char* szbuf , int nLen)
 {
     qDebug()<<"QMyTcpClient"<< QThread::currentThreadId();
+    STRU_LOGIN_RS *rs = (STRU_LOGIN_RS *)szbuf;
+    qDebug()<<rs->m_nType;
     emit SIG_ReadyData(szbuf,nLen);
 }
 int QMyTcpClient::IsConnected()

@@ -39,10 +39,8 @@ Dialog::Dialog(QWidget *parent) :
             return;
         }
         qDebug()<<username<<password;
-        //转到游戏大厅
-//        mainScene = new MainScene;
-//        mainScene->setGeometry((this->geometry()));
-//        mainScene->show();
+        Q_EMIT SIG_LoginCommit(username,password);
+
     });
 
     connect(regis,&MyPushButton::clicked,[=](){
@@ -76,7 +74,7 @@ Dialog::Dialog(QWidget *parent) :
         //返回登录结果
 
         //跳转到登录页
-        ui->tabWidget->setCurrentIndex(1);
+        //ui->tabWidget->setCurrentIndex(1);
     });
 }
 
