@@ -7,8 +7,10 @@
 CKernel::CKernel(QObject *parent) : QObject(parent)
 {
     //初始化指针
+    setNetPackMap();//初始化映射数组
+
     m_tcpClient = new QMyTcpClient;//网络指针
-    m_MainScene = new MainScene;//大厅指针
+
     m_Dialog = new Dialog;//登录注册指针
     m_Dialog->setWindowIcon(QIcon(":/res/icon/icon.png"));
     m_Dialog->setWindowTitle("三国Kill");
@@ -87,7 +89,7 @@ void CKernel::setNetPackMap(){
     memset(m_NetPackMap,0,sizeof(m_NetPackMap));
     m_NetPackMap[DEF_PACK_REGISTER_RS-DEF_PACK_BASE] = &CKernel::SLOT_DealRegisterRs;
     m_NetPackMap[DEF_PACK_LOGIN_RS-DEF_PACK_BASE] = &CKernel::SLOT_DealLoginRs;
-
+    qDebug()<<__func__<<DEF_PACK_LOGIN_RS-DEF_PACK_BASE;
 }
 
 //处理登录回复槽函数
@@ -101,13 +103,17 @@ void CKernel::SLOT_DealLoginRs(char *buf,int nlen){
             this->m_id = rs->m_userid;
             this->m_iconID = rs->m_userInfo.m_iconID;
             this->m_szName = QString(QLatin1String(rs->m_userInfo.m_szName));
-            this->m_feeling = QString(QLatin1String(rs->m_userInfo.m_szName));
+            this->m_feeling = QString(QLatin1String(rs->m_userInfo.m_feeling));
             this->m_state = rs->m_userInfo.m_state;
             //登录成功
-            QMessageBox::about(m_Dialog,"提示","登录成功");
+            //QMessageBox::about(m_Dialog,"提示","登录成功");
+            qDebug()<<__func__;
             qDebug()<<m_id<<m_iconID<<m_szName<<m_feeling<<m_state;
             //转到游戏大厅
-            m_MainScene->setGeometry(m_Dialog->geometry());
+            //m_Dialog->hide();
+            m_MainScene = new MainScene;//大厅指针
+            //m_MainScene->setParent(m_Dialog);
+            //m_MainScene->setGeometry(m_Dialog->geometry());
             m_MainScene->show();
         break;
         default:
