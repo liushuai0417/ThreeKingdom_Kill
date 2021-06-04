@@ -68,13 +68,9 @@ Dialog::Dialog(QWidget *parent) :
             QMessageBox::about(this,"提示","两次输入的密码不一致");
             return;
         }
-
         //向kernel发送信号
         Q_EMIT SIG_RegisterCommit(username,email,password);
-        //返回登录结果
 
-        //跳转到登录页
-        //ui->tabWidget->setCurrentIndex(1);
     });
 }
 
@@ -135,5 +131,9 @@ void Dialog::paintEvent(QPaintEvent *event){
     ui->le_password_login->setFont(QFont("华文行楷",15,QFont::Bold));
     ui->le_username_login->setFont(QFont("华文行楷",20,QFont::Bold));
 
+}
 
+Ui::Dialog *Dialog::getUi() const
+{
+    return ui;
 }

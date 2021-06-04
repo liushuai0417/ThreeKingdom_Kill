@@ -47,7 +47,7 @@
     </font>
    </property>
    <property name="currentIndex">
-    <number>0</number>
+    <number>1</number>
    </property>
    <widget class="QWidget" name="tab_register">
     <attribute name="title">
@@ -260,7 +260,7 @@
          </size>
         </property>
         <property name="text">
-         <string/>
+         <string>ttt</string>
         </property>
         <property name="echoMode">
          <enum>QLineEdit::Normal</enum>
@@ -298,7 +298,7 @@
          </size>
         </property>
         <property name="text">
-         <string/>
+         <string>111</string>
         </property>
         <property name="echoMode">
          <enum>QLineEdit::Password</enum>

@@ -15,6 +15,7 @@ public:
     explicit Dialog(QWidget *parent = 0);
     ~Dialog();
     void paintEvent(QPaintEvent *event);
+    Ui::Dialog *getUi() const;
 private:
     Ui::Dialog *ui;
 

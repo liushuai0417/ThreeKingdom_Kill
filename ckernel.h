@@ -34,13 +34,12 @@ private:
     int m_id;//用户id 唯一标识
     int m_iconID;//用户头像id
     int m_state;//用户状态
-    QString m_szName;//用户名
+    QString m_szName;//用户昵称
     QString m_feeling;//个性签名
 public slots:
     void SLOT_DealLoginRs(char *buf,int nlen);//处理登录回复槽函数
     void SLOT_DealRegisterRs(char *buf,int nlen);//处理注册回复槽函数
-
-    //void SLOT_DealData(char *buf,int nlen);//接收数据槽函数
+    void SLOT_ReadyData(char* buf,int nlen);
 };
 
 #endif // CKERNEL_H
