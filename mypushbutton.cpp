@@ -1,5 +1,6 @@
 #include "mypushbutton.h"
 #include<QPixmap>
+#include<QPropertyAnimation>
 //MyPushButton::MyPushButton(QWidget *parent) : QPushButton(parent)
 //{
 
@@ -74,4 +75,35 @@ void MyPushButton::mouseReleaseEvent(QMouseEvent *e){
     }
     //让父类执行其他内容
     return QPushButton::mouseReleaseEvent(e);
+}
+
+//向下跳
+void MyPushButton::zoom1(){
+    //创建动画对象
+    QPropertyAnimation *animation = new QPropertyAnimation(this,"geometry");
+    //设置动画时间间隔
+    //设置起始位置
+    animation->setStartValue(QRect(this->x(),this->y(),this->width(),this->height()));
+    //结束位置
+    animation->setEndValue(QRect(this->x(),this->y()+10,this->width(),this->height()));
+    //设置弹跳曲线
+    animation->setEasingCurve(QEasingCurve::OutBounce);
+    //执行动画
+    animation->start();
+}
+
+//向上跳
+void MyPushButton::zoom2(){
+    //创建动画对象
+    QPropertyAnimation *animation = new QPropertyAnimation(this,"geometry");
+    //设置动画时间间隔
+
+    //设置起始位置
+    animation->setStartValue(QRect(this->x(),this->y()+10,this->width(),this->height()));
+    //结束位置
+    animation->setEndValue(QRect(this->x(),this->y(),this->width(),this->height()));
+    //设置弹跳曲线
+    animation->setEasingCurve(QEasingCurve::OutBounce);
+    //执行动画
+    animation->start();
 }

@@ -161,5 +161,24 @@
         <file>res/icon/register2.png</file>
         <file>res/icon/register_1.png</file>
         <file>res/icon/register_2.png</file>
+        <file>res/BJ/arena_bg_img.png</file>
+        <file>res/BJ/big_bg.jpg</file>
+        <file>res/BJ/gu_click.png</file>
+        <file>res/BJ/hallBg1.jpg</file>
+        <file>res/BJ/shop_juanzhou.png</file>
+        <file>res/BJ/shop_skinbg.png</file>
+        <file>res/icon/quit.png</file>
+        <file>res/icon/set.png</file>
+        <file>res/icon/gu_click_1.png</file>
+        <file>res/icon/gu_click_2.png</file>
+        <file>res/icon/gu_click_createroom.png</file>
+        <file>res/icon/gu_click_addfriend.png</file>
+        <file>res/icon/gu_click_changeinfo.png</file>
+        <file>res/icon/gu_click_joinroom.png</file>
+        <file>res/icon/startgame_1.png</file>
+        <file>res/icon/gu_click_addfriend_1.png</file>
+        <file>res/icon/gu_click_changeinfo_1.png</file>
+        <file>res/icon/gu_click_createroom_1.png</file>
+        <file>res/icon/gu_click_joinroom_1.png</file>
     </qresource>
 </RCC>

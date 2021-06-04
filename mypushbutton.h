@@ -14,6 +14,8 @@ public:
     //重写按钮 按下和释放事件
     void mousePressEvent(QMouseEvent *e);
     void mouseReleaseEvent(QMouseEvent *e);
+    void zoom1();//向下跳
+    void zoom2();//向上跳
 signals:
 
 public slots:

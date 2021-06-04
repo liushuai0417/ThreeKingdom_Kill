@@ -16,13 +16,14 @@ Dialog::Dialog(QWidget *parent) :
 {
     ui->setupUi(this);
     ui->tabWidget->setCurrentIndex(0);
-
+    this->setWindowIcon(QIcon(":/res/icon/icon.png"));
+    this->setWindowTitle("三国Kill");
 
     //登录按钮
     MyPushButton *login = new MyPushButton(":/res/icon/loginbtn1.png",":/res/icon/loginbtn2.png");
     login->setParent(ui->tab_login);
     login->move(this->width()*0.5-login->width()*0.5,this->height()*0.8);
-
+    MainScene *Scene = new MainScene;
     //注册按钮
     MyPushButton *regis = new MyPushButton(":/res/icon/register_1.png",":/res/icon/register_2.png");
     regis->setParent(ui->tab_register);
@@ -39,7 +40,11 @@ Dialog::Dialog(QWidget *parent) :
             return;
         }
         qDebug()<<username<<password;
-        Q_EMIT SIG_LoginCommit(username,password);
+        //Q_EMIT SIG_LoginCommit(username,password);
+
+        //测试代码
+        //弹出大厅
+        Scene->show();
 
     });
 
@@ -69,7 +74,8 @@ Dialog::Dialog(QWidget *parent) :
             return;
         }
         //向kernel发送信号
-        Q_EMIT SIG_RegisterCommit(username,email,password);
+        //Q_EMIT SIG_RegisterCommit(username,email,password);
+
 
     });
 }

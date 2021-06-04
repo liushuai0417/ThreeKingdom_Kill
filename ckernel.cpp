@@ -11,8 +11,6 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     //初始化指针
     m_tcpClient = new QMyTcpClient;//网络指针
     m_Dialog = new Dialog;//登录注册指针
-    m_Dialog->setWindowIcon(QIcon(":/res/icon/icon.png"));
-    m_Dialog->setWindowTitle("三国Kill");
     m_Dialog->show();
     m_MainScene = new MainScene;//大厅指针
 
@@ -28,7 +26,7 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     void (Dialog::*LoginSignal)(QString,QString) = &Dialog::SIG_LoginCommit;//登录信号
     void (QMyTcpClient::*ReadyDataSignal)(char*,int) = &QMyTcpClient::SIG_ReadyData;//处理数据的信号
     //网络指针接收包内容的槽函数
-    connect(m_tcpClient,ReadyDataSignal,this,&CKernel::SLOT_ReadyData);
+    //connect(m_tcpClient,ReadyDataSignal,this,&CKernel::SLOT_ReadyData);
     //注册槽函数
     connect(m_Dialog,RegisterSignal,[=](QString username,QString email,QString password){
         STRU_REGISTER_RQ rq;
