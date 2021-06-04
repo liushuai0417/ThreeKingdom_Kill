@@ -3,6 +3,7 @@
 
 #include <QMainWindow>
 #include<QPaintEvent>
+#include<QVBoxLayout>
 namespace Ui {
 class MainScene;
 }
@@ -17,13 +18,15 @@ public:
     void paintEvent(QPaintEvent *event);
 private:
     Ui::MainScene *ui;
-
+    QVBoxLayout *m_mainLayout;
 public slots:
     void Slot_CreateRoom();//创建房间槽函数
     void Slot_AddFriend();//添加好友槽函数
     void Slot_JoinRoom();//加入房间槽函数
     void Slot_AlterInfo();//修改信息槽函数
     void Slot_StartGame();//开始游戏槽函数
+    void Slot_AddUserItem(QWidget *item);
+    void Slot_RemoveUserItem(QWidget *item);
 };
 
 #endif // MAINSCENE_H

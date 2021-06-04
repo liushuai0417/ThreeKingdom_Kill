@@ -3,6 +3,7 @@
 #include<QPaintEvent>
 #include <QDialog>
 #include<mainscene.h>
+#include<QVBoxLayout>
 namespace Ui {
 class Dialog;
 }

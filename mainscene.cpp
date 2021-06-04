@@ -55,6 +55,19 @@ MainScene::MainScene(QWidget *parent) :
     connect(addfriend,&MyPushButton::clicked,this,&MainScene::Slot_AddFriend);
     connect(alterinfo,&MyPushButton::clicked,this,&MainScene::Slot_AlterInfo);
 
+    m_mainLayout = new QVBoxLayout;
+    m_mainLayout->setContentsMargins(0,0,0,0);//设置外边距
+    m_mainLayout->setSpacing(2);
+    ui->wdg_roomlist->setLayout(m_mainLayout);
+
+}
+
+void MainScene::Slot_AddUserItem(QWidget *item){
+    m_mainLayout->addWidget(item);
+}
+
+void MainScene::Slot_RemoveUserItem(QWidget *item){
+    m_mainLayout->removeWidget(item);
 }
 
 MainScene::~MainScene()
