@@ -1,5 +1,11 @@
 #ifndef __DEF_PACKDEF__
 #define __DEF_PACKDEF__
+#include<QHostAddress>
+#include<QByteArray>
+#include<QDebug>
+#include<QFile>
+#include<QDateTime>
+#include <winsock2.h>
 
 using namespace std;
 #define BOOL bool
