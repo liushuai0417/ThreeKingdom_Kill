@@ -40,6 +40,7 @@ public slots:
     void SLOT_DealLoginRs(char *buf,int nlen);//处理登录回复槽函数
     void SLOT_DealRegisterRs(char *buf,int nlen);//处理注册回复槽函数
     void SLOT_ReadyData(char* buf,int nlen);
+    void SLOT_DealAskRoomRs(char *buf,int nlen);//处理请求房间回复槽函数
 };
 
 #endif // CKERNEL_H

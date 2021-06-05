@@ -5,6 +5,7 @@
 #include<QLatin1String>
 #include<QThread>
 #include "ui_dialog.h"
+#include"roomitem.h"
 #define NetPackMap(a) m_NetPackMap[(a)-DEF_PACK_BASE]
 CKernel::CKernel(QObject *parent) : QObject(parent)
 {
@@ -26,7 +27,7 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     void (Dialog::*LoginSignal)(QString,QString) = &Dialog::SIG_LoginCommit;//登录信号
     void (QMyTcpClient::*ReadyDataSignal)(char*,int) = &QMyTcpClient::SIG_ReadyData;//处理数据的信号
     //网络指针接收包内容的槽函数
-    //connect(m_tcpClient,ReadyDataSignal,this,&CKernel::SLOT_ReadyData);
+    connect(m_tcpClient,ReadyDataSignal,this,&CKernel::SLOT_ReadyData);
     //注册槽函数
     connect(m_Dialog,RegisterSignal,[=](QString username,QString email,QString password){
         STRU_REGISTER_RQ rq;
@@ -45,6 +46,11 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
         strcpy(rq.m_szPassword,password.toStdString().c_str());
         qDebug()<<rq.m_szUser<<rq.m_szPassword;
         //通过kernel发送包
+        m_tcpClient->SendData((char*)&rq,sizeof(rq));
+    });
+
+    connect(m_Dialog,&Dialog::SIG_AskRoomCommit,[=](){
+        STRU_ASKROOM_RQ rq;
         m_tcpClient->SendData((char*)&rq,sizeof(rq));
     });
 }
@@ -86,6 +92,7 @@ void CKernel::setNetPackMap(){
     memset(m_NetPackMap,0,sizeof(m_NetPackMap));
     NetPackMap(DEF_PACK_REGISTER_RS)  = &CKernel::SLOT_DealRegisterRs;
     NetPackMap(DEF_PACK_LOGIN_RS)  = &CKernel::SLOT_DealLoginRs;
+    NetPackMap(DEF_PACK_ASKROOM_RS) = &CKernel::SLOT_DealAskRoomRs;
     qDebug()<<__func__<<DEF_PACK_LOGIN_RS-DEF_PACK_BASE;
 }
 
@@ -104,9 +111,8 @@ void CKernel::SLOT_DealLoginRs(char *buf,int nlen){
             this->m_state = rs->m_userInfo.m_state;
             //登录成功
             QMessageBox::about(m_Dialog,"提示","登录成功");
-            //转到游戏大厅
             m_Dialog->hide();
-            m_MainScene = new MainScene;//大厅指针
+            //m_MainScene = new MainScene;//大厅指针
             m_MainScene->setGeometry(m_Dialog->geometry());
             m_MainScene->show();
         break;
@@ -132,4 +138,18 @@ void CKernel::SLOT_DealRegisterRs(char *buf,int nlen){
             QMessageBox::about(m_Dialog,"提示","用户名已存在");
         break;
     }
+}
+
+void CKernel::SLOT_DealAskRoomRs(char *buf,int nlen){
+
+    STRU_ASKROOM_RS *rs = (STRU_ASKROOM_RS *)buf;
+    QString roomname = QString(rs->m_RoomList[0].sz_Roomname);
+    int roomid = rs->m_RoomList[0].m_Roomid;
+    QString roomcreator = QString(rs->m_RoomList[0].sz_RoomCreator);
+    RoomItem *item1 = new RoomItem;
+    qDebug()<<"数组信息"<<roomname<<roomid<<roomcreator;
+    item1->setItem(roomid,roomname,roomcreator);
+    m_MainScene->Slot_AddUserItem(item1);
+    //转到游戏大厅
+
 }

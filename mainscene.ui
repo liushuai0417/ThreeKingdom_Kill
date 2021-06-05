@@ -43,7 +43,7 @@
      <rect>
       <x>40</x>
       <y>120</y>
-      <width>331</width>
+      <width>351</width>
       <height>421</height>
      </rect>
     </property>
@@ -62,10 +62,10 @@
     <widget class="QScrollArea" name="scrollArea">
      <property name="geometry">
       <rect>
-       <x>0</x>
-       <y>0</y>
-       <width>331</width>
-       <height>421</height>
+       <x>10</x>
+       <y>10</y>
+       <width>341</width>
+       <height>400</height>
       </rect>
      </property>
      <property name="minimumSize">
@@ -88,26 +88,25 @@
        <rect>
         <x>0</x>
         <y>0</y>
-        <width>329</width>
-        <height>419</height>
+        <width>339</width>
+        <height>398</height>
        </rect>
       </property>
       <layout class="QVBoxLayout" name="verticalLayout">
+       <property name="leftMargin">
+        <number>0</number>
+       </property>
+       <property name="topMargin">
+        <number>0</number>
+       </property>
+       <property name="rightMargin">
+        <number>0</number>
+       </property>
+       <property name="bottomMargin">
+        <number>0</number>
+       </property>
        <item>
-        <widget class="QWidget" name="wdg_roomlist" native="true">
-         <property name="minimumSize">
-          <size>
-           <width>300</width>
-           <height>80</height>
-          </size>
-         </property>
-         <property name="maximumSize">
-          <size>
-           <width>999</width>
-           <height>999</height>
-          </size>
-         </property>
-        </widget>
+        <widget class="QWidget" name="wdg_roomlist" native="true"/>
        </item>
        <item>
         <spacer name="verticalSpacer">
@@ -117,7 +116,7 @@
          <property name="sizeHint" stdset="0">
           <size>
            <width>20</width>
-           <height>40</height>
+           <height>378</height>
           </size>
          </property>
         </spacer>

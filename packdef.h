@@ -11,6 +11,7 @@ using namespace std;
 #define BOOL bool
 #define DEF_PACK_BASE  (10000)
 
+
 typedef enum Net_PACK
 {
     DEF_PACK_REGISTER_RQ = 10000,               //注册请求
@@ -57,7 +58,7 @@ typedef enum Net_PACK
 #define user_online          3
 
 //创建房间结果
-#define room_is_exist        0
+#define create_failed        0
 #define create_success       1
 
 //加入房间结果
@@ -79,6 +80,7 @@ typedef enum Net_PACK
 
 #define MAX_PATH            (280 )
 #define MAX_SIZE            (60  )
+#define MAX_ROOMLIST        (25)
 #define DEF_HOBBY_COUNT     (8  )
 #define MAX_CONTENT_LEN     (4096 )
 #define _DEF_PORT (8000)
@@ -126,6 +128,7 @@ typedef struct STRU_REGISTER_RS
     int  m_lResult ; //注册结果
 
 }STRU_REGISTER_RS;
+
 
 
 //登录请求
@@ -177,6 +180,7 @@ typedef struct STRU_LOGIN_RS
 }STRU_LOGIN_RS;
 
 
+
 //创建房间请求
 typedef struct STRU_CREATEROOM_RQ
 {
@@ -210,6 +214,44 @@ typedef struct STRU_CREATEROOM_RS
 
 }STRU_CREATEROOM_RS;
 
+//刷新房间列表请求
+typedef struct STRU_ASKROOM_RQ
+{
+    STRU_ASKROOM_RQ()
+    {
+        m_nType = DEF_PACK_ASKROOM_RQ;
+    }
+    PackType m_nType;
+
+}STRU_ASKROOM_RQ;
+
+    //房间信息
+    typedef struct RoomInfo
+    {
+        RoomInfo()
+        {
+            m_Roomid = 0;
+            memset(sz_Roomname,0,MAX_SIZE);
+            memset(sz_RoomCreator,0,MAX_SIZE);
+        }
+        int m_Roomid;
+        char sz_Roomname[MAX_SIZE];
+        char sz_RoomCreator[MAX_SIZE];
+    }RoomInfo;
+//刷新房间回复
+typedef struct STRU_ASKROOM_RS
+{
+    STRU_ASKROOM_RS()
+    {
+        m_nType = DEF_PACK_ASKROOM_RS;
+        m_lResult = 0;
+        memset(m_RoomList,0,sizeof(RoomInfo)*MAX_ROOMLIST);
+    }
+    PackType m_nType;
+    int  m_lResult ;
+    RoomInfo m_RoomList[MAX_ROOMLIST];
+}STRU_ASKROOM_RS;
+
 //加入房间请求
 typedef struct STRU_JOINROOM_RQ
 {
@@ -236,7 +278,7 @@ typedef struct STRU_JOINROOM_RS
         memset(m_Room_member,0,sizeof(m_Room_member));
     }
     PackType m_nType;       //包类型
-    int  m_lResult ;        //注册结果
+    int  m_lResult ;
     int m_Room_member[4];   //房间用户id
 }STRU_JOINROOM_RS;
 
@@ -305,31 +347,30 @@ typedef struct STRU_ADD_FRIEND_RQ
         memset(m_szAddFriendName,0,MAX_SIZE);
     }
     PackType   m_nType;   //包类型
-    int m_userID;          //自身用户id
+    int m_userID;            //自身用户名
     char m_szAddFriendName[MAX_SIZE];       //好友用户名
 
 }STRU_ADD_FRIEND_RQ;
 
+//好友信息
+typedef struct STRU_FRIEND_INFO
+{
+    STRU_FRIEND_INFO()
+    {
+        m_nType = DEF_PACK_FRIEND_INFO;
+        m_iconID = 0;
+        m_state = 0;
 
-        //好友信息
-        typedef struct STRU_FRIEND_INFO
-        {
-            STRU_FRIEND_INFO()
-            {
-                m_nType = DEF_PACK_FRIEND_INFO;
-                m_iconID = 0;
-                m_state = 0;
+        memset(m_szName,0,MAX_SIZE);
+        memset(m_feeling,0,MAX_SIZE);
+    }
+    PackType   m_nType;   //包类型
+    int m_iconID;
+    int m_state;
+    char m_szName[MAX_SIZE];
+    char m_feeling[MAX_SIZE];
 
-                memset(m_szName,0,MAX_SIZE);
-                memset(m_feeling,0,MAX_SIZE);
-            }
-            PackType   m_nType;   //包类型
-            int m_iconID;
-            int m_state;
-            char m_szName[MAX_SIZE];
-            char m_feeling[MAX_SIZE];
-
-        }STRU_FRIEND_INFO;
+}STRU_FRIEND_INFO;
 
 //添加好友回复
 typedef struct STRU_ADD_FRIEND_RS
@@ -436,10 +477,6 @@ typedef struct UserInfo
 //    int m_UserID;
 
 //}STRU_FORCE_OFFLINE;
-
-
-
-
 
 
 #endif

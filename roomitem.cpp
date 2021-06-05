@@ -1,6 +1,7 @@
 #include "roomitem.h"
 #include "ui_roomitem.h"
-
+#include<QDebug>
+#include<QDateTime>
 RoomItem::RoomItem(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::RoomItem)
@@ -17,6 +18,8 @@ RoomItem::~RoomItem()
 //双击事件
 void RoomItem::mouseDoubleClickEvent(QMouseEvent *event){
     //进入房间
+
+
 }
 
 void RoomItem::setItem(int Roomid,QString RoomName,QString CreatorName){
