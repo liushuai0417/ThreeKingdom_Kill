@@ -20,6 +20,9 @@
    <string>Form</string>
   </property>
   <layout class="QHBoxLayout" name="horizontalLayout">
+   <property name="spacing">
+    <number>0</number>
+   </property>
    <property name="leftMargin">
     <number>0</number>
    </property>
@@ -42,55 +45,108 @@
      </property>
      <property name="maximumSize">
       <size>
-       <width>300</width>
+       <width>9999</width>
        <height>80</height>
       </size>
      </property>
-     <widget class="QWidget" name="widget_2" native="true">
-      <property name="geometry">
-       <rect>
-        <x>0</x>
-        <y>10</y>
-        <width>300</width>
-        <height>70</height>
-       </rect>
+     <layout class="QHBoxLayout" name="horizontalLayout_3">
+      <property name="spacing">
+       <number>0</number>
       </property>
-      <property name="minimumSize">
-       <size>
-        <width>300</width>
-        <height>70</height>
-       </size>
+      <property name="leftMargin">
+       <number>0</number>
       </property>
-      <property name="maximumSize">
-       <size>
-        <width>300</width>
-        <height>70</height>
-       </size>
+      <property name="topMargin">
+       <number>0</number>
       </property>
-      <layout class="QHBoxLayout" name="horizontalLayout_2">
-       <item>
-        <widget class="QLabel" name="lb_roomname">
-         <property name="text">
-          <string>房间名</string>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <item>
+       <widget class="QWidget" name="widget_2" native="true">
+        <property name="minimumSize">
+         <size>
+          <width>300</width>
+          <height>80</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>300</width>
+          <height>9999</height>
+         </size>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <property name="spacing">
+          <number>0</number>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="lb_roomid">
-         <property name="text">
-          <string>房间号</string>
+         <property name="leftMargin">
+          <number>0</number>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="lb_roomcreator">
-         <property name="text">
-          <string>房主</string>
+         <property name="topMargin">
+          <number>0</number>
          </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <item>
+          <widget class="QLabel" name="lb_roomname">
+           <property name="font">
+            <font>
+             <family>华文行楷</family>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>房间名</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="lb_roomid">
+           <property name="font">
+            <font>
+             <family>华文行楷</family>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>房间号</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QLabel" name="lb_roomcreator">
+           <property name="font">
+            <font>
+             <family>华文行楷</family>
+             <pointsize>12</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>房主</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
     </widget>
    </item>
   </layout>

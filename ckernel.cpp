@@ -53,6 +53,9 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
         STRU_ASKROOM_RQ rq;
         m_tcpClient->SendData((char*)&rq,sizeof(rq));
     });
+    RoomItem *itemindex = new RoomItem;
+
+    m_MainScene->Slot_AddUserItem(itemindex);
 }
 
 //接收数据槽函数
@@ -143,6 +146,7 @@ void CKernel::SLOT_DealRegisterRs(char *buf,int nlen){
 void CKernel::SLOT_DealAskRoomRs(char *buf,int nlen){
 
     STRU_ASKROOM_RS *rs = (STRU_ASKROOM_RS *)buf;
+    qDebug()<<rs->m_RoomList[0].sz_Roomname;
     QString roomname = QString(rs->m_RoomList[0].sz_Roomname);
     int roomid = rs->m_RoomList[0].m_Roomid;
     QString roomcreator = QString(rs->m_RoomList[0].sz_RoomCreator);

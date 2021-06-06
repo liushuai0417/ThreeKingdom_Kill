@@ -4,6 +4,8 @@
 #include<QLabel>
 #include"mypushbutton.h"
 #include<QDebug>
+#include<QWidget>
+#include<chaneginfodialog.h>
 MainScene::MainScene(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainScene)
@@ -86,7 +88,20 @@ void MainScene::paintEvent(QPaintEvent *event){
     pix.load(":/res/icon/launcher_logo_big.png");
     //缩放
     pix = pix.scaled(pix.width()*0.3,pix.height()*0.3);
+
     painter.drawPixmap(10,30,pix.width(),pix.height(),pix);
+
+    ui->scrollArea->setStyleSheet("background-color:transparent;");
+    ui->scrollArea->viewport()->setStyleSheet("background:transparent;");
+    ui->wdg_info->setStyleSheet("QWidget#wdg_info{ border:1px solid white;background:  transparent; }");
+    QPalette pe;
+    pe.setColor(QPalette::WindowText, Qt::white);
+    QBrush myBrush;
+    QPalette palette;
+    myBrush = QBrush(Qt::white,Qt::DiagCrossPattern);
+    palette.setBrush( QPalette::Text,myBrush);
+    ui->lb_feeling->setPalette(pe);
+    ui->lb_name->setPalette(pe);
 }
 
 //创建房间槽函数
@@ -107,7 +122,8 @@ void MainScene::Slot_JoinRoom(){
 
 //修改信息槽函数
 void MainScene::Slot_AlterInfo(){
-    qDebug()<<__func__;
+    ChanegInfoDialog *changeDialog = new ChanegInfoDialog;
+    changeDialog->show();
 }
 
 //开始游戏槽函数

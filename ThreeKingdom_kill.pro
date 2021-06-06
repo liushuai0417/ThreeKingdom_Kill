@@ -17,18 +17,21 @@ SOURCES += main.cpp\
     mainscene.cpp \
     mypushbutton.cpp \
     ckernel.cpp \
-    roomitem.cpp
+    roomitem.cpp \
+    chaneginfodialog.cpp
 
 HEADERS  += dialog.h \
     packdef.h \
     mainscene.h \
     mypushbutton.h \
     ckernel.h \
-    roomitem.h
+    roomitem.h \
+    chaneginfodialog.h
 
 FORMS    += dialog.ui \
     mainscene.ui \
-    roomitem.ui
+    roomitem.ui \
+    chaneginfodialog.ui
 
 RESOURCES += \
     resource.qrc

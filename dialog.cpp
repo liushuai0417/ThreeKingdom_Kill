@@ -42,41 +42,8 @@ Dialog::Dialog(QWidget *parent) :
             return;
         }
         qDebug()<<username<<password;
-        Q_EMIT SIG_LoginCommit(username,password);
-        Q_EMIT SIG_AskRoomCommit();
-//        //测试代码
-//        //弹出大厅
-//        RoomItem *item1 = new RoomItem;
-//        item1->setItem(1,"测试1","刘帅");
-//        RoomItem *item2 = new RoomItem;
-//        item2->setItem(2,"测试2","刘帅");
-//        RoomItem *item3 = new RoomItem;
-//        item3->setItem(3,"测试3","刘帅");
-//        RoomItem *item4 = new RoomItem;
-//        item4->setItem(4,"测试4","刘帅");
-//        RoomItem *item5 = new RoomItem;
-//        item5->setItem(5,"测试1","刘帅");
-//        RoomItem *item6 = new RoomItem;
-//        item6->setItem(6,"测试2","刘帅");
-//        RoomItem *item7 = new RoomItem;
-//        item7->setItem(7,"测试3","刘帅");
-//        RoomItem *item8 = new RoomItem;
-//        item8->setItem(8,"测试4","刘帅");
-//        RoomItem *item9 = new RoomItem;
-//        item9->setItem(9,"测试4","刘帅");
-//        RoomItem *item10 = new RoomItem;
-//        item10->setItem(9,"测试4","刘帅");
-//        Scene->Slot_AddUserItem(item1);
-//        Scene->Slot_AddUserItem(item2);
-//        Scene->Slot_AddUserItem(item3);
-//        Scene->Slot_AddUserItem(item4);
-//        Scene->Slot_AddUserItem(item5);
-//        Scene->Slot_AddUserItem(item6);
-//        Scene->Slot_AddUserItem(item7);
-//        Scene->Slot_AddUserItem(item8);
-//        Scene->Slot_AddUserItem(item9);
-//        Scene->Slot_AddUserItem(item10);
-//        Scene->show();
+        Q_EMIT SIG_LoginCommit(username,password);//发送登录提交信号
+        Q_EMIT SIG_AskRoomCommit();//发送查询房间的信号
 
     });
 

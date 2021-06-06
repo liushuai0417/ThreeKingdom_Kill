@@ -41,8 +41,8 @@
    <widget class="QWidget" name="widget" native="true">
     <property name="geometry">
      <rect>
-      <x>40</x>
-      <y>120</y>
+      <x>30</x>
+      <y>150</y>
       <width>351</width>
       <height>421</height>
      </rect>
@@ -125,8 +125,113 @@
      </widget>
     </widget>
    </widget>
+   <widget class="QWidget" name="wdg_info" native="true">
+    <property name="geometry">
+     <rect>
+      <x>1060</x>
+      <y>30</y>
+      <width>411</width>
+      <height>151</height>
+     </rect>
+    </property>
+    <property name="minimumSize">
+     <size>
+      <width>411</width>
+      <height>151</height>
+     </size>
+    </property>
+    <property name="maximumSize">
+     <size>
+      <width>411</width>
+      <height>151</height>
+     </size>
+    </property>
+    <layout class="QHBoxLayout" name="horizontalLayout">
+     <property name="leftMargin">
+      <number>0</number>
+     </property>
+     <property name="topMargin">
+      <number>0</number>
+     </property>
+     <property name="rightMargin">
+      <number>0</number>
+     </property>
+     <property name="bottomMargin">
+      <number>0</number>
+     </property>
+     <item>
+      <widget class="QPushButton" name="pb_icon">
+       <property name="minimumSize">
+        <size>
+         <width>88</width>
+         <height>88</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>88</width>
+         <height>88</height>
+        </size>
+       </property>
+       <property name="text">
+        <string/>
+       </property>
+       <property name="icon">
+        <iconset resource="resource.qrc">
+         <normaloff>:/res/TX/01.png</normaloff>:/res/TX/01.png</iconset>
+       </property>
+       <property name="iconSize">
+        <size>
+         <width>80</width>
+         <height>80</height>
+        </size>
+       </property>
+       <property name="autoDefault">
+        <bool>false</bool>
+       </property>
+       <property name="flat">
+        <bool>true</bool>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QWidget" name="widget_3" native="true">
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QLabel" name="lb_name">
+          <property name="font">
+           <font>
+            <family>华文行楷</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>三国Kill001</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <widget class="QLabel" name="lb_feeling">
+          <property name="font">
+           <font>
+            <family>华文行楷</family>
+            <pointsize>12</pointsize>
+           </font>
+          </property>
+          <property name="text">
+           <string>这个人很懒，什么也没有写</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+    </layout>
+   </widget>
   </widget>
  </widget>
- <resources/>
+ <resources>
+  <include location="resource.qrc"/>
+ </resources>
  <connections/>
 </ui>
