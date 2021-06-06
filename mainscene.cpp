@@ -6,6 +6,7 @@
 #include<QDebug>
 #include<QWidget>
 #include<chaneginfodialog.h>
+#include<QScrollArea>
 //大厅界面
 MainScene::MainScene(QWidget *parent) :
     QMainWindow(parent),
@@ -107,8 +108,7 @@ void MainScene::paintEvent(QPaintEvent *event){
 
 //创建房间槽函数
 void MainScene::Slot_CreateRoom(){
-    //做弹起特效
-    qDebug()<<__func__;
+    Q_EMIT SIG_CreateRoom();
 }
 
 //添加好友槽函数
@@ -123,11 +123,17 @@ void MainScene::Slot_JoinRoom(){
 
 //修改信息槽函数
 void MainScene::Slot_AlterInfo(){
-    ChanegInfoDialog *changeDialog = new ChanegInfoDialog;
-    changeDialog->show();
+    Q_EMIT SIG_ShowAlterInfo();
+
 }
 
 //开始游戏槽函数
 void MainScene::Slot_StartGame(){
-    qDebug()<<__func__;
+
+}
+
+
+Ui::MainScene *MainScene::getUi() const
+{
+    return ui;
 }

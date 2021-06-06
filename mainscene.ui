@@ -128,27 +128,27 @@
    <widget class="QWidget" name="wdg_info" native="true">
     <property name="geometry">
      <rect>
-      <x>1060</x>
+      <x>980</x>
       <y>30</y>
-      <width>411</width>
+      <width>500</width>
       <height>151</height>
      </rect>
     </property>
     <property name="minimumSize">
      <size>
-      <width>411</width>
+      <width>500</width>
       <height>151</height>
      </size>
     </property>
     <property name="maximumSize">
      <size>
-      <width>411</width>
+      <width>500</width>
       <height>151</height>
      </size>
     </property>
     <layout class="QHBoxLayout" name="horizontalLayout">
      <property name="leftMargin">
-      <number>0</number>
+      <number>5</number>
      </property>
      <property name="topMargin">
       <number>0</number>

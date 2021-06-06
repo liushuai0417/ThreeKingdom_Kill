@@ -44,6 +44,6 @@ void RoomItem::setTop(QString Roomid,QString RoomName,QString CreatorName){
 }
 
 void RoomItem::paintEvent(QPaintEvent *event){
-    ui->widget_2->setStyleSheet("QWidget{background-color: rgba(96, 96, 96, 0.2)}"
-                                "QWidget{border-width:0;border-style:outset;");
+    ui->widget_2->setStyleSheet("QWidget{background-color: rgba(96, 96, 96, 0.2);}"
+                                "QWidget{border-width:0;border-style:outset;}");
 }

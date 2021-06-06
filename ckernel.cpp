@@ -6,6 +6,7 @@
 #include<QThread>
 #include "ui_dialog.h"
 #include"roomitem.h"
+#include "ui_mainscene.h"
 #define NetPackMap(a) m_NetPackMap[(a)-DEF_PACK_BASE]
 CKernel::CKernel(QObject *parent) : QObject(parent)
 {
@@ -14,7 +15,8 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     m_Dialog = new Dialog;//登录注册指针
     m_Dialog->show();
     m_MainScene = new MainScene;//大厅指针
-
+    changeDialog = new ChanegInfoDialog;//修改个人信息窗口指针
+    createDialog = new CreateRoomDialog;//创建房间窗口指针
     //窗口关闭槽函数
     connect(m_Dialog,&Dialog::SIG_CLOSE,[=](){
         DestoryInstance();
@@ -26,6 +28,8 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     void (Dialog::*RegisterSignal)(QString,QString,QString) = &Dialog::SIG_RegisterCommit;//注册信号
     void (Dialog::*LoginSignal)(QString,QString) = &Dialog::SIG_LoginCommit;//登录信号
     void (QMyTcpClient::*ReadyDataSignal)(char*,int) = &QMyTcpClient::SIG_ReadyData;//处理数据的信号
+    void (ChanegInfoDialog::*AlterInfoSignal)(int,QString,QString) = &ChanegInfoDialog::SIG_AleterInfoCommit;
+    void (CreateRoomDialog::*CreateRoomSignal)(QString) = &CreateRoomDialog::SIG_CreateRoomCommit;
     //网络指针接收包内容的槽函数
     connect(m_tcpClient,ReadyDataSignal,this,&CKernel::SLOT_ReadyData);
     //注册槽函数
@@ -49,13 +53,34 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
         m_tcpClient->SendData((char*)&rq,sizeof(rq));
     });
 
+    //获取房间列表槽函数
     connect(m_Dialog,&Dialog::SIG_AskRoomCommit,[=](){
         STRU_ASKROOM_RQ rq;
         m_tcpClient->SendData((char*)&rq,sizeof(rq));
     });
-    RoomItem *itemindex = new RoomItem;
 
+    //修改信息的槽函数
+    connect(changeDialog,AlterInfoSignal,[=](int iconid,QString name,QString feeling){
+        //发送修改信息的包
+
+    });
+
+    //创建房间的槽函数
+    connect(createDialog,CreateRoomSignal,[=](QString roomname){
+        qDebug()<<"发送创建房间";
+        STRU_CREATEROOM_RQ rq;
+        strcpy(rq.m_RoomName,roomname.toStdString().c_str());
+        strcpy(rq.m_szUser,this->m_szName.toStdString().c_str());
+        rq.m_userid = this->m_id;
+        m_tcpClient->SendData((char*)&rq,sizeof(rq));
+    });
+    connect(m_MainScene,&MainScene::SIG_ShowAlterInfo,this,&CKernel::SLOT_ShowAlterInfo);
+    connect(m_MainScene,&MainScene::SIG_CreateRoom,this,&CKernel::SLOT_ShowCreateRoom);
+    //房间列表的第一行
+    RoomItem *itemindex = new RoomItem;
     m_MainScene->Slot_AddUserItem(itemindex);
+
+
 }
 
 //接收数据槽函数
@@ -106,18 +131,34 @@ void CKernel::SLOT_DealLoginRs(char *buf,int nlen){
     //判断请求包的结果
     switch(rs->m_lResult){
         case login_sucess:
+        {
             //初始化个人信息
             this->m_id = rs->m_userid;
             this->m_iconID = rs->m_userInfo.m_iconID;
             this->m_szName = QString(rs->m_userInfo.m_szName);
             this->m_feeling = QString(rs->m_userInfo.m_feeling);
             this->m_state = rs->m_userInfo.m_state;
+            m_MainScene->getUi()->lb_name->setText(m_szName);
+            m_MainScene->getUi()->lb_feeling->setText(m_feeling);
+            QPixmap pix;
+            QString strPath;
+            if(m_iconID<10){
+                strPath = QString(":/res/TX/0%1.png").arg(m_iconID);
+            }else{
+                strPath = QString(":/res/TX/%1.png").arg(m_iconID);
+            }
+            pix.load(strPath);
+            m_MainScene->getUi()->pb_icon->setFixedSize(pix.width(),pix.height());
+            m_MainScene->getUi()->pb_icon->setStyleSheet("QPushButton{border:0px;}");//边框设置为0像素
+            m_MainScene->getUi()->pb_icon->setIcon(pix);
+            m_MainScene->getUi()->pb_icon->setIconSize(QSize(pix.width(),pix.height()));
             //登录成功
             QMessageBox::about(m_Dialog,"提示","登录成功");
             m_Dialog->hide();
             //m_MainScene = new MainScene;//大厅指针
             m_MainScene->setGeometry(m_Dialog->geometry());
             m_MainScene->show();
+        }
         break;
         default:
             QMessageBox::about(m_Dialog,"提示","用户名或密码错误");
@@ -146,14 +187,32 @@ void CKernel::SLOT_DealRegisterRs(char *buf,int nlen){
 void CKernel::SLOT_DealAskRoomRs(char *buf,int nlen){
 
     STRU_ASKROOM_RS *rs = (STRU_ASKROOM_RS *)buf;
-    qDebug()<<rs->m_RoomList[0].sz_Roomname;
-    QString roomname = QString(rs->m_RoomList[0].sz_Roomname);
-    int roomid = rs->m_RoomList[0].m_Roomid;
-    QString roomcreator = QString(rs->m_RoomList[0].sz_RoomCreator);
-    RoomItem *item1 = new RoomItem;
-    qDebug()<<"数组信息"<<roomname<<roomid<<roomcreator;
-    item1->setItem(roomid,roomname,roomcreator);
-    m_MainScene->Slot_AddUserItem(item1);
-    //转到游戏大厅
+    switch(rs->m_lResult){
+        case ask_room_success:
+        {
+            QString roomname = QString(rs->m_RoomList[0].sz_Roomname);
+            int roomid = rs->m_RoomList[0].m_Roomid;
+            QString roomcreator = QString(rs->m_RoomList[0].sz_RoomCreator);
+            RoomItem *item1 = new RoomItem;
+            qDebug()<<"数组信息"<<roomname<<roomid<<roomcreator;
+            item1->setItem(roomid,roomname,roomcreator);
+            m_MainScene->Slot_AddUserItem(item1);
+        }
+        break;
+        case ask_room_failed:
+            QMessageBox::about(m_MainScene,"提示","获取房间列表失败");
+        break;
+    }
+}
 
+//显示更改信息窗口的槽函数
+void CKernel::SLOT_ShowAlterInfo(){
+
+    qDebug()<<__func__;
+    changeDialog->show();
+}
+
+//显示创建房间窗口的槽函数
+void CKernel::SLOT_ShowCreateRoom(){
+    createDialog->show();
 }

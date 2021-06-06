@@ -16,6 +16,10 @@ public:
     explicit MainScene(QWidget *parent = 0);
     ~MainScene();
     void paintEvent(QPaintEvent *event);
+    Ui::MainScene *getUi() const;
+signals:
+    void SIG_ShowAlterInfo();//通知kernel类显示修改信息的窗口
+    void SIG_CreateRoom();//通知kernel类显示创建房间的窗口
 private:
     Ui::MainScene *ui;
     QVBoxLayout *m_mainLayout;

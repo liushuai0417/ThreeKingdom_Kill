@@ -10,6 +10,8 @@ class ChanegInfoDialog;
 class ChanegInfoDialog : public QDialog
 {
     Q_OBJECT
+signals:
+    void SIG_AleterInfoCommit(int iconid,QString name,QString feeling);
 public slots:
     void SLOT_AlterInfo();//修改信息槽函数
 public:

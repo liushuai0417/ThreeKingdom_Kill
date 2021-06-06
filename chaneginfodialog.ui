@@ -52,7 +52,7 @@
       <property name="font">
        <font>
         <family>华文行楷</family>
-        <pointsize>12</pointsize>
+        <pointsize>15</pointsize>
        </font>
       </property>
       <property name="text">
@@ -108,7 +108,7 @@
       <property name="font">
        <font>
         <family>华文行楷</family>
-        <pointsize>12</pointsize>
+        <pointsize>15</pointsize>
        </font>
       </property>
       <property name="text">
@@ -140,7 +140,7 @@
       <property name="font">
        <font>
         <family>华文行楷</family>
-        <pointsize>12</pointsize>
+        <pointsize>15</pointsize>
        </font>
       </property>
       <property name="text">
