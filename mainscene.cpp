@@ -6,6 +6,7 @@
 #include<QDebug>
 #include<QWidget>
 #include<chaneginfodialog.h>
+//大厅界面
 MainScene::MainScene(QWidget *parent) :
     QMainWindow(parent),
     ui(new Ui::MainScene)

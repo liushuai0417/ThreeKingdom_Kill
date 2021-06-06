@@ -1,6 +1,7 @@
 #include "mypushbutton.h"
 #include<QPixmap>
 #include<QPropertyAnimation>
+//自定义按钮类
 //MyPushButton::MyPushButton(QWidget *parent) : QPushButton(parent)
 //{
 

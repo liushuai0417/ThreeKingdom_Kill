@@ -1,6 +1,8 @@
 #include "chaneginfodialog.h"
 #include "ui_chaneginfodialog.h"
 #include"mypushbutton.h"
+#include"QMessageBox"
+//修改信息界面类
 ChanegInfoDialog::ChanegInfoDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::ChanegInfoDialog)
@@ -9,6 +11,7 @@ ChanegInfoDialog::ChanegInfoDialog(QWidget *parent) :
     this->setWindowIcon(QIcon(":/res/icon/icon.png"));
     this->setWindowTitle("三国Kill");
     ui->cb_icon->setIconSize(QSize(88,88));
+    //设置头像下拉菜单
     for(int i=1;i<=10;i++){
         QString strPath = QString(":/res/TX/0%1.png").arg(i);
         ui->cb_icon->addItem(QIcon(strPath),"");

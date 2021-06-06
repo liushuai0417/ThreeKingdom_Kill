@@ -2,6 +2,7 @@
 #include "ui_roomitem.h"
 #include<QDebug>
 #include<QDateTime>
+//房间列表插件类
 RoomItem::RoomItem(QWidget *parent) :
     QWidget(parent),
     ui(new Ui::RoomItem)
