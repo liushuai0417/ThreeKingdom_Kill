@@ -52,12 +52,17 @@ MainScene::MainScene(QWidget *parent) :
     alterinfo->setParent(this);
     alterinfo->move(index0+startgame->width()+index1+index2,this->height()*0.8-30);
 
+    //刷新房间列表按钮
+    MyPushButton *reget = new MyPushButton(":/res/icon/click_reget_2.png",":/res/icon/click_reget_1.png");
+    reget->setParent(this);
+    reget->move(400,this->height()*0.8-400);
     //五个按钮的信号和槽
     connect(createroom,&MyPushButton::clicked,this,&MainScene::Slot_CreateRoom);
     connect(joinroom,&MyPushButton::clicked,this,&MainScene::Slot_JoinRoom);
     connect(startgame,&MyPushButton::clicked,this,&MainScene::Slot_StartGame);
     connect(addfriend,&MyPushButton::clicked,this,&MainScene::Slot_AddFriend);
     connect(alterinfo,&MyPushButton::clicked,this,&MainScene::Slot_AlterInfo);
+    connect(reget,&MyPushButton::clicked,this,&MainScene::Slot_RegetRoom);
 
     m_mainLayout = new QVBoxLayout;
     m_mainLayout->setContentsMargins(0,0,0,0);//设置外边距
@@ -113,18 +118,17 @@ void MainScene::Slot_CreateRoom(){
 
 //添加好友槽函数
 void MainScene::Slot_AddFriend(){
-    qDebug()<<__func__;
+    Q_EMIT SIG_AddFriend();
 }
 
 //加入房间槽函数
 void MainScene::Slot_JoinRoom(){
-    qDebug()<<__func__;
+    Q_EMIT SIG_JoinRoom();
 }
 
 //修改信息槽函数
 void MainScene::Slot_AlterInfo(){
     Q_EMIT SIG_ShowAlterInfo();
-
 }
 
 //开始游戏槽函数
@@ -132,6 +136,9 @@ void MainScene::Slot_StartGame(){
 
 }
 
+void MainScene::Slot_RegetRoom(){
+    Q_EMIT SIG_ReGetRoomTable();
+}
 
 Ui::MainScene *MainScene::getUi() const
 {

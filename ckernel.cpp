@@ -7,6 +7,8 @@
 #include "ui_dialog.h"
 #include"roomitem.h"
 #include "ui_mainscene.h"
+#include"addfrienddialog.h"
+
 #define NetPackMap(a) m_NetPackMap[(a)-DEF_PACK_BASE]
 CKernel::CKernel(QObject *parent) : QObject(parent)
 {
@@ -17,6 +19,8 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     m_MainScene = new MainScene;//大厅指针
     changeDialog = new ChanegInfoDialog;//修改个人信息窗口指针
     createDialog = new CreateRoomDialog;//创建房间窗口指针
+    addDialog = new AddFriendDialog;//添加好友窗口指针
+    joinDialog = new JoinRoomDialog;//加入房间窗口指针
     //窗口关闭槽函数
     connect(m_Dialog,&Dialog::SIG_CLOSE,[=](){
         DestoryInstance();
@@ -30,6 +34,9 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     void (QMyTcpClient::*ReadyDataSignal)(char*,int) = &QMyTcpClient::SIG_ReadyData;//处理数据的信号
     void (ChanegInfoDialog::*AlterInfoSignal)(int,QString,QString) = &ChanegInfoDialog::SIG_AleterInfoCommit;
     void (CreateRoomDialog::*CreateRoomSignal)(QString) = &CreateRoomDialog::SIG_CreateRoomCommit;
+    void (AddFriendDialog::*AddFriendByNameSignal)(QString) = &AddFriendDialog::SIG_AddFriendByNameCommit;
+    void (JoinRoomDialog::*JoinRoomByNameSignal)(QString) = &JoinRoomDialog::SIG_JoinRoomByNameCommit;
+    void (JoinRoomDialog::*JoinRoomByIdSignal)(QString) = &JoinRoomDialog::SIG_JoinRoomByIdCommit;
     //网络指针接收包内容的槽函数
     connect(m_tcpClient,ReadyDataSignal,this,&CKernel::SLOT_ReadyData);
     //注册槽函数
@@ -74,8 +81,30 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
         rq.m_userid = this->m_id;
         m_tcpClient->SendData((char*)&rq,sizeof(rq));
     });
+
+    //通过name查找好友
+    connect(addDialog,AddFriendByNameSignal,[=](QString content){
+        //发送查找好友包
+        qDebug()<<"name查找好友"<<content;
+    });
+
+    //通过name查找房间
+    connect(joinDialog,JoinRoomByNameSignal,[=](QString content){
+        //发送查找房间包
+        qDebug()<<"name查找房间"<<content;
+    });
+
+    //通过id查找房间
+    connect(joinDialog,JoinRoomByIdSignal,[=](QString content){
+        //发送查找房间包
+        qDebug()<<"id查找房间"<<content;
+    });
+
+    connect(m_MainScene,&MainScene::SIG_ReGetRoomTable,this,&CKernel::SLOT_ReGetRoomTable);
     connect(m_MainScene,&MainScene::SIG_ShowAlterInfo,this,&CKernel::SLOT_ShowAlterInfo);
     connect(m_MainScene,&MainScene::SIG_CreateRoom,this,&CKernel::SLOT_ShowCreateRoom);
+    connect(m_MainScene,&MainScene::SIG_AddFriend,this,&CKernel::SLOT_ShowAddFriend);
+    connect(m_MainScene,&MainScene::SIG_JoinRoom,this,&CKernel::SLOT_ShowJoinRoom);
     //房间列表的第一行
     RoomItem *itemindex = new RoomItem;
     m_MainScene->Slot_AddUserItem(itemindex);
@@ -190,13 +219,19 @@ void CKernel::SLOT_DealAskRoomRs(char *buf,int nlen){
     switch(rs->m_lResult){
         case ask_room_success:
         {
-            QString roomname = QString(rs->m_RoomList[0].sz_Roomname);
-            int roomid = rs->m_RoomList[0].m_Roomid;
-            QString roomcreator = QString(rs->m_RoomList[0].sz_RoomCreator);
-            RoomItem *item1 = new RoomItem;
-            qDebug()<<"数组信息"<<roomname<<roomid<<roomcreator;
-            item1->setItem(roomid,roomname,roomcreator);
-            m_MainScene->Slot_AddUserItem(item1);
+            int i=0;
+            while(rs->m_RoomList[i].m_Roomid!=0){
+                QString roomname = QString(rs->m_RoomList[i].sz_Roomname);
+                int roomid = rs->m_RoomList[i].m_Roomid;
+                QString roomcreator = QString(rs->m_RoomList[i].sz_RoomCreator);
+                RoomItem *item = new RoomItem;
+                vec_roomitem.push_back(item);
+                qDebug()<<"数组信息"<<roomname<<roomid<<roomcreator;
+                item->setItem(roomid,roomname,roomcreator);
+                m_MainScene->Slot_AddUserItem(item);
+                i++;
+            }
+
         }
         break;
         case ask_room_failed:
@@ -215,4 +250,26 @@ void CKernel::SLOT_ShowAlterInfo(){
 //显示创建房间窗口的槽函数
 void CKernel::SLOT_ShowCreateRoom(){
     createDialog->show();
+}
+
+//显示添加好友窗口的槽函数
+void CKernel::SLOT_ShowAddFriend(){
+    addDialog->show();
+}
+
+void CKernel::SLOT_ShowJoinRoom(){
+    joinDialog->show();
+}
+
+void CKernel::SLOT_ReGetRoomTable(){
+    auto ite = vec_roomitem.begin();
+    while(ite!=vec_roomitem.end()){
+        m_MainScene->Slot_RemoveUserItem(*ite);
+        delete *ite;
+        *ite = NULL;
+        ite++;
+    }
+    m_MainScene->repaint();
+    STRU_ASKROOM_RQ rq;
+    m_tcpClient->SendData((char*)&rq,sizeof(rq));
 }

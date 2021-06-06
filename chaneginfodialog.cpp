@@ -68,7 +68,6 @@ void ChanegInfoDialog::paintEvent(QPaintEvent *event){
     QPainter painter(this);
     QPixmap pix;
     pix.load(":/res/BJ/task_level_map.png");
-    //pix = pix.scaled(pix.width()*2,pix.height()*2);
     painter.drawPixmap(0,0,this->width(),this->height(),pix);
 }
 

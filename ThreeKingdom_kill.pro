@@ -19,7 +19,9 @@ SOURCES += main.cpp\
     ckernel.cpp \
     roomitem.cpp \
     chaneginfodialog.cpp \
-    createroomdialog.cpp
+    createroomdialog.cpp \
+    addfrienddialog.cpp \
+    joinroomdialog.cpp
 
 HEADERS  += dialog.h \
     packdef.h \
@@ -28,13 +30,17 @@ HEADERS  += dialog.h \
     ckernel.h \
     roomitem.h \
     chaneginfodialog.h \
-    createroomdialog.h
+    createroomdialog.h \
+    addfrienddialog.h \
+    joinroomdialog.h
 
 FORMS    += dialog.ui \
     mainscene.ui \
     roomitem.ui \
     chaneginfodialog.ui \
-    createroomdialog.ui
+    createroomdialog.ui \
+    addfrienddialog.ui \
+    joinroomdialog.ui
 
 RESOURCES += \
     resource.qrc

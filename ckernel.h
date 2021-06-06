@@ -8,6 +8,10 @@
 #include"packdef.h"
 #include"chaneginfodialog.h"
 #include"createroomdialog.h"
+#include"addfrienddialog.h"
+#include"joinroomdialog.h"
+#include<vector>
+#include"roomitem.h"
 class CKernel;
 typedef void (CKernel::*PFUN)(char*,int);
 class CKernel : public QObject
@@ -34,12 +38,15 @@ private:
     QMyTcpClient *m_tcpClient;//网络指针
     ChanegInfoDialog *changeDialog;//修改个人信息窗口指针
     CreateRoomDialog *createDialog;//创建房间窗口指针
+    AddFriendDialog *addDialog;//添加好友
+    JoinRoomDialog *joinDialog;//加入房间
     PFUN m_NetPackMap[DEF_PACK_COUNT];//协议映射数组
     int m_id;//用户id 唯一标识
     int m_iconID;//用户头像id
     int m_state;//用户状态
     QString m_szName;//用户昵称
     QString m_feeling;//个性签名
+    vector<RoomItem *>vec_roomitem;
 public slots:
     void SLOT_DealLoginRs(char *buf,int nlen);//处理登录回复槽函数
     void SLOT_DealRegisterRs(char *buf,int nlen);//处理注册回复槽函数
@@ -47,6 +54,9 @@ public slots:
     void SLOT_DealAskRoomRs(char *buf,int nlen);//处理请求房间回复槽函数
     void SLOT_ShowAlterInfo();//显示更改信息窗口的槽函数
     void SLOT_ShowCreateRoom();//显示创建房间窗口的槽函数
+    void SLOT_ShowAddFriend();//显示添加好友窗口的槽函数
+    void SLOT_ShowJoinRoom();//显示查找房间窗口的槽函数
+    void SLOT_ReGetRoomTable();//刷新房间列表槽函数
 };
 
 #endif // CKERNEL_H

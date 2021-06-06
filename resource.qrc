@@ -180,5 +180,16 @@
         <file>res/icon/gu_click_changeinfo_1.png</file>
         <file>res/icon/gu_click_createroom_1.png</file>
         <file>res/icon/gu_click_joinroom_1.png</file>
+        <file>res/icon/gu_click_searchbyname.png</file>
+        <file>res/icon/gu_click_searchbyname_1.png</file>
+        <file>res/icon/gu_click_serachbyid.png</file>
+        <file>res/icon/gu_click_serachbyid_1.png</file>
+        <file>res/icon/click_searchbyid.png</file>
+        <file>res/icon/click_searchbyid_1.png</file>
+        <file>res/icon/click_searchbyname.png</file>
+        <file>res/icon/click_searchbyname_1.png</file>
+        <file>res/icon/click_reget.png</file>
+        <file>res/icon/click_reget_1.png</file>
+        <file>res/icon/click_reget_2.png</file>
     </qresource>
 </RCC>
