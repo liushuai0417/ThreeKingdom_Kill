@@ -165,7 +165,7 @@ void CKernel::setNetPackMap(){
 void CKernel::SLOT_DealAddFriend(char *buf,int nlen){
     STRU_ADD_FRIEND_RS *rs = (STRU_ADD_FRIEND_RS *)buf;
     qDebug()<<"SLOT_DealAddFriend";
-    if(rs->m_nType == add_wait){
+    if(rs->m_result == add_wait){
         QMessageBox::about(m_Dialog,"提示","该用户离线,请等待对方上线后同意请求");
     }
 }
