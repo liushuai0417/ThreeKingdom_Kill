@@ -18,7 +18,7 @@ public:
     void mouseDoubleClickEvent(QMouseEvent *event);
     void setItem(int Roomid,QString RoomName,QString CreatorName);
     void paintEvent(QPaintEvent *event);
-    void setTop(QString Roomid,QString RoomName,QString CreatorName);
+
 private:
     Ui::RoomItem *ui;
     int m_RoomID;

@@ -8,7 +8,7 @@
 #include"roomitem.h"
 #include "ui_mainscene.h"
 #include"addfrienddialog.h"
-
+#include"frienditem.h"
 #define NetPackMap(a) m_NetPackMap[(a)-DEF_PACK_BASE]
 CKernel::CKernel(QObject *parent) : QObject(parent)
 {
@@ -21,6 +21,7 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     createDialog = new CreateRoomDialog;//创建房间窗口指针
     addDialog = new AddFriendDialog;//添加好友窗口指针
     joinDialog = new JoinRoomDialog;//加入房间窗口指针
+    friendlistDialog = new FriendList;
     //窗口关闭槽函数
     connect(m_Dialog,&Dialog::SIG_CLOSE,[=](){
         DestoryInstance();
@@ -105,6 +106,7 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     connect(m_MainScene,&MainScene::SIG_CreateRoom,this,&CKernel::SLOT_ShowCreateRoom);
     connect(m_MainScene,&MainScene::SIG_AddFriend,this,&CKernel::SLOT_ShowAddFriend);
     connect(m_MainScene,&MainScene::SIG_JoinRoom,this,&CKernel::SLOT_ShowJoinRoom);
+    connect(m_MainScene,&MainScene::SIG_GetFriendList,this,&CKernel::SLOT_GetFriendList);
     //房间列表的第一行
     RoomItem *itemindex = new RoomItem;
     m_MainScene->Slot_AddUserItem(itemindex);
@@ -150,6 +152,7 @@ void CKernel::setNetPackMap(){
     NetPackMap(DEF_PACK_REGISTER_RS)  = &CKernel::SLOT_DealRegisterRs;
     NetPackMap(DEF_PACK_LOGIN_RS)  = &CKernel::SLOT_DealLoginRs;
     NetPackMap(DEF_PACK_ASKROOM_RS) = &CKernel::SLOT_DealAskRoomRs;
+    NetPackMap(DEF_PACK_CREATEROOM_RS) = &CKernel::SLOT_DealCreateRoom;
     qDebug()<<__func__<<DEF_PACK_LOGIN_RS-DEF_PACK_BASE;
 }
 
@@ -240,10 +243,22 @@ void CKernel::SLOT_DealAskRoomRs(char *buf,int nlen){
     }
 }
 
+void CKernel::SLOT_DealCreateRoom(char *buf,int nlen){
+    STRU_CREATEROOM_RS *rs = (STRU_CREATEROOM_RS *)buf;
+    QString str;
+    switch (rs->m_lResult) {
+        case create_success:{
+            str = QString("创建房间成功,房间号为%1").arg(rs->m_RoomId);
+            QMessageBox::about(m_MainScene,"提示",str);
+        }
+        break;
+        case create_failed:
+            QMessageBox::about(m_MainScene,"提示","创建房间失败");
+            break;
+    }
+}
 //显示更改信息窗口的槽函数
 void CKernel::SLOT_ShowAlterInfo(){
-
-    qDebug()<<__func__;
     changeDialog->show();
 }
 
@@ -272,4 +287,23 @@ void CKernel::SLOT_ReGetRoomTable(){
     m_MainScene->repaint();
     STRU_ASKROOM_RQ rq;
     m_tcpClient->SendData((char*)&rq,sizeof(rq));
+}
+
+void CKernel::SLOT_GetFriendList(){
+
+    FriendItem *item1 = new FriendItem;
+    item1->setItem(1,"test1","测试1");
+    FriendItem *item2 = new FriendItem;
+    item2->setItem(2,"test1","测试1");
+    FriendItem *item3 = new FriendItem;
+    item3->setItem(3,"test1","测试1");
+    FriendItem *item4 = new FriendItem;
+    item4->setItem(4,"test1","测试1");
+    friendlistDialog->Slot_AddFriendItem(item1);
+    friendlistDialog->Slot_AddFriendItem(item2);
+    friendlistDialog->Slot_AddFriendItem(item3);
+    friendlistDialog->Slot_AddFriendItem(item4);
+    friendlistDialog->show();
+    //发送查询好友列表包
+
 }

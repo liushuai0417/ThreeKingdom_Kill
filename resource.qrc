@@ -191,5 +191,13 @@
         <file>res/icon/click_reget.png</file>
         <file>res/icon/click_reget_1.png</file>
         <file>res/icon/click_reget_2.png</file>
+        <file>res/icon/click_myfriend.png</file>
+        <file>res/icon/click_myfriend_1.png</file>
+        <file>res/icon/click_getfriendlist.png</file>
+        <file>res/icon/click_getfriendlist_1.png</file>
+        <file>res/icon/getfriendlist.png</file>
+        <file>res/icon/getfriendlist_1.png</file>
+        <file>res/icon/click_regetfriendlist.png</file>
+        <file>res/icon/click_regetfriendlist_1.png</file>
     </qresource>
 </RCC>

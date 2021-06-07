@@ -7,6 +7,8 @@
 #include<QWidget>
 #include<chaneginfodialog.h>
 #include<QScrollArea>
+#include<friendlist.h>
+#include<frienditem.h>
 //大厅界面
 MainScene::MainScene(QWidget *parent) :
     QMainWindow(parent),
@@ -56,18 +58,40 @@ MainScene::MainScene(QWidget *parent) :
     MyPushButton *reget = new MyPushButton(":/res/icon/click_reget_2.png",":/res/icon/click_reget_1.png");
     reget->setParent(this);
     reget->move(400,this->height()*0.8-400);
-    //五个按钮的信号和槽
+
+    //获取好友列表按钮
+    MyPushButton *getFriendList = new MyPushButton(":/res/icon/getfriendlist.png",":/res/icon/getfriendlist_1.png");
+    getFriendList->setParent(this);
+    getFriendList->move(this->width()-200,this->height()*0.8-400);
+    //六个按钮的信号和槽
     connect(createroom,&MyPushButton::clicked,this,&MainScene::Slot_CreateRoom);
     connect(joinroom,&MyPushButton::clicked,this,&MainScene::Slot_JoinRoom);
     connect(startgame,&MyPushButton::clicked,this,&MainScene::Slot_StartGame);
     connect(addfriend,&MyPushButton::clicked,this,&MainScene::Slot_AddFriend);
     connect(alterinfo,&MyPushButton::clicked,this,&MainScene::Slot_AlterInfo);
     connect(reget,&MyPushButton::clicked,this,&MainScene::Slot_RegetRoom);
-
+    connect(getFriendList,&MyPushButton::clicked,this,&MainScene::Slot_GetFriendList);
+//    connect(getFriendList,&MyPushButton::clicked,[=](){
+//        FriendList *dia = new FriendList;
+//        FriendItem *item1 = new FriendItem;
+//        item1->setItem(1,"test1","测试1");
+//        FriendItem *item2 = new FriendItem;
+//        item2->setItem(2,"test1","测试1");
+//        FriendItem *item3 = new FriendItem;
+//        item3->setItem(3,"test1","测试1");
+//        FriendItem *item4 = new FriendItem;
+//        item4->setItem(4,"test1","测试1");
+//        dia->Slot_AddFriendItem(item1);
+//        dia->Slot_AddFriendItem(item2);
+//        dia->Slot_AddFriendItem(item3);
+//        dia->Slot_AddFriendItem(item4);
+//        dia->show();
+//    });
     m_mainLayout = new QVBoxLayout;
     m_mainLayout->setContentsMargins(0,0,0,0);//设置外边距
     m_mainLayout->setSpacing(2);
     ui->wdg_roomlist->setLayout(m_mainLayout);
+
 
 }
 
@@ -136,6 +160,12 @@ void MainScene::Slot_StartGame(){
 
 }
 
+//好友列表槽函数
+void MainScene::Slot_GetFriendList(){
+    Q_EMIT SIG_GetFriendList();
+}
+
+//刷新房间列表槽函数
 void MainScene::Slot_RegetRoom(){
     Q_EMIT SIG_ReGetRoomTable();
 }

@@ -23,9 +23,11 @@ signals:
     void SIG_AddFriend();//通知kernel类显示添加好友的窗口
     void SIG_JoinRoom();//通知kernel类显示加入房间的窗口
     void SIG_ReGetRoomTable();//通知kernel类获取房间列表
+    void SIG_GetFriendList();//通知kernel类获取好友列表
 private:
     Ui::MainScene *ui;
     QVBoxLayout *m_mainLayout;
+
 public slots:
     void Slot_CreateRoom();//创建房间槽函数
     void Slot_AddFriend();//添加好友槽函数
@@ -35,6 +37,7 @@ public slots:
     void Slot_AddUserItem(QWidget *item);
     void Slot_RemoveUserItem(QWidget *item);
     void Slot_RegetRoom();//获取房间列表槽函数
+    void Slot_GetFriendList();//获取好友列表槽函数
 };
 
 #endif // MAINSCENE_H

@@ -39,9 +39,7 @@ void RoomItem::setItem(int Roomid,QString RoomName,QString CreatorName){
     ui->lb_roomcreator->setText(CreatorName);
 }
 
-void RoomItem::setTop(QString Roomid,QString RoomName,QString CreatorName){
 
-}
 
 void RoomItem::paintEvent(QPaintEvent *event){
     ui->widget_2->setStyleSheet("QWidget{background-color: rgba(96, 96, 96, 0.2);}"
