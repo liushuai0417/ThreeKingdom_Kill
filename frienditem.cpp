@@ -14,6 +14,7 @@ FriendItem::FriendItem(QWidget *parent) :
     palette.setBrush( QPalette::Text,myBrush);
     ui->lb_feeling->setPalette(pe);
     ui->lb_name->setPalette(pe);
+    ui->lb_state->setPalette(pe);
 }
 
 FriendItem::~FriendItem()
@@ -22,7 +23,7 @@ FriendItem::~FriendItem()
 }
 
 //设置用户信息
-void FriendItem::setItem(int iconid,QString name,QString feeling){
+void FriendItem::setItem(int iconid,QString name,QString feeling,int state){
     ui->lb_name->setText(name);
     ui->lb_feeling->setText(feeling);
     QPixmap pix;
@@ -37,6 +38,11 @@ void FriendItem::setItem(int iconid,QString name,QString feeling){
     ui->pb_icon->setStyleSheet("QPushButton{border:0px;}");//边框设置为0像素
     ui->pb_icon->setIcon(pix);
     ui->pb_icon->setIconSize(QSize(pix.width(),pix.height()));
+    if(state == 0){
+        ui->lb_state->setText("离线");
+    }else{
+        ui->lb_state->setText("在线");
+    }
 }
 
 void FriendItem::paintEvent(QPaintEvent *event){
@@ -44,4 +50,5 @@ void FriendItem::paintEvent(QPaintEvent *event){
                                 "QWidget{border-width:0;border-style:outset;}");
     ui->lb_feeling->setStyleSheet("QLabel {background-color: transparent;}");
     ui->lb_name->setStyleSheet("QLabel {background-color: transparent;}");
+    ui->lb_state->setStyleSheet("QLabel {background-color: transparent;}");
 }

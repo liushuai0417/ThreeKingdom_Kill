@@ -9,6 +9,7 @@
 #include "ui_mainscene.h"
 #include"addfrienddialog.h"
 #include"frienditem.h"
+#include"mypushbutton.h"
 #define NetPackMap(a) m_NetPackMap[(a)-DEF_PACK_BASE]
 CKernel::CKernel(QObject *parent) : QObject(parent)
 {
@@ -86,7 +87,11 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     //通过name查找好友
     connect(addDialog,AddFriendByNameSignal,[=](QString content){
         //发送查找好友包
-        qDebug()<<"name查找好友"<<content;
+        STRU_SEARCH_FRIEND_RQ rq;
+        strcpy(rq.sz_friendName,content.toStdString().c_str());
+        rq.m_userid = this->m_id;
+        m_tcpClient->SendData((char*)&rq,sizeof(rq));
+        qDebug()<<rq.sz_friendName;
     });
 
     //通过name查找房间
@@ -153,8 +158,59 @@ void CKernel::setNetPackMap(){
     NetPackMap(DEF_PACK_LOGIN_RS)  = &CKernel::SLOT_DealLoginRs;
     NetPackMap(DEF_PACK_ASKROOM_RS) = &CKernel::SLOT_DealAskRoomRs;
     NetPackMap(DEF_PACK_CREATEROOM_RS) = &CKernel::SLOT_DealCreateRoom;
-    qDebug()<<__func__<<DEF_PACK_LOGIN_RS-DEF_PACK_BASE;
+    NetPackMap(DEF_PACK_SEARCH_FRIEND_RS) = &CKernel::SLOT_DealSearchFriend;
+    NetPackMap(DEF_PACK_ADD_FRIEND_RS) = &CKernel::SLOT_DealAddFriend;
 }
+
+void CKernel::SLOT_DealAddFriend(char *buf,int nlen){
+    STRU_ADD_FRIEND_RS *rs = (STRU_ADD_FRIEND_RS *)buf;
+    qDebug()<<"SLOT_DealAddFriend";
+    if(rs->m_nType == add_wait){
+        QMessageBox::about(m_Dialog,"提示","该用户离线,请等待对方上线后同意请求");
+    }
+}
+//处理查找好友回复
+void CKernel::SLOT_DealSearchFriend(char *buf,int nlen){
+    STRU_SEARCH_FRIEND_RS *rs = (STRU_SEARCH_FRIEND_RS *)buf;
+    int iconid;
+    int state;
+    QString name;
+    QString feeling;
+    switch(rs->m_result){
+        case no_this_user:
+           QMessageBox::about(m_Dialog,"提示","用户不存在");
+        break;
+        case is_your_friend:
+            QMessageBox::about(m_Dialog,"提示","该用户是你的好友");
+        break;
+        case search_success:
+        {
+            qDebug()<<"查询结果"<<rs->m_friend_info.m_szName;
+            iconid = rs->m_friend_info.m_iconID;
+            state = rs->m_friend_info.m_state;
+            name = QString(rs->m_friend_info.m_szName);
+            feeling = QString(rs->m_friend_info.m_feeling);
+            FriendItem *item = new FriendItem;
+            item->setItem(iconid,name,feeling,state);
+            MyPushButton *addFriend = new MyPushButton(":/res/icon/addfriend.png",":/res/icon/addfriend_1.png");
+            addFriend->setParent(item);
+            addFriend->move(item->width()-80,item->height()*0.8-25);
+            item->m_friendName = QString(rs->m_friend_info.m_szName);
+            item->m_friendId = rs->m_friend_info.m_friend;
+            connect(addFriend,&MyPushButton::clicked,[=](){
+                STRU_ADD_FRIEND_RQ rq;
+                rq.m_friendID = item->m_friendId;
+                rq.m_userID = this->m_id;
+                strcpy(rq.m_szAddFriendName,item->m_friendName.toStdString().c_str());
+                qDebug()<<rq.m_friendID<<" "<<rq.m_userID<<" "<<rq.m_szAddFriendName;
+                m_tcpClient->SendData((char*)&rq,sizeof(rq));
+            });
+            addDialog->Slot_AddFriendItem(item);
+        }
+        break;
+    }
+}
+
 
 //处理登录回复槽函数
 void CKernel::SLOT_DealLoginRs(char *buf,int nlen){
@@ -165,6 +221,7 @@ void CKernel::SLOT_DealLoginRs(char *buf,int nlen){
         case login_sucess:
         {
             //初始化个人信息
+
             this->m_id = rs->m_userid;
             this->m_iconID = rs->m_userInfo.m_iconID;
             this->m_szName = QString(rs->m_userInfo.m_szName);
@@ -292,13 +349,13 @@ void CKernel::SLOT_ReGetRoomTable(){
 void CKernel::SLOT_GetFriendList(){
 
     FriendItem *item1 = new FriendItem;
-    item1->setItem(1,"test1","测试1");
+    item1->setItem(1,"test1","测试1",1);
     FriendItem *item2 = new FriendItem;
-    item2->setItem(2,"test1","测试1");
+    item2->setItem(2,"test1","测试1",0);
     FriendItem *item3 = new FriendItem;
-    item3->setItem(3,"test1","测试1");
+    item3->setItem(3,"test1","测试1",1);
     FriendItem *item4 = new FriendItem;
-    item4->setItem(4,"test1","测试1");
+    item4->setItem(4,"test1","测试1",1);
     friendlistDialog->Slot_AddFriendItem(item1);
     friendlistDialog->Slot_AddFriendItem(item2);
     friendlistDialog->Slot_AddFriendItem(item3);

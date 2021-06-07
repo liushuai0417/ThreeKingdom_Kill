@@ -48,12 +48,15 @@ private:
     int m_state;//用户状态
     QString m_szName;//用户昵称
     QString m_feeling;//个性签名
+    int m_friendid;//查询好友id
     vector<RoomItem *>vec_roomitem;
 public slots:
     void SLOT_DealLoginRs(char *buf,int nlen);//处理登录回复槽函数
     void SLOT_DealRegisterRs(char *buf,int nlen);//处理注册回复槽函数
     void SLOT_DealAskRoomRs(char *buf,int nlen);//处理请求房间回复槽函数
     void SLOT_DealCreateRoom(char *buf,int nlen);
+    void SLOT_DealSearchFriend(char* buf,int nlen);
+    void SLOT_DealAddFriend(char *buf,int nlen);
     void SLOT_ReadyData(char* buf,int nlen);//接收包槽函数
     void SLOT_ShowAlterInfo();//显示更改信息窗口的槽函数
     void SLOT_ShowCreateRoom();//显示创建房间窗口的槽函数

@@ -3,6 +3,7 @@
 
 #include <QDialog>
 #include<QPaintEvent>
+#include<QVBoxLayout>
 namespace Ui {
 class AddFriendDialog;
 }
@@ -18,8 +19,13 @@ public:
     explicit AddFriendDialog(QWidget *parent = 0);
     ~AddFriendDialog();
     void paintEvent(QPaintEvent *event);
+    void Slot_AddFriendItem(QWidget *item);
+    void Slot_RemoveFriendItem(QWidget *item);
+    QVBoxLayout *m_friendLayout;
+
 private:
     Ui::AddFriendDialog *ui;
+
 };
 
 #endif // ADDFRIENDDIALOG_H

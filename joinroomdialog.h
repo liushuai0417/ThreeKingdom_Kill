@@ -3,6 +3,8 @@
 
 #include <QDialog>
 #include<QPaintEvent>
+#include"packdef.h"
+#include<QVBoxLayout>
 namespace Ui {
 class JoinRoomDialog;
 }
@@ -17,9 +19,13 @@ public:
     explicit JoinRoomDialog(QWidget *parent = 0);
     ~JoinRoomDialog();
     void paintEvent(QPaintEvent *event);
+    void Slot_AddFriendItem(QWidget *item);
+    void Slot_RemoveFriendItem(QWidget *item);
+    QVBoxLayout *m_roomLayout;
 public slots:
     void SLOT_JoinRoomById();
     void SLOT_JoinRoomByName();
+
 private:
     Ui::JoinRoomDialog *ui;
 };

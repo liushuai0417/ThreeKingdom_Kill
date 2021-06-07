@@ -138,6 +138,18 @@
            </property>
           </widget>
          </item>
+         <item>
+          <widget class="QLabel" name="lb_state">
+           <property name="font">
+            <font>
+             <family>华文行楷</family>
+            </font>
+           </property>
+           <property name="text">
+            <string>在线</string>
+           </property>
+          </widget>
+         </item>
         </layout>
        </widget>
       </item>

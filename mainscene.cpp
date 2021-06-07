@@ -71,22 +71,6 @@ MainScene::MainScene(QWidget *parent) :
     connect(alterinfo,&MyPushButton::clicked,this,&MainScene::Slot_AlterInfo);
     connect(reget,&MyPushButton::clicked,this,&MainScene::Slot_RegetRoom);
     connect(getFriendList,&MyPushButton::clicked,this,&MainScene::Slot_GetFriendList);
-//    connect(getFriendList,&MyPushButton::clicked,[=](){
-//        FriendList *dia = new FriendList;
-//        FriendItem *item1 = new FriendItem;
-//        item1->setItem(1,"test1","测试1");
-//        FriendItem *item2 = new FriendItem;
-//        item2->setItem(2,"test1","测试1");
-//        FriendItem *item3 = new FriendItem;
-//        item3->setItem(3,"test1","测试1");
-//        FriendItem *item4 = new FriendItem;
-//        item4->setItem(4,"test1","测试1");
-//        dia->Slot_AddFriendItem(item1);
-//        dia->Slot_AddFriendItem(item2);
-//        dia->Slot_AddFriendItem(item3);
-//        dia->Slot_AddFriendItem(item4);
-//        dia->show();
-//    });
     m_mainLayout = new QVBoxLayout;
     m_mainLayout->setContentsMargins(0,0,0,0);//设置外边距
     m_mainLayout->setSpacing(2);

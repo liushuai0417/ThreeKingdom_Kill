@@ -14,8 +14,10 @@ class FriendItem : public QWidget
 public:
     explicit FriendItem(QWidget *parent = 0);
     ~FriendItem();
-    void setItem(int iconid,QString name,QString feeling);
+    void setItem(int iconid,QString name,QString feeling,int state);
     void paintEvent(QPaintEvent *event);
+    int m_friendId;//用户id
+    QString m_friendName;//用户昵称
 private:
     Ui::FriendItem *ui;
 };
