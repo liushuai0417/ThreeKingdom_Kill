@@ -48,8 +48,8 @@ typedef enum Net_PACK
     DEF_PACK_ADD_FRIEND_RQ,                     //添加好友请求
     DEF_PACK_ADD_FRIEND_RS,
 
-    DEF_PACK_DEAL_FRIEND_RQ,                    //处理好友请求
-    DEF_PACK_DEAL_FRIEND_RS,
+    DEF_ALTER_USERINFO_RQ,                      //修改用户信息请求
+    DEF_ALTER_USERINFO_RS,
 
     DEF_PACK_FRIEND_INFO,
 
@@ -92,9 +92,11 @@ typedef enum Net_PACK
 
 //添加好友结果
 #define add_failed          0
-#define add_wait            1
-#define add_success         3
+#define add_success         1
 
+//修改用户信息结果
+#define name_repeat      0      //修改失败名称重复
+#define alter_success    1
 
 #define DEF_PACK_COUNT (100)
 
@@ -453,41 +455,46 @@ typedef struct STRU_ADD_FRIEND_RS
     {
         m_nType = DEF_PACK_ADD_FRIEND_RS;
         m_result = 0;
+        m_userId = 0;
+        m_friend_Id = 0;
     }
     PackType   m_nType;   //包类型
     int m_result;
-    STRU_FRIEND_INFO str_fi;
-
+    int m_userId;
+    int m_friend_Id;
 }STRU_ADD_FRIEND_RS;
 
-//接受好友请求
-typedef struct STRU_DEAL_FRIEND_RQ
+//修改个人信息请求
+typedef struct STRU_ALTER_USERINFO_RQ
 {
-    STRU_DEAL_FRIEND_RQ()
+    STRU_ALTER_USERINFO_RQ()
     {
-        m_nType = DEF_PACK_DEAL_FRIEND_RQ;
+        m_nType = DEF_ALTER_USERINFO_RQ;
+        user_id = 0;
+        m_iconid = 0;
+        memset(sz_userName,0,MAX_SIZE);
+        memset(sz_felling,0,MAX_SIZE);
     }
     PackType m_nType;
-    STRU_FRIEND_INFO m_friend_info;
+    int user_id;
+    int m_iconid;
+    char sz_userName[MAX_SIZE];
+    char sz_felling[MAX_SIZE];
 
-}STRU_DEAL_FRIEND_RQ;
+}STRU_ALTER_USERINFO_RQ;
 
-//接受好友回复
-typedef struct STRU_DEAL_FRIEND_RS
+//修改个人信息回复
+typedef struct STRU_ALTER_USERINFO_RS
 {
-    STRU_DEAL_FRIEND_RS()
+    STRU_ALTER_USERINFO_RS()
     {
-        m_nType = DEF_PACK_DEAL_FRIEND_RS;
+        m_nType = DEF_ALTER_USERINFO_RS;
         m_result = 0;
-        m_userid = 0;
-        m_friendid = 0;
     }
     PackType m_nType;
-    int m_userid;
-    int m_friendid;
     int m_result;
+}STRU_ALTER_USERINFO_RS;
 
-}STRU_DEAL_FRIEND_RS;
 //聊天请求
 typedef struct STRU_CHAT_RQ
 {
@@ -602,7 +609,6 @@ typedef struct UserInfo
 
 
 #endif
-
 
 
 
