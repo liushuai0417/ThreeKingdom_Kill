@@ -58,6 +58,7 @@ public slots:
     void SLOT_DealSearchFriend(char* buf,int nlen);
     void SLOT_DealAddFriend(char *buf,int nlen);
     void SLOT_ReadyData(char* buf,int nlen);//接收包槽函数
+    void SLOT_DealAddFriendRq(char *buf,int nlen);//好友添加
     void SLOT_ShowAlterInfo();//显示更改信息窗口的槽函数
     void SLOT_ShowCreateRoom();//显示创建房间窗口的槽函数
     void SLOT_ShowAddFriend();//显示添加好友窗口的槽函数

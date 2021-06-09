@@ -160,14 +160,41 @@ void CKernel::setNetPackMap(){
     NetPackMap(DEF_PACK_CREATEROOM_RS) = &CKernel::SLOT_DealCreateRoom;
     NetPackMap(DEF_PACK_SEARCH_FRIEND_RS) = &CKernel::SLOT_DealSearchFriend;
     NetPackMap(DEF_PACK_ADD_FRIEND_RS) = &CKernel::SLOT_DealAddFriend;
+    NetPackMap(DEF_PACK_ADD_FRIEND_RQ) = &CKernel::SLOT_DealAddFriendRq;
 }
 
+//处理好友添加请求
+void CKernel::SLOT_DealAddFriendRq(char *buf,int nlen){
+    STRU_DEAL_FRIEND_RQ *rq = (STRU_DEAL_FRIEND_RQ *)buf;
+    QString friendname = QString(rq->m_friend_info.m_szName);
+    QString friendfeeling = QString(rq->m_friend_info.m_feeling);
+    int friendiconid = rq->m_friend_info.m_iconID;
+    int friendstate = rq->m_friend_info.m_state;
+    qDebug()<<friendname<<" "<<friendfeeling<<" "<<friendiconid<<" "<<friendstate;
+
+    QString str = QString("[%1]请求添加你为好友,是否同意?").arg(rq->m_friend_info.m_szName);
+    STRU_DEAL_FRIEND_RS rs;
+    rs.m_friendid = rq->m_friend_info.m_friend;
+    rs.m_userid = this->m_id;
+    if(QMessageBox::question(addDialog,"添加好友",str) == QMessageBox::Yes){
+        rs.m_result = add_success;
+    }else{
+
+    }
+
+}
+
+//处理好友添加回复
 void CKernel::SLOT_DealAddFriend(char *buf,int nlen){
     STRU_ADD_FRIEND_RS *rs = (STRU_ADD_FRIEND_RS *)buf;
     qDebug()<<"SLOT_DealAddFriend";
     if(rs->m_result == add_wait){
         QMessageBox::about(m_Dialog,"提示","该用户离线,请等待对方上线后同意请求");
+    }else{
+
     }
+
+    m_tcpClient->SendData((char*)&rq,sizeof(rq));
 }
 //处理查找好友回复
 void CKernel::SLOT_DealSearchFriend(char *buf,int nlen){
