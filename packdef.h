@@ -456,12 +456,11 @@ typedef struct STRU_ADD_FRIEND_RS
         m_nType = DEF_PACK_ADD_FRIEND_RS;
         m_result = 0;
         m_userId = 0;
-        m_friend_Id = 0;
     }
     PackType   m_nType;   //包类型
     int m_result;
     int m_userId;
-    int m_friend_Id;
+    STRU_FRIEND_INFO m_friInfo;
 }STRU_ADD_FRIEND_RS;
 
 //修改个人信息请求
