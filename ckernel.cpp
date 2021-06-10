@@ -10,6 +10,7 @@
 #include"addfrienddialog.h"
 #include"frienditem.h"
 #include"mypushbutton.h"
+#include<QPixmap>
 #define NetPackMap(a) m_NetPackMap[(a)-DEF_PACK_BASE]
 CKernel::CKernel(QObject *parent) : QObject(parent)
 {
@@ -71,7 +72,16 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     //修改信息的槽函数
     connect(changeDialog,AlterInfoSignal,[=](int iconid,QString name,QString feeling){
         //发送修改信息的包
-
+        qDebug()<<"发送修改信息";
+        STRU_ALTER_USERINFO_RQ rq;
+        rq.user_id = this->m_id;
+        rq.m_iconid = iconid;
+        strcpy(rq.sz_userName,name.toStdString().c_str());
+        strcpy(rq.sz_felling,feeling.toStdString().c_str());
+        this->m_iconID = iconid;
+        this->m_szName = name;
+        this->m_feeling = feeling;
+        m_tcpClient->SendData((char*)&rq,sizeof(rq));
     });
 
     //创建房间的槽函数
@@ -161,6 +171,38 @@ void CKernel::setNetPackMap(){
     NetPackMap(DEF_PACK_SEARCH_FRIEND_RS) = &CKernel::SLOT_DealSearchFriend;
     NetPackMap(DEF_PACK_ADD_FRIEND_RS) = &CKernel::SLOT_DealAddFriend;
     NetPackMap(DEF_PACK_ADD_FRIEND_RQ) = &CKernel::SLOT_DealAddFriendRq;
+    NetPackMap(DEF_ALTER_USERINFO_RS) = &CKernel::SLOT_DealAlterInfoRs;
+}
+
+//处理修改信息回复
+void CKernel::SLOT_DealAlterInfoRs(char *buf,int nlen){
+    STRU_ADD_FRIEND_RS *rs = (STRU_ADD_FRIEND_RS *)buf;
+    switch(rs->m_result){
+        case name_repeat:
+            {
+               QMessageBox::about(m_Dialog,"提示","修改的用户名已存在");
+            }
+        break;
+        case alter_success:
+        {
+            //修改控件
+            m_MainScene->getUi()->lb_name->setText(m_szName);
+            m_MainScene->getUi()->lb_feeling->setText(m_feeling);
+            QPixmap pix;
+            QString strPath;
+            if(m_iconID<10){
+                strPath = QString(":/res/TX/0%1.png").arg(m_iconID);
+            }else{
+                strPath = QString(":/res/TX/%1.png").arg(m_iconID);
+            }
+            pix.load(strPath);
+            m_MainScene->getUi()->pb_icon->setFixedSize(pix.width(),pix.height());
+            m_MainScene->getUi()->pb_icon->setStyleSheet("QPushButton{border:0px;}");//边框设置为0像素
+            m_MainScene->getUi()->pb_icon->setIcon(pix);
+            m_MainScene->getUi()->pb_icon->setIconSize(QSize(pix.width(),pix.height()));
+        }
+        break;
+    }
 }
 
 //处理好友添加请求
@@ -193,6 +235,7 @@ void CKernel::SLOT_DealAddFriend(char *buf,int nlen){
 
     m_tcpClient->SendData((char*)&rs,sizeof(rs));
 }
+//ll
 //处理查找好友回复
 void CKernel::SLOT_DealSearchFriend(char *buf,int nlen){
     STRU_SEARCH_FRIEND_RS *rs = (STRU_SEARCH_FRIEND_RS *)buf;
@@ -216,12 +259,13 @@ void CKernel::SLOT_DealSearchFriend(char *buf,int nlen){
             feeling = QString(rs->m_friend_info.m_feeling);
             FriendItem *item = new FriendItem;
             item->setItem(iconid,name,feeling,state);
+            addDialog->vec.push_back(item);
             MyPushButton *addFriend = new MyPushButton(":/res/icon/addfriend.png",":/res/icon/addfriend_1.png");
             addFriend->setParent(item);
             addFriend->move(item->width()-80,item->height()*0.8-25);
             item->m_friendName = QString(rs->m_friend_info.m_szName);
             item->m_friendId = rs->m_friend_info.m_friend;
-            connect(addFriend,&MyPushButton::clicked,[=](){
+            connect(addFriend,&MyPushButton::clicked,[&](){
                 STRU_ADD_FRIEND_RQ rq;
                 rq.m_friendID = item->m_friendId;
                 rq.m_userID = this->m_id;
@@ -229,6 +273,7 @@ void CKernel::SLOT_DealSearchFriend(char *buf,int nlen){
                 qDebug()<<rq.m_friendID<<" "<<rq.m_userID<<" "<<rq.m_szAddFriendName;
                 m_tcpClient->SendData((char*)&rq,sizeof(rq));
             });
+
             addDialog->Slot_AddFriendItem(item);
         }
         break;

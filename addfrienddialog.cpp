@@ -2,6 +2,7 @@
 #include "ui_addfrienddialog.h"
 #include<QPainter>
 #include"mypushbutton.h"
+#include<QDebug>
 AddFriendDialog::AddFriendDialog(QWidget *parent) :
     QDialog(parent),
     ui(new Ui::AddFriendDialog)
@@ -73,4 +74,14 @@ void AddFriendDialog::Slot_AddFriendItem(QWidget *item){
 
 void AddFriendDialog::Slot_RemoveFriendItem(QWidget *item){
     m_friendLayout->removeWidget(item);
+}
+
+void AddFriendDialog::closeEvent(QCloseEvent *event){
+    auto ite = vec.begin();
+    while(ite!=vec.end()){
+        this->Slot_RemoveFriendItem(*ite);
+        delete *ite;
+        *ite = NULL;
+        ite++;
+    }
 }

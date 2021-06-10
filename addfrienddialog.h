@@ -4,6 +4,9 @@
 #include <QDialog>
 #include<QPaintEvent>
 #include<QVBoxLayout>
+#include<QVector>
+#include"frienditem.h"
+#include<QCloseEvent>
 namespace Ui {
 class AddFriendDialog;
 }
@@ -16,11 +19,14 @@ signals:
 public slots:
     void SLOT_AddFriendByName();
 public:
+    QVector<FriendItem *>vec;
+public:
     explicit AddFriendDialog(QWidget *parent = 0);
     ~AddFriendDialog();
     void paintEvent(QPaintEvent *event);
     void Slot_AddFriendItem(QWidget *item);
     void Slot_RemoveFriendItem(QWidget *item);
+    void closeEvent(QCloseEvent *event);
     QVBoxLayout *m_friendLayout;
 
 private:

@@ -13,6 +13,7 @@
 #include<vector>
 #include"roomitem.h"
 #include"friendlist.h"
+#include"frienditem.h"
 class CKernel;
 typedef void (CKernel::*PFUN)(char*,int);
 class CKernel : public QObject
@@ -50,10 +51,12 @@ private:
     QString m_feeling;//个性签名
     int m_friendid;//查询好友id
     vector<RoomItem *>vec_roomitem;
+
 public slots:
     void SLOT_DealLoginRs(char *buf,int nlen);//处理登录回复槽函数
     void SLOT_DealRegisterRs(char *buf,int nlen);//处理注册回复槽函数
     void SLOT_DealAskRoomRs(char *buf,int nlen);//处理请求房间回复槽函数
+    void SLOT_DealAlterInfoRs(char *buf,int nlen);//处理修改信息回复槽函数
     void SLOT_DealCreateRoom(char *buf,int nlen);
     void SLOT_DealSearchFriend(char* buf,int nlen);
     void SLOT_DealAddFriend(char *buf,int nlen);
