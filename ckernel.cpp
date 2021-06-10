@@ -185,6 +185,7 @@ void CKernel::SLOT_DealAlterInfoRs(char *buf,int nlen){
         break;
         case alter_success:
         {
+            //修改控件
             m_MainScene->getUi()->lb_name->setText(m_szName);
             m_MainScene->getUi()->lb_feeling->setText(m_feeling);
             QPixmap pix;
