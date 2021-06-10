@@ -35,7 +35,8 @@ HEADERS  += dialog.h \
     addfrienddialog.h \
     joinroomdialog.h \
     friendlist.h \
-    frienditem.h
+    frienditem.h \
+    packdef.h
 
 FORMS    += dialog.ui \
     mainscene.ui \
