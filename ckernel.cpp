@@ -235,6 +235,7 @@ void CKernel::SLOT_DealAddFriend(char *buf,int nlen){
 
     m_tcpClient->SendData((char*)&rs,sizeof(rs));
 }
+//ll
 //处理查找好友回复
 void CKernel::SLOT_DealSearchFriend(char *buf,int nlen){
     STRU_SEARCH_FRIEND_RS *rs = (STRU_SEARCH_FRIEND_RS *)buf;
