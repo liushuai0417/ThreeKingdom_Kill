@@ -136,6 +136,7 @@ void MainScene::Slot_JoinRoom(){
 
 //修改信息槽函数
 void MainScene::Slot_AlterInfo(){
+
     Q_EMIT SIG_ShowAlterInfo();
 }
 
