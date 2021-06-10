@@ -26,7 +26,6 @@ SOURCES += main.cpp\
     frienditem.cpp
 
 HEADERS  += dialog.h \
-    packdef.h \
     mainscene.h \
     mypushbutton.h \
     ckernel.h \

@@ -29,9 +29,9 @@ void FriendItem::setItem(int iconid,QString name,QString feeling,int state){
     QPixmap pix;
     QString strPath;
     if(iconid<10){
-        strPath = QString(":/res/TX/0%1.png").arg(iconid);
+        strPath = QString(":/res/TX/0%1.png").arg(iconid+1);
     }else{
-        strPath = QString(":/res/TX/%1.png").arg(iconid);
+        strPath = QString(":/res/TX/%1.png").arg(iconid+1);
     }
     pix.load(strPath);
     ui->pb_icon->setFixedSize(pix.width(),pix.height());

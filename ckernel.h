@@ -51,7 +51,7 @@ private:
     QString m_feeling;//个性签名
     int m_friendid;//查询好友id
     vector<RoomItem *>vec_roomitem;
-
+    vector<FriendItem*>vec_frienditem;
 public slots:
     void SLOT_DealLoginRs(char *buf,int nlen);//处理登录回复槽函数
     void SLOT_DealRegisterRs(char *buf,int nlen);//处理注册回复槽函数

@@ -73,11 +73,12 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     connect(changeDialog,AlterInfoSignal,[=](int iconid,QString name,QString feeling){
         //发送修改信息的包
         qDebug()<<"发送修改信息";
+        qDebug()<<iconid<<name<<feeling;
         STRU_ALTER_USERINFO_RQ rq;
-        rq.user_id = this->m_id;
-        rq.m_iconid = iconid;
-        strcpy(rq.sz_userName,name.toStdString().c_str());
-        strcpy(rq.sz_felling,feeling.toStdString().c_str());
+        rq.m_userInfo.m_userid = this->m_id;
+        rq.m_userInfo.m_iconid = iconid;
+        strcpy(rq.m_userInfo.m_szName,name.toStdString().c_str());
+        strcpy(rq.m_userInfo.m_szFelling,feeling.toStdString().c_str());
         this->m_iconID = iconid;
         this->m_szName = name;
         this->m_feeling = feeling;
@@ -133,6 +134,8 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
 void CKernel::SLOT_ReadyData(char *buf,int nlen){
     //获取包类型
     int type = *(int*)buf;
+    qDebug()<<type;
+    qDebug()<<DEF_PACK_BASE;
     if(type>=DEF_PACK_BASE && type<=DEF_PACK_BASE+DEF_PACK_COUNT){
         PFUN fun = m_NetPackMap[type-DEF_PACK_BASE];
         if(fun){
@@ -176,7 +179,7 @@ void CKernel::setNetPackMap(){
 
 //处理修改信息回复
 void CKernel::SLOT_DealAlterInfoRs(char *buf,int nlen){
-    STRU_ADD_FRIEND_RS *rs = (STRU_ADD_FRIEND_RS *)buf;
+    STRU_ALTER_USERINFO_RS *rs = (STRU_ALTER_USERINFO_RS *)buf;
     switch(rs->m_result){
         case name_repeat:
             {
@@ -186,16 +189,19 @@ void CKernel::SLOT_DealAlterInfoRs(char *buf,int nlen){
         case alter_success:
         {
             //修改控件
+            QMessageBox::about(m_Dialog,"提示","修改成功");
+            changeDialog->hide();
             m_MainScene->getUi()->lb_name->setText(m_szName);
             m_MainScene->getUi()->lb_feeling->setText(m_feeling);
             QPixmap pix;
             QString strPath;
-            if(m_iconID<10){
-                strPath = QString(":/res/TX/0%1.png").arg(m_iconID);
+           if(m_iconID<10){
+                strPath = QString(":/res/TX/0%1.png").arg(m_iconID+1);
             }else{
-                strPath = QString(":/res/TX/%1.png").arg(m_iconID);
+                strPath = QString(":/res/TX/%1.png").arg(m_iconID+1);
             }
             pix.load(strPath);
+
             m_MainScene->getUi()->pb_icon->setFixedSize(pix.width(),pix.height());
             m_MainScene->getUi()->pb_icon->setStyleSheet("QPushButton{border:0px;}");//边框设置为0像素
             m_MainScene->getUi()->pb_icon->setIcon(pix);
@@ -208,18 +214,23 @@ void CKernel::SLOT_DealAlterInfoRs(char *buf,int nlen){
 //处理好友添加请求
 void CKernel::SLOT_DealAddFriendRq(char *buf,int nlen){
     STRU_ADD_FRIEND_RQ *rq = (STRU_ADD_FRIEND_RQ *)buf;
-    QString friendname = QString(rq->m_szAddFriendName);
-    int friendId = rq->m_userID;
+    QString friendname = QString(rq->m_friInfo.m_szName);
 
-    QString str = QString("[%1]请求添加你为好友,是否同意?").arg(friendId);
+    QString str = QString("[%1]请求添加你为好友,是否同意?").arg(friendname);
     STRU_ADD_FRIEND_RS rs;
-    rs.m_friend_Id = friendId;
-    rs.m_userId = this->m_id;
+    rs.m_friInfo.m_userid = this->m_id;
+    strcpy(rs.m_friInfo.m_szFelling,this->m_feeling.toStdString().c_str());
+    strcpy(rs.m_friInfo.m_szName,this->m_szName.toStdString().c_str());
+    rs.m_friInfo.m_iconid = this->m_iconID;
     if(QMessageBox::question(addDialog,"添加好友",str) == QMessageBox::Yes){
         rs.m_result = add_success;
     }else{
         rs.m_result = add_failed;
     }
+    FriendItem *item = new FriendItem;
+    item->setItem(rq->m_userInfo.m_iconid,rq->m_userInfo.m_szName,rq->m_userInfo.m_szFelling,rq->m_userInfo.status);
+    vec_frienditem.push_back(item);
+    friendlistDialog->Slot_AddFriendItem(item);
     m_tcpClient->SendData((char*)&rs,sizeof(rs));
 }
 
@@ -235,7 +246,7 @@ void CKernel::SLOT_DealAddFriend(char *buf,int nlen){
 
     m_tcpClient->SendData((char*)&rs,sizeof(rs));
 }
-//ll
+
 //处理查找好友回复
 void CKernel::SLOT_DealSearchFriend(char *buf,int nlen){
     STRU_SEARCH_FRIEND_RS *rs = (STRU_SEARCH_FRIEND_RS *)buf;
@@ -252,25 +263,33 @@ void CKernel::SLOT_DealSearchFriend(char *buf,int nlen){
         break;
         case search_success:
         {
-            qDebug()<<"查询结果"<<rs->m_friend_info.m_szName;
-            iconid = rs->m_friend_info.m_iconID;
-            state = rs->m_friend_info.m_state;
-            name = QString(rs->m_friend_info.m_szName);
-            feeling = QString(rs->m_friend_info.m_feeling);
+            qDebug()<<"查询结果"<<rs->m_friInfo.m_szName;
+            iconid = rs->m_friInfo.m_iconid;
+            state = rs->m_friInfo.status;
+            name = QString(rs->m_friInfo.m_szName);
+            feeling = QString(rs->m_friInfo.m_szFelling);
             FriendItem *item = new FriendItem;
             item->setItem(iconid,name,feeling,state);
             addDialog->vec.push_back(item);
             MyPushButton *addFriend = new MyPushButton(":/res/icon/addfriend.png",":/res/icon/addfriend_1.png");
             addFriend->setParent(item);
             addFriend->move(item->width()-80,item->height()*0.8-25);
-            item->m_friendName = QString(rs->m_friend_info.m_szName);
-            item->m_friendId = rs->m_friend_info.m_friend;
+            item->m_friendName = QString(rs->m_friInfo.m_szName);
+            item->m_friendId = rs->m_friInfo.m_userid;
             connect(addFriend,&MyPushButton::clicked,[&](){
                 STRU_ADD_FRIEND_RQ rq;
-                rq.m_friendID = item->m_friendId;
-                rq.m_userID = this->m_id;
-                strcpy(rq.m_szAddFriendName,item->m_friendName.toStdString().c_str());
-                qDebug()<<rq.m_friendID<<" "<<rq.m_userID<<" "<<rq.m_szAddFriendName;
+                //个人信息初始化
+                rq.m_userInfo.m_userid = this->m_id;
+                strcpy(rq.m_userInfo.m_szFelling,this->m_feeling.toStdString().c_str());
+                strcpy(rq.m_userInfo.m_szName,this->m_szName.toStdString().c_str());
+                rq.m_userInfo.m_iconid = this->m_iconID;
+                rq.m_userInfo.status = this->m_state;
+                //好友信息初始化
+                rq.m_friInfo.m_iconid = iconid;
+                strcpy(rq.m_friInfo.m_szFelling,feeling.toStdString().c_str());
+                strcpy(rq.m_friInfo.m_szName,name.toStdString().c_str());
+                rq.m_friInfo.m_userid = rs->m_friInfo.m_userid;
+                rq.m_friInfo.status = rs->m_friInfo.status;
                 m_tcpClient->SendData((char*)&rq,sizeof(rq));
             });
 
@@ -291,19 +310,19 @@ void CKernel::SLOT_DealLoginRs(char *buf,int nlen){
         {
             //初始化个人信息
 
-            this->m_id = rs->m_userid;
-            this->m_iconID = rs->m_userInfo.m_iconID;
+            this->m_id = rs->m_userInfo.m_userid;
+            this->m_iconID = rs->m_userInfo.m_iconid;
             this->m_szName = QString(rs->m_userInfo.m_szName);
-            this->m_feeling = QString(rs->m_userInfo.m_feeling);
-            this->m_state = rs->m_userInfo.m_state;
+            this->m_feeling = QString(rs->m_userInfo.m_szFelling);
+            this->m_state = rs->m_userInfo.status;
             m_MainScene->getUi()->lb_name->setText(m_szName);
             m_MainScene->getUi()->lb_feeling->setText(m_feeling);
             QPixmap pix;
             QString strPath;
             if(m_iconID<10){
-                strPath = QString(":/res/TX/0%1.png").arg(m_iconID);
+                strPath = QString(":/res/TX/0%1.png").arg(m_iconID+1);
             }else{
-                strPath = QString(":/res/TX/%1.png").arg(m_iconID);
+                strPath = QString(":/res/TX/%1.png").arg(m_iconID+1);
             }
             pix.load(strPath);
             m_MainScene->getUi()->pb_icon->setFixedSize(pix.width(),pix.height());
