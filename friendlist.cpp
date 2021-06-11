@@ -18,6 +18,10 @@ FriendList::FriendList(QWidget *parent) :
     MyPushButton *regetFriendList = new MyPushButton(":/res/icon/click_regetfriendlist.png",":/res/icon/click_regetfriendlist_1.png");
     regetFriendList->setParent(this);
     regetFriendList->move(this->width()*0.5-regetFriendList->width()*0.5,this->height()*0.8-80);
+
+    connect(regetFriendList,&MyPushButton::clicked,[=](){
+       Q_EMIT SIG_ReGetFriendList();
+    });
 }
 
 FriendList::~FriendList()

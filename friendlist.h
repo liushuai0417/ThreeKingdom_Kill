@@ -10,7 +10,8 @@ class FriendList;
 class FriendList : public QMainWindow
 {
     Q_OBJECT
-
+signals:
+    void SIG_ReGetFriendList();
 public:
     explicit FriendList(QWidget *parent = 0);
     ~FriendList();

@@ -109,6 +109,8 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     connect(joinDialog,JoinRoomByNameSignal,[=](QString content){
         //发送查找房间包
         qDebug()<<"name查找房间"<<content;
+        STRU_SEARCH_ROOM_RQ rq;
+
     });
 
     //通过id查找房间
@@ -123,6 +125,7 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     connect(m_MainScene,&MainScene::SIG_AddFriend,this,&CKernel::SLOT_ShowAddFriend);
     connect(m_MainScene,&MainScene::SIG_JoinRoom,this,&CKernel::SLOT_ShowJoinRoom);
     connect(m_MainScene,&MainScene::SIG_GetFriendList,this,&CKernel::SLOT_GetFriendList);
+    connect(friendlistDialog,&FriendList::SIG_ReGetFriendList,this,&CKernel::SLOT_ReGetFriendList);
     //房间列表的第一行
     RoomItem *itemindex = new RoomItem;
     m_MainScene->Slot_AddUserItem(itemindex);
@@ -130,12 +133,24 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
 
 }
 
+void CKernel::SLOT_ReGetFriendList(){
+    auto ite = vec_friendlist.begin();
+    while(ite!=vec_friendlist.end()){
+        m_MainScene->Slot_RemoveUserItem(*ite);
+        delete *ite;
+        *ite = NULL;
+        ite++;
+    }
+    m_MainScene->repaint();
+    STRU_GETFRILIST_RQ rq;
+    rq.m_userid = this->m_id;
+    m_tcpClient->SendData((char*)&rq,sizeof(rq));
+}
+
 //接收数据槽函数
 void CKernel::SLOT_ReadyData(char *buf,int nlen){
     //获取包类型
     int type = *(int*)buf;
-    qDebug()<<type;
-    qDebug()<<DEF_PACK_BASE;
     if(type>=DEF_PACK_BASE && type<=DEF_PACK_BASE+DEF_PACK_COUNT){
         PFUN fun = m_NetPackMap[type-DEF_PACK_BASE];
         if(fun){
@@ -175,6 +190,31 @@ void CKernel::setNetPackMap(){
     NetPackMap(DEF_PACK_ADD_FRIEND_RS) = &CKernel::SLOT_DealAddFriend;
     NetPackMap(DEF_PACK_ADD_FRIEND_RQ) = &CKernel::SLOT_DealAddFriendRq;
     NetPackMap(DEF_ALTER_USERINFO_RS) = &CKernel::SLOT_DealAlterInfoRs;
+    NetPackMap(DEF_PACK_GETFRIENDLIST_RS) = &CKernel::SLOT_DealGetFriendListRs;
+}
+
+void CKernel::SLOT_DealGetFriendListRs(char *buf,int nlen){
+    STRU_GETFRILIST_RS *rs = (STRU_GETFRILIST_RS *)buf;
+    switch(rs->m_lResult){
+        case aks_failed:
+        {
+            int i=0;
+            while(rs->m_friArr[i].m_userid !=0){
+                FriendItem *item = new FriendItem;
+                item->setItem(rs->m_friArr[i].m_iconid,rs->m_friArr[i].m_szName,rs->m_friArr[i].m_szFelling,rs->m_friArr[i].status);
+                this->vec_friendlist.push_back(item);
+                friendlistDialog->Slot_AddFriendItem(item);
+                i++;
+            }
+            friendlistDialog->show();
+        }
+        break;
+        case ask_success:
+        {
+            QMessageBox::about(m_Dialog,"提示","获取好友列表失败");
+        }
+        break;
+    }
 }
 
 //处理修改信息回复
@@ -361,6 +401,7 @@ void CKernel::SLOT_DealRegisterRs(char *buf,int nlen){
     }
 }
 
+//处理查找房间回复
 void CKernel::SLOT_DealAskRoomRs(char *buf,int nlen){
 
     STRU_ASKROOM_RS *rs = (STRU_ASKROOM_RS *)buf;
@@ -374,7 +415,6 @@ void CKernel::SLOT_DealAskRoomRs(char *buf,int nlen){
                 QString roomcreator = QString(rs->m_RoomList[i].sz_RoomCreator);
                 RoomItem *item = new RoomItem;
                 vec_roomitem.push_back(item);
-                qDebug()<<"数组信息"<<roomname<<roomid<<roomcreator;
                 item->setItem(roomid,roomname,roomcreator);
                 m_MainScene->Slot_AddUserItem(item);
                 i++;
@@ -388,6 +428,7 @@ void CKernel::SLOT_DealAskRoomRs(char *buf,int nlen){
     }
 }
 
+//处理创建房间回复
 void CKernel::SLOT_DealCreateRoom(char *buf,int nlen){
     STRU_CREATEROOM_RS *rs = (STRU_CREATEROOM_RS *)buf;
     QString str;
@@ -417,10 +458,12 @@ void CKernel::SLOT_ShowAddFriend(){
     addDialog->show();
 }
 
+//显示查找房间
 void CKernel::SLOT_ShowJoinRoom(){
     joinDialog->show();
 }
 
+//刷新房间列表
 void CKernel::SLOT_ReGetRoomTable(){
     auto ite = vec_roomitem.begin();
     while(ite!=vec_roomitem.end()){
@@ -434,21 +477,10 @@ void CKernel::SLOT_ReGetRoomTable(){
     m_tcpClient->SendData((char*)&rq,sizeof(rq));
 }
 
+//获取好友列表
 void CKernel::SLOT_GetFriendList(){
-
-    FriendItem *item1 = new FriendItem;
-    item1->setItem(1,"test1","测试1",1);
-    FriendItem *item2 = new FriendItem;
-    item2->setItem(2,"test1","测试1",0);
-    FriendItem *item3 = new FriendItem;
-    item3->setItem(3,"test1","测试1",1);
-    FriendItem *item4 = new FriendItem;
-    item4->setItem(4,"test1","测试1",1);
-    friendlistDialog->Slot_AddFriendItem(item1);
-    friendlistDialog->Slot_AddFriendItem(item2);
-    friendlistDialog->Slot_AddFriendItem(item3);
-    friendlistDialog->Slot_AddFriendItem(item4);
-    friendlistDialog->show();
     //发送查询好友列表包
-
+    STRU_GETFRILIST_RQ rq;
+    rq.m_userid = this->m_id;
+    m_tcpClient->SendData((char*)&rq,sizeof(rq));
 }
