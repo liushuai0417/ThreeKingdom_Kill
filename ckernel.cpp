@@ -102,21 +102,21 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
         strcpy(rq.sz_friendName,content.toStdString().c_str());
         rq.m_userid = this->m_id;
         m_tcpClient->SendData((char*)&rq,sizeof(rq));
-        qDebug()<<rq.sz_friendName;
     });
 
     //通过name查找房间
     connect(joinDialog,JoinRoomByNameSignal,[=](QString content){
         //发送查找房间包
-        qDebug()<<"name查找房间"<<content;
         STRU_SEARCH_ROOM_RQ rq;
-
+        strcpy(rq.m_szRoomName,content.toStdString().c_str());
+        m_tcpClient->SendData((char*)&rq,sizeof(rq));
     });
 
     //通过id查找房间
     connect(joinDialog,JoinRoomByIdSignal,[=](QString content){
-        //发送查找房间包
-        qDebug()<<"id查找房间"<<content;
+        STRU_SEARCH_ROOM_RQ rq;
+        rq.m_Roomid = content.toInt();
+        m_tcpClient->SendData((char*)&rq,sizeof(rq));
     });
 
     connect(m_MainScene,&MainScene::SIG_ReGetRoomTable,this,&CKernel::SLOT_ReGetRoomTable);

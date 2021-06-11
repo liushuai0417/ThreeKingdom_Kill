@@ -23,7 +23,8 @@ SOURCES += main.cpp\
     addfrienddialog.cpp \
     joinroomdialog.cpp \
     friendlist.cpp \
-    frienditem.cpp
+    frienditem.cpp \
+    gaming.cpp
 
 HEADERS  += dialog.h \
     mainscene.h \
@@ -36,7 +37,8 @@ HEADERS  += dialog.h \
     joinroomdialog.h \
     friendlist.h \
     frienditem.h \
-    packdef.h
+    packdef.h \
+    gaming.h
 
 FORMS    += dialog.ui \
     mainscene.ui \
@@ -46,7 +48,8 @@ FORMS    += dialog.ui \
     addfrienddialog.ui \
     joinroomdialog.ui \
     friendlist.ui \
-    frienditem.ui
+    frienditem.ui \
+    gaming.ui
 
 RESOURCES += \
     resource.qrc

@@ -9,6 +9,7 @@
 #include<QScrollArea>
 #include<friendlist.h>
 #include<frienditem.h>
+#include"gaming.h"
 //大厅界面
 MainScene::MainScene(QWidget *parent) :
     QMainWindow(parent),
@@ -142,7 +143,8 @@ void MainScene::Slot_AlterInfo(){
 
 //开始游戏槽函数
 void MainScene::Slot_StartGame(){
-
+    Gaming *game = new Gaming;
+    game->show();
 }
 
 //好友列表槽函数
