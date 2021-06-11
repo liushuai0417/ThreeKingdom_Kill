@@ -17,6 +17,7 @@ RoomItem::RoomItem(QWidget *parent) :
     ui->lb_roomcreator->setPalette(pe);
     ui->lb_roomid->setPalette(pe);
     ui->lb_roomname->setPalette(pe);
+    ui->lb_number->setPalette(pe);
 }
 
 
@@ -32,11 +33,12 @@ void RoomItem::mouseDoubleClickEvent(QMouseEvent *event){
 
 }
 
-void RoomItem::setItem(int Roomid,QString RoomName,QString CreatorName){
+void RoomItem::setItem(int Roomid,QString RoomName,QString CreatorName,int num){
 
     ui->lb_roomname->setText(RoomName);
     ui->lb_roomid->setText(QString::number(Roomid));
     ui->lb_roomcreator->setText(CreatorName);
+    ui->lb_number->setText(QString::number(num));
 }
 
 

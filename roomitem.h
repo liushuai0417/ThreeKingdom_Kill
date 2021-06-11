@@ -16,7 +16,7 @@ public:
     explicit RoomItem(QWidget *parent = 0);
     ~RoomItem();
     void mouseDoubleClickEvent(QMouseEvent *event);
-    void setItem(int Roomid,QString RoomName,QString CreatorName);
+    void setItem(int Roomid,QString RoomName,QString CreatorName,int num);
     void paintEvent(QPaintEvent *event);
 
 private:

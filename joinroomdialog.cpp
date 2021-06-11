@@ -75,10 +75,20 @@ void JoinRoomDialog::SLOT_JoinRoomById(){
     Q_EMIT SIG_JoinRoomByIdCommit(str);
 }
 
-void JoinRoomDialog::Slot_AddFriendItem(QWidget *item){
+void JoinRoomDialog::Slot_AddRoomItem(QWidget *item){
     m_roomLayout->addWidget(item);
 }
 
-void JoinRoomDialog::Slot_RemoveFriendItem(QWidget *item){
+void JoinRoomDialog::Slot_RemoveRoomItem(QWidget *item){
     m_roomLayout->removeWidget(item);
+}
+
+void JoinRoomDialog::closeEvent(QCloseEvent *event){
+    auto ite = vec.begin();
+    while(ite!=vec.end()){
+        this->Slot_RemoveRoomItem(*ite);
+        delete *ite;
+        *ite = NULL;
+        ite++;
+    }
 }

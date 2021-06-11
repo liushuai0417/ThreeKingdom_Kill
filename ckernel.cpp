@@ -191,8 +191,34 @@ void CKernel::setNetPackMap(){
     NetPackMap(DEF_PACK_ADD_FRIEND_RQ) = &CKernel::SLOT_DealAddFriendRq;
     NetPackMap(DEF_ALTER_USERINFO_RS) = &CKernel::SLOT_DealAlterInfoRs;
     NetPackMap(DEF_PACK_GETFRIENDLIST_RS) = &CKernel::SLOT_DealGetFriendListRs;
+    NetPackMap(DEF_PACK_SEARCH_ROOM_RS) = &CKernel::SLOT_DealSearchRoomRs;
 }
 
+//处理查找房间回复
+void CKernel::SLOT_DealSearchRoomRs(char *buf,int nlen){
+    STRU_SEARCH_ROOM_RS *rs = (STRU_SEARCH_ROOM_RS *)buf;
+    switch(rs->m_lResult){
+        case search_room_success:
+        {
+            QString roomname = rs->m_roomInfo.sz_Roomname;
+            int roomid = rs->m_roomInfo.m_Roomid;
+            QString roomcreator = rs->m_roomInfo.sz_RoomCreator;
+            int num = rs->m_roomInfo.m_num;
+            RoomItem *item = new RoomItem;
+            item->setItem(roomid,roomname,roomcreator,num);
+            joinDialog->vec.push_back(item);
+            joinDialog->Slot_AddRoomItem(item);
+        }
+        break;
+        case search_room_failed:
+        {
+            QMessageBox::about(joinDialog,"提示","该房间不存在");
+        }
+        break;
+    }
+}
+
+//处理刷新好友列表回复
 void CKernel::SLOT_DealGetFriendListRs(char *buf,int nlen){
     STRU_GETFRILIST_RS *rs = (STRU_GETFRILIST_RS *)buf;
     switch(rs->m_lResult){
@@ -413,9 +439,10 @@ void CKernel::SLOT_DealAskRoomRs(char *buf,int nlen){
                 QString roomname = QString(rs->m_RoomList[i].sz_Roomname);
                 int roomid = rs->m_RoomList[i].m_Roomid;
                 QString roomcreator = QString(rs->m_RoomList[i].sz_RoomCreator);
+                int number = rs->m_RoomList[i].m_num;
                 RoomItem *item = new RoomItem;
-                vec_roomitem.push_back(item);
-                item->setItem(roomid,roomname,roomcreator);
+                vec_roomlist.push_back(item);
+                item->setItem(roomid,roomname,roomcreator,number);
                 m_MainScene->Slot_AddUserItem(item);
                 i++;
             }
@@ -465,8 +492,8 @@ void CKernel::SLOT_ShowJoinRoom(){
 
 //刷新房间列表
 void CKernel::SLOT_ReGetRoomTable(){
-    auto ite = vec_roomitem.begin();
-    while(ite!=vec_roomitem.end()){
+    auto ite = vec_roomlist.begin();
+    while(ite!=vec_roomlist.end()){
         m_MainScene->Slot_RemoveUserItem(*ite);
         delete *ite;
         *ite = NULL;

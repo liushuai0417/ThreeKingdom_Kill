@@ -88,8 +88,8 @@ typedef enum Net_PACK
 #define join_success         1
 
 //请求房间列表结果
-#define ask_room_success 1
-#define ask_room_failed  0
+#define ask_room_failed     0
+#define ask_room_success    1
 
 //查询好友结果
 #define no_this_user        0
@@ -359,10 +359,12 @@ typedef struct RoomInfo
         m_Roomid = 0;
         memset(sz_Roomname,0,MAX_SIZE);
         memset(sz_RoomCreator,0,MAX_SIZE);
+        m_num = 0;
     }
     int m_Roomid;
     char sz_Roomname[MAX_SIZE];
     char sz_RoomCreator[MAX_SIZE];
+    int m_num;
 }RoomInfo;
 
 
@@ -463,9 +465,9 @@ typedef struct STRU_JOINROOM_RQ
         m_userId = 0;
         m_RoomID = 0;
     }
-PackType m_nType;   //包类型
-int m_userId;
-int m_RoomID;
+    PackType m_nType;   //包类型
+    int m_userId;
+    int m_RoomID;
 
 }STRU_JOINROOM_RQ;
 
@@ -575,7 +577,6 @@ typedef struct STRU_OFFLINE_RQ
     }
     PackType   m_nType;   //包类型
     int m_UserID;
-
 }STRU_FORCE_OFFLINE*/;
 
 

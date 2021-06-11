@@ -5,6 +5,9 @@
 #include<QPaintEvent>
 #include"packdef.h"
 #include<QVBoxLayout>
+#include<QCloseEvent>
+#include<vector>
+#include"roomitem.h"
 namespace Ui {
 class JoinRoomDialog;
 }
@@ -19,8 +22,10 @@ public:
     explicit JoinRoomDialog(QWidget *parent = 0);
     ~JoinRoomDialog();
     void paintEvent(QPaintEvent *event);
-    void Slot_AddFriendItem(QWidget *item);
-    void Slot_RemoveFriendItem(QWidget *item);
+    void Slot_AddRoomItem(QWidget *item);
+    void Slot_RemoveRoomItem(QWidget *item);
+    void closeEvent(QCloseEvent *event);
+    vector<RoomItem*>vec;
     QVBoxLayout *m_roomLayout;
 public slots:
     void SLOT_JoinRoomById();
