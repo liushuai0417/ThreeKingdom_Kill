@@ -24,6 +24,7 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     addDialog = new AddFriendDialog;//添加好友窗口指针
     joinDialog = new JoinRoomDialog;//加入房间窗口指针
     friendlistDialog = new FriendList;
+    m_roomcount = 0;
     //窗口关闭槽函数
     connect(m_Dialog,&Dialog::SIG_CLOSE,[=](){
         DestoryInstance();
@@ -107,16 +108,35 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     //通过name查找房间
     connect(joinDialog,JoinRoomByNameSignal,[=](QString content){
         //发送查找房间包
+        //如果有清空当前显示的插件
+        auto ite = joinDialog->vec.begin();
+        while(ite!=joinDialog->vec.end()){
+            joinDialog->Slot_RemoveRoomItem(*ite);
+            delete *ite;
+            *ite = NULL;
+            ite++;
+        }
         STRU_SEARCH_ROOM_RQ rq;
         strcpy(rq.m_szRoomName,content.toStdString().c_str());
         m_tcpClient->SendData((char*)&rq,sizeof(rq));
+        m_roomcount++;
     });
 
     //通过id查找房间
     connect(joinDialog,JoinRoomByIdSignal,[=](QString content){
+        //发送查找房间包
+        //如果有清空当前显示的插件
+        auto ite = joinDialog->vec.begin();
+        while(ite!=joinDialog->vec.end()){
+            joinDialog->Slot_RemoveRoomItem(*ite);
+            delete *ite;
+            *ite = NULL;
+            ite++;
+        }
         STRU_SEARCH_ROOM_RQ rq;
         rq.m_Roomid = content.toInt();
         m_tcpClient->SendData((char*)&rq,sizeof(rq));
+        m_roomcount++;
     });
 
     connect(m_MainScene,&MainScene::SIG_ReGetRoomTable,this,&CKernel::SLOT_ReGetRoomTable);
@@ -126,11 +146,16 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     connect(m_MainScene,&MainScene::SIG_JoinRoom,this,&CKernel::SLOT_ShowJoinRoom);
     connect(m_MainScene,&MainScene::SIG_GetFriendList,this,&CKernel::SLOT_GetFriendList);
     connect(friendlistDialog,&FriendList::SIG_ReGetFriendList,this,&CKernel::SLOT_ReGetFriendList);
+    connect(joinDialog,&JoinRoomDialog::SIG_SetCountZero,this,&CKernel::SLOT_SetCountZero);
     //房间列表的第一行
     RoomItem *itemindex = new RoomItem;
     m_MainScene->Slot_AddUserItem(itemindex);
 
 
+}
+
+void CKernel::SLOT_SetCountZero(){
+    this->m_roomcount = 0;
 }
 
 void CKernel::SLOT_ReGetFriendList(){
@@ -204,10 +229,14 @@ void CKernel::SLOT_DealSearchRoomRs(char *buf,int nlen){
             int roomid = rs->m_roomInfo.m_Roomid;
             QString roomcreator = rs->m_roomInfo.sz_RoomCreator;
             int num = rs->m_roomInfo.m_num;
-            RoomItem *item = new RoomItem;
-            item->setItem(roomid,roomname,roomcreator,num);
-            joinDialog->vec.push_back(item);
-            joinDialog->Slot_AddRoomItem(item);
+
+            if(this->m_roomcount==1){
+                RoomItem *item = new RoomItem;
+                item->setItem(roomid,roomname,roomcreator,num);
+                joinDialog->vec.push_back(item);
+                joinDialog->Slot_AddRoomItem(item);
+            }
+
         }
         break;
         case search_room_failed:
@@ -222,7 +251,7 @@ void CKernel::SLOT_DealSearchRoomRs(char *buf,int nlen){
 void CKernel::SLOT_DealGetFriendListRs(char *buf,int nlen){
     STRU_GETFRILIST_RS *rs = (STRU_GETFRILIST_RS *)buf;
     switch(rs->m_lResult){
-        case aks_failed:
+        case ask_success:
         {
             int i=0;
             while(rs->m_friArr[i].m_userid !=0){
@@ -235,7 +264,7 @@ void CKernel::SLOT_DealGetFriendListRs(char *buf,int nlen){
             friendlistDialog->show();
         }
         break;
-        case ask_success:
+        case aks_failed:
         {
             QMessageBox::about(m_Dialog,"提示","获取好友列表失败");
         }
@@ -427,7 +456,7 @@ void CKernel::SLOT_DealRegisterRs(char *buf,int nlen){
     }
 }
 
-//处理查找房间回复
+//处理获取房间列表回复
 void CKernel::SLOT_DealAskRoomRs(char *buf,int nlen){
 
     STRU_ASKROOM_RS *rs = (STRU_ASKROOM_RS *)buf;

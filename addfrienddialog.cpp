@@ -84,4 +84,5 @@ void AddFriendDialog::closeEvent(QCloseEvent *event){
         *ite = NULL;
         ite++;
     }
+    ui->le_info->clear();
 }

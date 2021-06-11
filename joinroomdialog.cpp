@@ -91,4 +91,6 @@ void JoinRoomDialog::closeEvent(QCloseEvent *event){
         *ite = NULL;
         ite++;
     }
+    ui->le_content->clear();
+    Q_EMIT SIG_SetCountZero();
 }

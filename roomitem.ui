@@ -152,6 +152,7 @@
           <widget class="QLabel" name="lb_number">
            <property name="font">
             <font>
+             <family>华文行楷</family>
              <pointsize>12</pointsize>
             </font>
            </property>

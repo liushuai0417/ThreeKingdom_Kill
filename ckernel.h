@@ -50,6 +50,8 @@ private:
     QString m_szName;//用户昵称
     QString m_feeling;//个性签名
     int m_friendid;//查询好友id
+    bool m_roomcount;//限制room插件插入次数
+    bool m_friendcount;//限制friend插件次数
     vector<RoomItem *>vec_roomlist;
     vector<FriendItem*>vec_frienditem;
     vector<FriendItem*>vec_friendlist;
@@ -73,6 +75,7 @@ public slots:
     void SLOT_ShowJoinRoom();//显示查找房间窗口的槽函数
     void SLOT_ReGetRoomTable();//刷新房间列表槽函数
     void SLOT_GetFriendList();//显示好友列表窗口槽函数
+    void SLOT_SetCountZero();
 };
 
 #endif // CKERNEL_H

@@ -15,6 +15,7 @@ FriendItem::FriendItem(QWidget *parent) :
     ui->lb_feeling->setPalette(pe);
     ui->lb_name->setPalette(pe);
     ui->lb_state->setPalette(pe);
+
 }
 
 FriendItem::~FriendItem()

@@ -18,6 +18,7 @@ class JoinRoomDialog : public QDialog
 signals:
     void SIG_JoinRoomByIdCommit(QString content);
     void SIG_JoinRoomByNameCommit(QString content);
+    void SIG_SetCountZero();//向kernel发送将count置0信号
 public:
     explicit JoinRoomDialog(QWidget *parent = 0);
     ~JoinRoomDialog();
