@@ -24,7 +24,16 @@ SOURCES += main.cpp\
     joinroomdialog.cpp \
     friendlist.cpp \
     frienditem.cpp \
-    gaming.cpp
+    gaming.cpp \
+    hero.cpp \
+    ganning.cpp \
+    guanyu.cpp \
+    huatuo.cpp \
+    huanggai.cpp \
+    lvbu.cpp \
+    zhangfei.cpp \
+    zhangliao.cpp \
+    zhaoyun.cpp
 
 HEADERS  += dialog.h \
     mainscene.h \
@@ -38,7 +47,16 @@ HEADERS  += dialog.h \
     friendlist.h \
     frienditem.h \
     packdef.h \
-    gaming.h
+    gaming.h \
+    hero.h \
+    ganning.h \
+    guanyu.h \
+    huatuo.h \
+    huanggai.h \
+    lvbu.h \
+    zhangfei.h \
+    zhangliao.h \
+    zhaoyun.h
 
 FORMS    += dialog.ui \
     mainscene.ui \
