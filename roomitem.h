@@ -11,6 +11,7 @@ class RoomItem;
 class RoomItem : public QWidget
 {
     Q_OBJECT
+signals:
 
 public:
     explicit RoomItem(QWidget *parent = 0);
@@ -18,7 +19,7 @@ public:
     void mouseDoubleClickEvent(QMouseEvent *event);
     void setItem(int Roomid,QString RoomName,QString CreatorName,int num);
     void paintEvent(QPaintEvent *event);
-
+    Ui::RoomItem *getUi() const;
 private:
     Ui::RoomItem *ui;
     int m_RoomID;

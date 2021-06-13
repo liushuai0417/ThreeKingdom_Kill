@@ -7,6 +7,7 @@
 #include "ui_dialog.h"
 #include"roomitem.h"
 #include "ui_mainscene.h"
+#include"ui_roomitem.h"
 #include"addfrienddialog.h"
 #include"frienditem.h"
 #include"mypushbutton.h"
@@ -41,6 +42,7 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     void (AddFriendDialog::*AddFriendByNameSignal)(QString) = &AddFriendDialog::SIG_AddFriendByNameCommit;
     void (JoinRoomDialog::*JoinRoomByNameSignal)(QString) = &JoinRoomDialog::SIG_JoinRoomByNameCommit;
     void (JoinRoomDialog::*JoinRoomByIdSignal)(QString) = &JoinRoomDialog::SIG_JoinRoomByIdCommit;
+
     //网络指针接收包内容的槽函数
     connect(m_tcpClient,ReadyDataSignal,this,&CKernel::SLOT_ReadyData);
     //注册槽函数
@@ -139,6 +141,8 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
         m_roomcount++;
     });
 
+    //加入房间槽函数
+
     connect(m_MainScene,&MainScene::SIG_ReGetRoomTable,this,&CKernel::SLOT_ReGetRoomTable);
     connect(m_MainScene,&MainScene::SIG_ShowAlterInfo,this,&CKernel::SLOT_ShowAlterInfo);
     connect(m_MainScene,&MainScene::SIG_CreateRoom,this,&CKernel::SLOT_ShowCreateRoom);
@@ -153,6 +157,8 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
 
 
 }
+
+
 
 void CKernel::SLOT_SetCountZero(){
     this->m_roomcount = 0;
@@ -231,10 +237,23 @@ void CKernel::SLOT_DealSearchRoomRs(char *buf,int nlen){
             int num = rs->m_roomInfo.m_num;
 
             if(this->m_roomcount==1){
-                RoomItem *item = new RoomItem;
+                item = new RoomItem;
                 item->setItem(roomid,roomname,roomcreator,num);
                 joinDialog->vec.push_back(item);
                 joinDialog->Slot_AddRoomItem(item);
+                MyPushButton *addRoom = new MyPushButton(":/res/icon/addfriend.png",":/res/icon/addfriend_1.png");
+                addRoom->setParent(item);
+                addRoom->move(item->width()-80,item->height()*0.8-25);
+                connect(addRoom,&MyPushButton::clicked,[=](){
+                    int roomid = item->getUi()->lb_roomid->text().toInt();
+                    STRU_JOINROOM_RQ rq;
+                    rq.m_RoomID = roomid;
+                    rq.m_userInfo.m_iconid = this->m_iconID;
+                    strcpy(rq.m_userInfo.m_szFelling,this->m_feeling.toStdString().c_str());
+                    strcpy(rq.m_userInfo.m_szName,this->m_szName.toStdString().c_str());
+                    rq.m_userInfo.m_userid = this->m_id;
+                    m_tcpClient->SendData((char*)&rq,sizeof(rq));
+                });
             }
 
         }

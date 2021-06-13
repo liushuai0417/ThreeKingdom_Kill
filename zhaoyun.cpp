@@ -5,6 +5,11 @@ ZhaoYun::ZhaoYun()
 
 }
 
+ZhaoYun::~ZhaoYun()
+{
+
+}
+
 ZhaoYun::ZhaoYun(int identity){
     //如果是主公
     this->m_nblood = 5;

@@ -12,7 +12,9 @@ GanNing::GanNing(int identity){
     this->m_nidentity = identity;
     this->m_ncount = 1;
 }
+GanNing::~GanNing(){
 
+}
 
 void GanNing::FirstSkill(){
     //出牌阶段

@@ -5,6 +5,10 @@ ZhangFei::ZhangFei()
 
 }
 
+ZhangFei::~ZhangFei(){
+
+}
+
 ZhangFei::ZhangFei(int identity){
     //如果是主公
     this->m_nblood = 5;

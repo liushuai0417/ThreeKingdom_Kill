@@ -5,6 +5,10 @@ HuaTuo::HuaTuo()
 
 }
 
+HuaTuo::~HuaTuo(){
+
+}
+
 HuaTuo::HuaTuo(int identity){
     //如果是主公
     this->m_nblood = 4;

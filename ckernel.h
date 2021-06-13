@@ -44,6 +44,7 @@ private:
     JoinRoomDialog *joinDialog;//加入房间
     FriendList* friendlistDialog;//好友列表窗口
     PFUN m_NetPackMap[DEF_PACK_COUNT];//协议映射数组
+    RoomItem *item;
     int m_id;//用户id 唯一标识
     int m_iconID;//用户头像id
     int m_state;//用户状态

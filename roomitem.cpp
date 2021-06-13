@@ -28,8 +28,6 @@ RoomItem::~RoomItem()
 
 //双击事件
 void RoomItem::mouseDoubleClickEvent(QMouseEvent *event){
-    //进入房间
-
 
 }
 
@@ -46,4 +44,9 @@ void RoomItem::setItem(int Roomid,QString RoomName,QString CreatorName,int num){
 void RoomItem::paintEvent(QPaintEvent *event){
     ui->widget_2->setStyleSheet("QWidget{background-color: rgba(96, 96, 96, 0.2);}"
                                 "QWidget{border-width:0;border-style:outset;}");
+}
+
+Ui::RoomItem *RoomItem::getUi() const
+{
+    return ui;
 }

@@ -7,7 +7,10 @@ class Hero
 public:
     Hero();
     Hero(int identity);
-    ~Hero();
+    ~Hero(){
+
+    }
+
 public:
     int m_nblood;//血量
     int m_nidentity;//身份
