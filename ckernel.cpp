@@ -12,6 +12,7 @@
 #include"frienditem.h"
 #include"mypushbutton.h"
 #include<QPixmap>
+#include"gamingdialog.h"
 #define NetPackMap(a) m_NetPackMap[(a)-DEF_PACK_BASE]
 CKernel::CKernel(QObject *parent) : QObject(parent)
 {
@@ -24,6 +25,7 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     createDialog = new CreateRoomDialog;//创建房间窗口指针
     addDialog = new AddFriendDialog;//添加好友窗口指针
     joinDialog = new JoinRoomDialog;//加入房间窗口指针
+    gamedlg = new GamingDialog(m_MainScene);
     friendlistDialog = new FriendList;
     m_roomcount = 0;
     //窗口关闭槽函数
@@ -42,7 +44,7 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     void (AddFriendDialog::*AddFriendByNameSignal)(QString) = &AddFriendDialog::SIG_AddFriendByNameCommit;
     void (JoinRoomDialog::*JoinRoomByNameSignal)(QString) = &JoinRoomDialog::SIG_JoinRoomByNameCommit;
     void (JoinRoomDialog::*JoinRoomByIdSignal)(QString) = &JoinRoomDialog::SIG_JoinRoomByIdCommit;
-
+    void (GamingDialog::*LeaveRoomSignal)(int) = &GamingDialog::SIG_LeaveRoom;
     //网络指针接收包内容的槽函数
     connect(m_tcpClient,ReadyDataSignal,this,&CKernel::SLOT_ReadyData);
     //注册槽函数
@@ -141,6 +143,13 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
         m_roomcount++;
     });
 
+    //离开房间槽函数
+    connect(gamedlg,LeaveRoomSignal,[=](int roomid){
+        STRU_LEAVEROOM_RQ rq;
+        rq.m_RoomId = roomid;
+        rq.m_userId = this->m_id;
+        m_tcpClient->SendData((char*)&rq,sizeof(rq));
+    });
     //加入房间槽函数
 
     connect(m_MainScene,&MainScene::SIG_ReGetRoomTable,this,&CKernel::SLOT_ReGetRoomTable);
@@ -181,7 +190,9 @@ void CKernel::SLOT_ReGetFriendList(){
 //接收数据槽函数
 void CKernel::SLOT_ReadyData(char *buf,int nlen){
     //获取包类型
+
     int type = *(int*)buf;
+    qDebug()<<type;
     if(type>=DEF_PACK_BASE && type<=DEF_PACK_BASE+DEF_PACK_COUNT){
         PFUN fun = m_NetPackMap[type-DEF_PACK_BASE];
         if(fun){
@@ -223,6 +234,29 @@ void CKernel::setNetPackMap(){
     NetPackMap(DEF_ALTER_USERINFO_RS) = &CKernel::SLOT_DealAlterInfoRs;
     NetPackMap(DEF_PACK_GETFRIENDLIST_RS) = &CKernel::SLOT_DealGetFriendListRs;
     NetPackMap(DEF_PACK_SEARCH_ROOM_RS) = &CKernel::SLOT_DealSearchRoomRs;
+    NetPackMap(DEF_PACK_JOINROOM_RS) = &CKernel::SLOT_DealJoinRoomRs;
+}
+
+void CKernel::SLOT_DealJoinRoomRs(char *buf,int nlen){
+    STRU_JOINROOM_RS *rs = (STRU_JOINROOM_RS *)buf;
+    switch(rs->m_lResult){
+        case room_no_exist:
+            QMessageBox::about(joinDialog,"提示","该房间不存在");
+        break;
+        case room_is_full:
+            QMessageBox::about(joinDialog,"提示","该房间满员");
+        break;
+        case join_success:
+            {
+                int i=0;
+                while(rs->m_userInfoarr[i].m_userid != 0){
+                    qDebug()<<rs->m_userInfoarr[i].m_szName;
+                    i++;
+                }
+
+            }
+        break;
+    }
 }
 
 //处理查找房间回复
@@ -253,6 +287,8 @@ void CKernel::SLOT_DealSearchRoomRs(char *buf,int nlen){
                     strcpy(rq.m_userInfo.m_szName,this->m_szName.toStdString().c_str());
                     rq.m_userInfo.m_userid = this->m_id;
                     m_tcpClient->SendData((char*)&rq,sizeof(rq));
+                    gamedlg->roomid = roomid;
+                    gamedlg->exec();
                 });
             }
 
@@ -496,9 +532,6 @@ void CKernel::SLOT_DealAskRoomRs(char *buf,int nlen){
             }
 
         }
-        break;
-        case ask_room_failed:
-            QMessageBox::about(m_MainScene,"提示","获取房间列表失败");
         break;
     }
 }

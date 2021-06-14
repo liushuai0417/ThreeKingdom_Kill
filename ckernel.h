@@ -14,6 +14,7 @@
 #include"roomitem.h"
 #include"friendlist.h"
 #include"frienditem.h"
+#include"gamingdialog.h"
 class CKernel;
 typedef void (CKernel::*PFUN)(char*,int);
 class CKernel : public QObject
@@ -43,6 +44,7 @@ private:
     AddFriendDialog *addDialog;//添加好友
     JoinRoomDialog *joinDialog;//加入房间
     FriendList* friendlistDialog;//好友列表窗口
+    GamingDialog *gamedlg;//游戏指针
     PFUN m_NetPackMap[DEF_PACK_COUNT];//协议映射数组
     RoomItem *item;
     int m_id;//用户id 唯一标识
@@ -69,6 +71,7 @@ public slots:
     void SLOT_DealAddFriendRq(char *buf,int nlen);//好友添加
     void SLOT_DealGetFriendListRs(char *buf,int nlen);//获取好友列表
     void SLOT_DealSearchRoomRs(char *buf,int nlen);//处理查找房间
+    void SLOT_DealJoinRoomRs(char *buf,int nlen);//处理加入房间
     void SLOT_ReGetFriendList();//刷新好友列表
     void SLOT_ShowAlterInfo();//显示更改信息窗口的槽函数
     void SLOT_ShowCreateRoom();//显示创建房间窗口的槽函数

@@ -24,7 +24,6 @@ SOURCES += main.cpp\
     joinroomdialog.cpp \
     friendlist.cpp \
     frienditem.cpp \
-    gaming.cpp \
     hero.cpp \
     ganning.cpp \
     guanyu.cpp \
@@ -33,7 +32,8 @@ SOURCES += main.cpp\
     lvbu.cpp \
     zhangfei.cpp \
     zhangliao.cpp \
-    zhaoyun.cpp
+    zhaoyun.cpp \
+    gamingdialog.cpp
 
 HEADERS  += dialog.h \
     mainscene.h \
@@ -47,7 +47,6 @@ HEADERS  += dialog.h \
     friendlist.h \
     frienditem.h \
     packdef.h \
-    gaming.h \
     hero.h \
     ganning.h \
     guanyu.h \
@@ -56,7 +55,8 @@ HEADERS  += dialog.h \
     lvbu.h \
     zhangfei.h \
     zhangliao.h \
-    zhaoyun.h
+    zhaoyun.h \
+    gamingdialog.h
 
 FORMS    += dialog.ui \
     mainscene.ui \
@@ -67,7 +67,8 @@ FORMS    += dialog.ui \
     joinroomdialog.ui \
     friendlist.ui \
     frienditem.ui \
-    gaming.ui
+    gaming.ui \
+    gamingdialog.ui
 
 RESOURCES += \
     resource.qrc

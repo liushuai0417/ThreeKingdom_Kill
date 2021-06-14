@@ -9,7 +9,7 @@
 #include<QScrollArea>
 #include<friendlist.h>
 #include<frienditem.h>
-#include"gaming.h"
+#include"gamingdialog.h"
 //大厅界面
 MainScene::MainScene(QWidget *parent) :
     QMainWindow(parent),
@@ -143,7 +143,7 @@ void MainScene::Slot_AlterInfo(){
 
 //开始游戏槽函数
 void MainScene::Slot_StartGame(){
-    Gaming *game = new Gaming;
+    GamingDialog *game = new GamingDialog;
     game->show();
 }
 

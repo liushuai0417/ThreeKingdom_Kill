@@ -1,9 +1,9 @@
-#include "gaming.h"
-#include "ui_gaming.h"
+#include "gamingdialog.h"
+#include "ui_gamingdialog.h"
 #include<QPainter>
-Gaming::Gaming(QWidget *parent) :
-    QWidget(parent),
-    ui(new Ui::Gaming)
+GamingDialog::GamingDialog(QWidget *parent) :
+    QDialog(parent),
+    ui(new Ui::GamingDialog)
 {
     ui->setupUi(this);
     //配置场景
@@ -15,7 +15,12 @@ Gaming::Gaming(QWidget *parent) :
     this->setWindowTitle("三国Kill");
 }
 
-void Gaming::paintEvent(QPaintEvent *event){
+GamingDialog::~GamingDialog()
+{
+    delete ui;
+}
+
+void GamingDialog::paintEvent(QPaintEvent *event){
     //设置背景
     QPainter painter(this);
     QPixmap pix;
@@ -23,7 +28,7 @@ void Gaming::paintEvent(QPaintEvent *event){
     painter.drawPixmap(0,0,this->width(),this->height(),pix);
 }
 
-Gaming::~Gaming()
-{
-    delete ui;
+void GamingDialog::closeEvent(QCloseEvent *event){
+    event->accept();
+    Q_EMIT SIG_LeaveRoom(this->roomid);
 }
