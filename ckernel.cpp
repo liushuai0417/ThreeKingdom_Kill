@@ -543,6 +543,8 @@ void CKernel::SLOT_DealCreateRoom(char *buf,int nlen){
     switch (rs->m_lResult) {
         case create_success:{
             str = QString("创建房间成功,房间号为%1").arg(rs->m_RoomId);
+            gamedlg->roomid = rs->m_RoomId;
+            gamedlg->exec();
             QMessageBox::about(m_MainScene,"提示",str);
         }
         break;
