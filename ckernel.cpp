@@ -190,7 +190,6 @@ void CKernel::SLOT_ReGetFriendList(){
 //接收数据槽函数
 void CKernel::SLOT_ReadyData(char *buf,int nlen){
     //获取包类型
-
     int type = *(int*)buf;
     qDebug()<<type;
     if(type>=DEF_PACK_BASE && type<=DEF_PACK_BASE+DEF_PACK_COUNT){
@@ -543,9 +542,18 @@ void CKernel::SLOT_DealCreateRoom(char *buf,int nlen){
     switch (rs->m_lResult) {
         case create_success:{
             str = QString("创建房间成功,房间号为%1").arg(rs->m_RoomId);
+            QMessageBox::about(m_MainScene,"提示",str);
+            MyPushButton *startgame = new MyPushButton(":/res/icon/btnzhunbei.png",":/res/icon/btnzhunbei_1.png");
+            startgame->setParent(gamedlg);
+            startgame->move(gamedlg->width()*0.5-startgame->width()*0.5,gamedlg->height()*0.8-10);
             gamedlg->roomid = rs->m_RoomId;
             gamedlg->exec();
-            QMessageBox::about(m_MainScene,"提示",str);
+            connect(startgame,&MyPushButton::clicked,[=](){
+                STRU_STARTGAME_RQ rq;
+                rq.Room_id = gamedlg->roomid;
+                rq.user_id = this->m_id;
+                m_tcpClient->SendData((char*)&rq,sizeof(rq));
+            });
         }
         break;
         case create_failed:

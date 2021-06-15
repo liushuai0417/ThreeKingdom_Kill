@@ -43,6 +43,10 @@ typedef enum Net_PACK
     DEF_PACK_CHECKOFFLINE_RQ,                   //查询离线数据请求
     DEF_PACK_CHECKOFFLINE_RS,
 
+    DEF_PACK_STARTGAME_RQ,                      //开始游戏请求
+    DEF_PACK_STARTGAME_RS,
+
+
     DEF_PACK_LEAVEROOM_RQ ,                     //离开房间请求
     DEF_PACK_LEAVEROOM_RS ,
 
@@ -83,6 +87,9 @@ typedef enum Net_PACK
 //查找房间结果
 #define search_room_failed   0
 #define search_room_success  1
+
+//开始游戏结果
+#define game_start_success   1
 
 //加入房间结果
 #define room_no_exist        0
@@ -486,16 +493,6 @@ typedef struct STRU_JOINROOM_RS
     STRU_USER_INFO m_userInfoarr[4];   //房间用户id
 }STRU_JOINROOM_RS;
 
-////更新房间回复
-//typedef struct STRU_UPDATE_ROOM5_INFO_RS
-//{
-//    STRU_UPDATE_ROOM5_INFO_RS()
-//    {
-//        m_nType =
-//    }
-//    PackType m_nType;
-//    STRU_USER_INFO m_userInfoarr[4];
-//}STRU_UPDATE_ROOM5_INFO_RS;
 
 //房间成员请求
 typedef struct STRU_ROOM_MEMBER_RQ
@@ -518,10 +515,9 @@ typedef struct STRU_ROOM_MEMBER_RS
     STRU_ROOM_MEMBER_RS()
     {
          m_nType= DEF_PACK_ROOM_MEMBER_RS;
-         memset(m_Room_member,0,sizeof(m_Room_member));
     }
     PackType m_nType;   //包类型
-    int m_Room_member[4];   //房间用户id
+    STRU_USER_INFO m_userInfo[4];
 }STRU_ROOM_MEMBER_RS;
 
 //离开房间请求
@@ -551,6 +547,32 @@ typedef struct STRU_LEAVEROOM_RS
     int  m_lResult ;
 }STRU_LEAVEROOM_RS;
 
+//游戏开始请求
+typedef struct STRU_STARTGAME_RQ
+{
+    STRU_STARTGAME_RQ()
+    {
+        m_nType = DEF_PACK_STARTGAME_RQ;
+        Room_id = 0;
+        user_id = 0;
+    }
+    PackType m_nType;
+    int Room_id;
+    int user_id;
+}STRU_STARTGAME_RQ;
+
+//游戏开始回复
+typedef struct STRU_STARTGAME_RS
+{
+    STRU_STARTGAME_RS()
+    {
+       m_nType = DEF_PACK_STARTGAME_RS;
+       m_lResult = 0;
+    }
+
+    PackType m_nType;
+    int m_lResult;
+}STRU_STARTGAME_RS;
 
 //查询离线数据请求
 typedef struct STRU_CHECK_OFFLINEMSG_RQ
@@ -587,6 +609,7 @@ typedef struct STRU_OFFLINE_RQ
     }
     PackType   m_nType;   //包类型
     int m_UserID;
+
 }STRU_FORCE_OFFLINE*/;
 
 

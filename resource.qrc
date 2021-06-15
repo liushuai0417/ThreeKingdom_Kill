@@ -207,5 +207,9 @@
         <file>res/icon/addfriends_1.png</file>
         <file>res/icon/addfriend.png</file>
         <file>res/icon/addfriend_1.png</file>
+        <file>res/icon/zhunbei.png</file>
+        <file>res/icon/zhunbei_1.png</file>
+        <file>res/icon/btnzhunbei.png</file>
+        <file>res/icon/btnzhunbei_1.png</file>
     </qresource>
 </RCC>
