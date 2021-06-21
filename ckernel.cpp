@@ -25,7 +25,7 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     createDialog = new CreateRoomDialog;//创建房间窗口指针
     addDialog = new AddFriendDialog;//添加好友窗口指针
     joinDialog = new JoinRoomDialog;//加入房间窗口指针
-    gamedlg = new GamingDialog(m_MainScene);
+    gamedlg = new GamingDialog;
     friendlistDialog = new FriendList;
     m_roomcount = 0;
     //窗口关闭槽函数
@@ -150,6 +150,8 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
         rq.m_RoomId = roomid;
         rq.m_userId = this->m_id;
         m_tcpClient->SendData((char*)&rq,sizeof(rq));
+        gamedlg->hide();
+        m_MainScene->show();
     });
     //加入房间槽函数
 
@@ -161,6 +163,7 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     connect(m_MainScene,&MainScene::SIG_GetFriendList,this,&CKernel::SLOT_GetFriendList);
     connect(friendlistDialog,&FriendList::SIG_ReGetFriendList,this,&CKernel::SLOT_ReGetFriendList);
     connect(joinDialog,&JoinRoomDialog::SIG_SetCountZero,this,&CKernel::SLOT_SetCountZero);
+
     //房间列表的第一行
     RoomItem *itemindex = new RoomItem;
     m_MainScene->Slot_AddUserItem(itemindex);
@@ -316,6 +319,12 @@ void CKernel::SLOT_DealSearchRoomRs(char *buf,int nlen){
                     startgame1->move(gamedlg->width()*0.5-startgame1->width()*0.5,gamedlg->height()*0.8-10);
                     m_MainScene->hide();
                     gamedlg->show();
+                    connect(startgame1,&MyPushButton::clicked,[=](){
+                        STRU_STARTGAME_RQ rq;
+                        rq.Room_id = gamedlg->roomid;
+                        rq.user_id = this->m_id;
+                        m_tcpClient->SendData((char*)&rq,sizeof(rq));
+                    });
                 });
 
             }
@@ -580,7 +589,6 @@ void CKernel::SLOT_DealCreateRoom(char *buf,int nlen){
             m_MainScene->hide();
             gamedlg->show();
             connect(startgame,&MyPushButton::clicked,[=](){
-
                 STRU_STARTGAME_RQ rq;
                 rq.Room_id = gamedlg->roomid;
                 rq.user_id = this->m_id;
