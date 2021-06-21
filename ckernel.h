@@ -15,6 +15,7 @@
 #include"friendlist.h"
 #include"frienditem.h"
 #include"gamingdialog.h"
+#include"gamedialog.h"
 #include"mypushbutton.h"
 class CKernel;
 typedef void (CKernel::*PFUN)(char*,int);
@@ -45,7 +46,8 @@ private:
     AddFriendDialog *addDialog;//添加好友
     JoinRoomDialog *joinDialog;//加入房间
     FriendList* friendlistDialog;//好友列表窗口
-    GamingDialog *gamedlg;//游戏指针
+    GameDialog *gamedlg;//游戏指针
+    GamingDialog *gamingdlg;
     PFUN m_NetPackMap[DEF_PACK_COUNT];//协议映射数组
     RoomItem *item;
     int m_id;//用户id 唯一标识
@@ -62,6 +64,7 @@ private:
     vector<RoomItem *>vec_roomitem;
     MyPushButton *startgame;
     MyPushButton *startgame1;
+    vector<int>m_vecId;
 public slots:
     void SLOT_DealLoginRs(char *buf,int nlen);//处理登录回复槽函数
     void SLOT_DealRegisterRs(char *buf,int nlen);//处理注册回复槽函数
@@ -76,6 +79,7 @@ public slots:
     void SLOT_DealSearchRoomRs(char *buf,int nlen);//处理查找房间
     void SLOT_DealJoinRoomRs(char *buf,int nlen);//处理加入房间
     void SLOT_DealStartGameRs(char *buf,int nlen);//处理开始游戏
+    void SLOT_DealPostIdentity(char *buf,int nlen);
     void SLOT_ReGetFriendList();//刷新好友列表
     void SLOT_ShowAlterInfo();//显示更改信息窗口的槽函数
     void SLOT_ShowCreateRoom();//显示创建房间窗口的槽函数

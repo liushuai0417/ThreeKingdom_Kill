@@ -64,6 +64,11 @@ typedef enum Net_PACK
 
     DEF_PACK_OFFLINRE_RQ,                       //下线请求
     DEF_PACK_OFFLINRE_RS,
+
+    DEF_PACK_POST_IDENTITY,                      //发送身份
+
+    DEF_PACK_SELHERO_RQ,                         //选择英雄请求
+    DEF_PACK_SELHERO_RS,
 }Net_PACK;
 
 //注册请求结果
@@ -609,8 +614,109 @@ typedef struct STRU_OFFLINE_RQ
     }
     PackType   m_nType;   //包类型
     int m_UserID;
-
 }STRU_FORCE_OFFLINE*/;
 
+enum CARD_TYPE{
+    JICHU=1,
+    FEIYANSHIJINNANG,
+    YANSHIJINNANG,
+    WUQI,
+    FANGJU,
+    JINGONGMA,
+    FANGYUMA
+};
+enum CARDID{
+    //基础
+    SHA = 1,
+    SHAN,
+    TAO,
+    //非延时锦囊
+    GUOHECHAIQIAO,
+    SHUNSHOUQIANYANG,
+    JUEDOU,
+    JIEDAOSHAREN,
+    WUZHONGSHENGYOU,
+    WUXIEKEJI,
+    WANJIANQIFA,
+    NANMANRUQIN,
+    TAOYUANJIEYI,
+    WUGUFENGDENG,
+    //延时锦囊
+    SHANDIAN,
+    LEBUSISHU,
+    //武器
+    HANBINGJIAN,
+    CIXIONGSHUANGGUJIAN,
+    QINGLONGYANYUEDAO,
+    QINGGANGJIAN,
+    ZHANGBASHEMAO,
+    QILINGONG,
+    ZHUGELIANNU,
+    GUANSHIFU,
+    FANGTIANHUAJI,
+    //防具
+    BAGUAZHEN,
+    RENWANGDUN,
+    //进攻马
+    CHITU,
+    DAYUAN,
+    //防御马
+    DILU,
+    JUEYING,
+    ZHUAHUANGFEIDIAN,
+    ZIXIN
+};
+enum COLOR{Spade1 = 1,Hearts2,Club3,Diamond4};
+typedef struct STRU_CARD
+{
+    STRU_CARD()
+    {
+        id = 0;
+        num = 0;
+        col = 0;
+        type = 0;
+    }
+    int id;
+    int num;
+    int col;
+    int type;
+}STRU_CARD;
+
+enum IDENTITY{zhugong = 1,zhongchen,fanzei,neijian};
+
+enum HERO{liubei = 1,sunquan,caocao,ganning,guanyu,huatuo};
+//发送身份
+typedef struct STRU_POST_IDENTITY
+{
+    STRU_POST_IDENTITY()
+    {
+        m_nType = DEF_PACK_POST_IDENTITY;
+        m_identity = 0;
+    }
+    PackType m_nType;
+    int m_identity;
+    int m_ZGidentity;
+}STRU_POST_IDENTITY;
+
+//选择英雄请求
+typedef struct STRU_SELHERO_RQ
+{
+    STRU_SELHERO_RQ()
+    {
+        m_nType = DEF_PACK_SELHERO_RQ;
+    }
+    PackType  m_nType;
+    int m_HeroArr[6];
+}STRU_SELHERO_RQ;
+
+//选择英雄回复
+typedef struct STRU_SELHERO_RS
+{
+    STRU_SELHERO_RS(){
+        m_nType = DEF_PACK_SELHERO_RS;
+    }
+    PackType m_nType;
+    int hero_id;
+}STRU_SELHERO_RS;
 
 #endif

@@ -212,5 +212,10 @@
         <file>res/icon/btnzhunbei.png</file>
         <file>res/icon/btnzhunbei_1.png</file>
         <file>res/BJ/loading.png</file>
+        <file>res/icon/yizhunbei.png</file>
+        <file>res/Shenfen/fanzei.png</file>
+        <file>res/Shenfen/neijian.png</file>
+        <file>res/Shenfen/zhongchen.png</file>
+        <file>res/Shenfen/zhugong.png</file>
     </qresource>
 </RCC>

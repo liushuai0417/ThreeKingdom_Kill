@@ -13,6 +13,7 @@
 #include"mypushbutton.h"
 #include<QPixmap>
 #include"gamingdialog.h"
+#include<QPushButton>
 #define NetPackMap(a) m_NetPackMap[(a)-DEF_PACK_BASE]
 CKernel::CKernel(QObject *parent) : QObject(parent)
 {
@@ -25,7 +26,8 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     createDialog = new CreateRoomDialog;//创建房间窗口指针
     addDialog = new AddFriendDialog;//添加好友窗口指针
     joinDialog = new JoinRoomDialog;//加入房间窗口指针
-    gamedlg = new GamingDialog;
+    gamedlg = new GameDialog;
+    gamingdlg = new GamingDialog;
     friendlistDialog = new FriendList;
     m_roomcount = 0;
     //窗口关闭槽函数
@@ -44,7 +46,7 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     void (AddFriendDialog::*AddFriendByNameSignal)(QString) = &AddFriendDialog::SIG_AddFriendByNameCommit;
     void (JoinRoomDialog::*JoinRoomByNameSignal)(QString) = &JoinRoomDialog::SIG_JoinRoomByNameCommit;
     void (JoinRoomDialog::*JoinRoomByIdSignal)(QString) = &JoinRoomDialog::SIG_JoinRoomByIdCommit;
-    void (GamingDialog::*LeaveRoomSignal)(int) = &GamingDialog::SIG_LeaveRoom;
+    void (GameDialog::*LeaveRoomSignal)(int) = &GameDialog::SIG_LeaveRoom;
     //网络指针接收包内容的槽函数
     connect(m_tcpClient,ReadyDataSignal,this,&CKernel::SLOT_ReadyData);
     //注册槽函数
@@ -239,7 +241,31 @@ void CKernel::setNetPackMap(){
     NetPackMap(DEF_PACK_SEARCH_ROOM_RS) = &CKernel::SLOT_DealSearchRoomRs;
     NetPackMap(DEF_PACK_JOINROOM_RS) = &CKernel::SLOT_DealJoinRoomRs;
     NetPackMap(DEF_PACK_STARTGAME_RS) = &CKernel::SLOT_DealStartGameRs;
+    NetPackMap(DEF_PACK_POST_IDENTITY) = &CKernel::SLOT_DealPostIdentity;
 }
+
+void CKernel::SLOT_DealPostIdentity(char *buf,int nlen){
+    STRU_POST_IDENTITY *rs = (STRU_POST_IDENTITY*)buf;
+    if(rs->m_identity == zhugong){
+        MyPushButton *identity = new MyPushButton(":/res/Shenfen/zhugong.png");
+        identity->setParent(gamedlg);
+        identity->move(gamedlg->width()*0.5-identity->width()*0.5,gamedlg->height()*0.8-10);
+    }else if(rs->m_identity == zhongchen){
+        MyPushButton *identity = new MyPushButton(":/res/Shenfen/zhongchen.png");
+        identity->setParent(gamedlg);
+        identity->move(gamedlg->width()*0.5-identity->width()*0.5,gamedlg->height()*0.8-10);
+    }else if(rs->m_identity == neijian){
+        MyPushButton *identity = new MyPushButton(":/res/Shenfen/neijian.png");
+        identity->setParent(gamedlg);
+        identity->move(gamedlg->width()*0.5-identity->width()*0.5,gamedlg->height()*0.8-10);
+    }else if(rs->m_identity == fanzei){
+        MyPushButton *identity = new MyPushButton(":/res/Shenfen/fanzei.png");
+        identity->setParent(gamedlg);
+        identity->move(gamedlg->width()*0.5-identity->width()*0.5,gamedlg->height()*0.8-10);
+    }
+}
+
+
 
 void CKernel::SLOT_DealStartGameRs(char *buf,int nlen){
     STRU_STARTGAME_RS *rs = (STRU_STARTGAME_RS*)buf;
@@ -274,11 +300,14 @@ void CKernel::SLOT_DealJoinRoomRs(char *buf,int nlen){
         case join_success:
             {
                 int i=0;
+                m_vecId.clear();
+                rs->m_userInfoarr[i].m_userid;
                 while(rs->m_userInfoarr[i].m_userid != 0){
-                    qDebug()<<rs->m_userInfoarr[i].m_szName;
+                    if(rs->m_userInfoarr[i].m_userid!=this->m_id){
+                        m_vecId.push_back(rs->m_userInfoarr[i].m_userid);
+                    }
                     i++;
                 }
-
             }
         break;
     }
@@ -313,16 +342,17 @@ void CKernel::SLOT_DealSearchRoomRs(char *buf,int nlen){
                     rq.m_userInfo.m_userid = this->m_id;
                     m_tcpClient->SendData((char*)&rq,sizeof(rq));
                     gamedlg->roomid = roomid;
-
                     startgame1 = new MyPushButton(":/res/icon/btnzhunbei.png",":/res/icon/btnzhunbei_1.png");
                     startgame1->setParent(gamedlg);
                     startgame1->move(gamedlg->width()*0.5-startgame1->width()*0.5,gamedlg->height()*0.8-10);
                     m_MainScene->hide();
+                    gamedlg->setGeometry(m_MainScene->geometry());
                     gamedlg->show();
                     connect(startgame1,&MyPushButton::clicked,[=](){
                         STRU_STARTGAME_RQ rq;
                         rq.Room_id = gamedlg->roomid;
                         rq.user_id = this->m_id;
+                        startgame1->setIcon(QIcon(":/res/icon/yizhunbei.png"));
                         m_tcpClient->SendData((char*)&rq,sizeof(rq));
                     });
                 });
@@ -383,7 +413,7 @@ void CKernel::SLOT_DealAlterInfoRs(char *buf,int nlen){
             m_MainScene->getUi()->lb_feeling->setText(m_feeling);
             QPixmap pix;
             QString strPath;
-           if(m_iconID<10){
+            if(m_iconID<10){
                 strPath = QString(":/res/TX/0%1.png").arg(m_iconID+1);
             }else{
                 strPath = QString(":/res/TX/%1.png").arg(m_iconID+1);
@@ -582,17 +612,30 @@ void CKernel::SLOT_DealCreateRoom(char *buf,int nlen){
         case create_success:{
             str = QString("创建房间成功,房间号为%1").arg(rs->m_RoomId);
             QMessageBox::about(m_MainScene,"提示",str);
-            startgame = new MyPushButton(":/res/icon/btnzhunbei.png",":/res/icon/btnzhunbei_1.png");
+            startgame = new MyPushButton(":/res/icon/btnzhunbei.png");
             startgame->setParent(gamedlg);
             startgame->move(gamedlg->width()*0.5-startgame->width()*0.5,gamedlg->height()*0.8-10);
             gamedlg->roomid = rs->m_RoomId;
             m_MainScene->hide();
+            gamedlg->setGeometry(m_MainScene->geometry());
             gamedlg->show();
-            connect(startgame,&MyPushButton::clicked,[=](){
+            static bool flag = true;
+            connect(startgame,&MyPushButton::clicked,[&](){
                 STRU_STARTGAME_RQ rq;
                 rq.Room_id = gamedlg->roomid;
                 rq.user_id = this->m_id;
+                if(flag){
+                    QPixmap pix;
+                    pix.load(":/res/icon/yizhunbei.png");
+                    startgame->setIcon(pix);
+                }
+                if(!flag){
+                    QPixmap pix;
+                    pix.load(":/res/icon/btnzhunbei.png");
+                    startgame->setIcon(pix);
+                }
                 m_tcpClient->SendData((char*)&rq,sizeof(rq));
+                flag = !flag;
             });
         }
         break;
