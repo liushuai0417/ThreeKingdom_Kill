@@ -83,7 +83,6 @@ public slots:
     void SLOT_ShowJoinRoom();//显示查找房间窗口的槽函数
     void SLOT_ReGetRoomTable();//刷新房间列表槽函数
     void SLOT_GetFriendList();//显示好友列表窗口槽函数
-
     void SLOT_SetCountZero();
 };
 

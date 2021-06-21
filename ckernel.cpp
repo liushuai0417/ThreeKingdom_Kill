@@ -315,14 +315,9 @@ void CKernel::SLOT_DealSearchRoomRs(char *buf,int nlen){
                     startgame1->setParent(gamedlg);
                     startgame1->move(gamedlg->width()*0.5-startgame1->width()*0.5,gamedlg->height()*0.8-10);
                     m_MainScene->hide();
-                    gamedlg->exec();
-                    connect(startgame1,&MyPushButton::clicked,[=](){
-                        STRU_STARTGAME_RQ rq;
-                        rq.Room_id = gamedlg->roomid;
-                        rq.user_id = this->m_id;
-                        m_tcpClient->SendData((char*)&rq,sizeof(rq));
-                    });
+                    gamedlg->show();
                 });
+
             }
 
         }
@@ -334,6 +329,7 @@ void CKernel::SLOT_DealSearchRoomRs(char *buf,int nlen){
         break;
     }
 }
+
 
 //处理刷新好友列表回复
 void CKernel::SLOT_DealGetFriendListRs(char *buf,int nlen){
@@ -582,8 +578,9 @@ void CKernel::SLOT_DealCreateRoom(char *buf,int nlen){
             startgame->move(gamedlg->width()*0.5-startgame->width()*0.5,gamedlg->height()*0.8-10);
             gamedlg->roomid = rs->m_RoomId;
             m_MainScene->hide();
-            gamedlg->exec();
+            gamedlg->show();
             connect(startgame,&MyPushButton::clicked,[=](){
+
                 STRU_STARTGAME_RQ rq;
                 rq.Room_id = gamedlg->roomid;
                 rq.user_id = this->m_id;
