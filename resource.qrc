@@ -211,5 +211,6 @@
         <file>res/icon/zhunbei_1.png</file>
         <file>res/icon/btnzhunbei.png</file>
         <file>res/icon/btnzhunbei_1.png</file>
+        <file>res/BJ/loading.png</file>
     </qresource>
 </RCC>

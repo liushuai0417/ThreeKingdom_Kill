@@ -15,6 +15,7 @@
 #include"friendlist.h"
 #include"frienditem.h"
 #include"gamingdialog.h"
+#include"mypushbutton.h"
 class CKernel;
 typedef void (CKernel::*PFUN)(char*,int);
 class CKernel : public QObject
@@ -59,6 +60,8 @@ private:
     vector<FriendItem*>vec_frienditem;
     vector<FriendItem*>vec_friendlist;
     vector<RoomItem *>vec_roomitem;
+    MyPushButton *startgame;
+    MyPushButton *startgame1;
 public slots:
     void SLOT_DealLoginRs(char *buf,int nlen);//处理登录回复槽函数
     void SLOT_DealRegisterRs(char *buf,int nlen);//处理注册回复槽函数
@@ -72,6 +75,7 @@ public slots:
     void SLOT_DealGetFriendListRs(char *buf,int nlen);//获取好友列表
     void SLOT_DealSearchRoomRs(char *buf,int nlen);//处理查找房间
     void SLOT_DealJoinRoomRs(char *buf,int nlen);//处理加入房间
+    void SLOT_DealStartGameRs(char *buf,int nlen);//处理开始游戏
     void SLOT_ReGetFriendList();//刷新好友列表
     void SLOT_ShowAlterInfo();//显示更改信息窗口的槽函数
     void SLOT_ShowCreateRoom();//显示创建房间窗口的槽函数
@@ -79,6 +83,7 @@ public slots:
     void SLOT_ShowJoinRoom();//显示查找房间窗口的槽函数
     void SLOT_ReGetRoomTable();//刷新房间列表槽函数
     void SLOT_GetFriendList();//显示好友列表窗口槽函数
+
     void SLOT_SetCountZero();
 };
 

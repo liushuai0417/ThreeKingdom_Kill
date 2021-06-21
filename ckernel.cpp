@@ -98,6 +98,7 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
         strcpy(rq.m_szUser,this->m_szName.toStdString().c_str());
         rq.m_userid = this->m_id;
         m_tcpClient->SendData((char*)&rq,sizeof(rq));
+        createDialog->hide();
     });
 
     //通过name查找好友
@@ -234,6 +235,28 @@ void CKernel::setNetPackMap(){
     NetPackMap(DEF_PACK_GETFRIENDLIST_RS) = &CKernel::SLOT_DealGetFriendListRs;
     NetPackMap(DEF_PACK_SEARCH_ROOM_RS) = &CKernel::SLOT_DealSearchRoomRs;
     NetPackMap(DEF_PACK_JOINROOM_RS) = &CKernel::SLOT_DealJoinRoomRs;
+    NetPackMap(DEF_PACK_STARTGAME_RS) = &CKernel::SLOT_DealStartGameRs;
+}
+
+void CKernel::SLOT_DealStartGameRs(char *buf,int nlen){
+    STRU_STARTGAME_RS *rs = (STRU_STARTGAME_RS*)buf;
+    switch(rs->m_lResult){
+        case game_start_success:
+            {
+                if(startgame){
+                    startgame->hide();
+                    delete startgame;
+                    startgame = NULL;
+                }
+                if(startgame1){
+                    startgame1->hide();
+                    delete startgame1;
+                    startgame1 = NULL;
+                }
+                qDebug()<<"开始游戏";
+            }
+        break;
+    }
 }
 
 void CKernel::SLOT_DealJoinRoomRs(char *buf,int nlen){
@@ -287,7 +310,18 @@ void CKernel::SLOT_DealSearchRoomRs(char *buf,int nlen){
                     rq.m_userInfo.m_userid = this->m_id;
                     m_tcpClient->SendData((char*)&rq,sizeof(rq));
                     gamedlg->roomid = roomid;
+
+                    startgame1 = new MyPushButton(":/res/icon/btnzhunbei.png",":/res/icon/btnzhunbei_1.png");
+                    startgame1->setParent(gamedlg);
+                    startgame1->move(gamedlg->width()*0.5-startgame1->width()*0.5,gamedlg->height()*0.8-10);
+                    m_MainScene->hide();
                     gamedlg->exec();
+                    connect(startgame1,&MyPushButton::clicked,[=](){
+                        STRU_STARTGAME_RQ rq;
+                        rq.Room_id = gamedlg->roomid;
+                        rq.user_id = this->m_id;
+                        m_tcpClient->SendData((char*)&rq,sizeof(rq));
+                    });
                 });
             }
 
@@ -543,10 +577,11 @@ void CKernel::SLOT_DealCreateRoom(char *buf,int nlen){
         case create_success:{
             str = QString("创建房间成功,房间号为%1").arg(rs->m_RoomId);
             QMessageBox::about(m_MainScene,"提示",str);
-            MyPushButton *startgame = new MyPushButton(":/res/icon/btnzhunbei.png",":/res/icon/btnzhunbei_1.png");
+            startgame = new MyPushButton(":/res/icon/btnzhunbei.png",":/res/icon/btnzhunbei_1.png");
             startgame->setParent(gamedlg);
             startgame->move(gamedlg->width()*0.5-startgame->width()*0.5,gamedlg->height()*0.8-10);
             gamedlg->roomid = rs->m_RoomId;
+            m_MainScene->hide();
             gamedlg->exec();
             connect(startgame,&MyPushButton::clicked,[=](){
                 STRU_STARTGAME_RQ rq;
