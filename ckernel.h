@@ -15,7 +15,6 @@
 #include"friendlist.h"
 #include"frienditem.h"
 #include"gamingdialog.h"
-#include"gamedialog.h"
 #include"mypushbutton.h"
 class CKernel;
 typedef void (CKernel::*PFUN)(char*,int);
@@ -36,7 +35,7 @@ private:
     void setNetPackMap();//设置协议映射表
     void MainSceneShow();
 signals:
-
+    void SIG_ShowIdentity(int identity);
 private:
     Dialog *m_Dialog;//登录窗口指针
     MainScene *m_MainScene;//大厅指针
@@ -46,8 +45,8 @@ private:
     AddFriendDialog *addDialog;//添加好友
     JoinRoomDialog *joinDialog;//加入房间
     FriendList* friendlistDialog;//好友列表窗口
-    GameDialog *gamedlg;//游戏指针
-    GamingDialog *gamingdlg;
+    GamingDialog *gamingdlg;//游戏界面指针
+    MyPushButton *identity;//身份牌
     PFUN m_NetPackMap[DEF_PACK_COUNT];//协议映射数组
     RoomItem *item;
     int m_id;//用户id 唯一标识
@@ -88,6 +87,7 @@ public slots:
     void SLOT_ReGetRoomTable();//刷新房间列表槽函数
     void SLOT_GetFriendList();//显示好友列表窗口槽函数
     void SLOT_SetCountZero();
+
 };
 
 #endif // CKERNEL_H

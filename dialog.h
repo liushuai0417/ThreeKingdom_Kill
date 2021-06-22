@@ -24,7 +24,6 @@ signals:
     void SIG_CLOSE();//关闭的信号
     void SIG_RegisterCommit(QString username,QString email,QString password);//注册信号
     void SIG_LoginCommit(QString username,QString password);//登录信号
-    void SIG_AskRoomCommit();
 };
 
 #endif // DIALOG_H

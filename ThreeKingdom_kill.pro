@@ -33,8 +33,7 @@ SOURCES += main.cpp\
     zhangfei.cpp \
     zhangliao.cpp \
     zhaoyun.cpp \
-    gamingdialog.cpp \
-    gamedialog.cpp
+    gamingdialog.cpp
 
 HEADERS  += dialog.h \
     mainscene.h \
@@ -57,8 +56,7 @@ HEADERS  += dialog.h \
     zhangfei.h \
     zhangliao.h \
     zhaoyun.h \
-    gamingdialog.h \
-    gamedialog.h
+    gamingdialog.h
 
 FORMS    += dialog.ui \
     mainscene.ui \
@@ -71,7 +69,8 @@ FORMS    += dialog.ui \
     frienditem.ui \
     gaming.ui \
     gamingdialog.ui \
-    gamedialog.ui
+    gamedialog.ui \
+    gamescene.ui
 
 RESOURCES += \
     resource.qrc

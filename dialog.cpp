@@ -43,8 +43,6 @@ Dialog::Dialog(QWidget *parent) :
         }
         qDebug()<<username<<password;
         Q_EMIT SIG_LoginCommit(username,password);//发送登录提交信号
-        Q_EMIT SIG_AskRoomCommit();//发送查询房间的信号
-
     });
 
     connect(regis,&MyPushButton::clicked,[=](){

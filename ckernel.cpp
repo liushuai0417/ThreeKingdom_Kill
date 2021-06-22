@@ -26,8 +26,8 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     createDialog = new CreateRoomDialog;//创建房间窗口指针
     addDialog = new AddFriendDialog;//添加好友窗口指针
     joinDialog = new JoinRoomDialog;//加入房间窗口指针
-    gamedlg = new GameDialog;
     gamingdlg = new GamingDialog;
+
     friendlistDialog = new FriendList;
     m_roomcount = 0;
     //窗口关闭槽函数
@@ -46,7 +46,7 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     void (AddFriendDialog::*AddFriendByNameSignal)(QString) = &AddFriendDialog::SIG_AddFriendByNameCommit;
     void (JoinRoomDialog::*JoinRoomByNameSignal)(QString) = &JoinRoomDialog::SIG_JoinRoomByNameCommit;
     void (JoinRoomDialog::*JoinRoomByIdSignal)(QString) = &JoinRoomDialog::SIG_JoinRoomByIdCommit;
-    void (GameDialog::*LeaveRoomSignal)(int) = &GameDialog::SIG_LeaveRoom;
+    void (GamingDialog::*LeaveRoomSignal)(int) = &GamingDialog::SIG_LeaveRoom;
     //网络指针接收包内容的槽函数
     connect(m_tcpClient,ReadyDataSignal,this,&CKernel::SLOT_ReadyData);
     //注册槽函数
@@ -67,12 +67,6 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
         strcpy(rq.m_szPassword,password.toStdString().c_str());
         qDebug()<<rq.m_szUser<<rq.m_szPassword;
         //通过kernel发送包
-        m_tcpClient->SendData((char*)&rq,sizeof(rq));
-    });
-
-    //获取房间列表槽函数
-    connect(m_Dialog,&Dialog::SIG_AskRoomCommit,[=](){
-        STRU_ASKROOM_RQ rq;
         m_tcpClient->SendData((char*)&rq,sizeof(rq));
     });
 
@@ -147,12 +141,12 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     });
 
     //离开房间槽函数
-    connect(gamedlg,LeaveRoomSignal,[=](int roomid){
+    connect(gamingdlg,LeaveRoomSignal,[=](int roomid){
         STRU_LEAVEROOM_RQ rq;
         rq.m_RoomId = roomid;
         rq.m_userId = this->m_id;
         m_tcpClient->SendData((char*)&rq,sizeof(rq));
-        gamedlg->hide();
+        gamingdlg->hide();
         m_MainScene->show();
     });
     //加入房间槽函数
@@ -165,15 +159,12 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     connect(m_MainScene,&MainScene::SIG_GetFriendList,this,&CKernel::SLOT_GetFriendList);
     connect(friendlistDialog,&FriendList::SIG_ReGetFriendList,this,&CKernel::SLOT_ReGetFriendList);
     connect(joinDialog,&JoinRoomDialog::SIG_SetCountZero,this,&CKernel::SLOT_SetCountZero);
-
     //房间列表的第一行
     RoomItem *itemindex = new RoomItem;
     m_MainScene->Slot_AddUserItem(itemindex);
 
 
 }
-
-
 
 void CKernel::SLOT_SetCountZero(){
     this->m_roomcount = 0;
@@ -246,23 +237,32 @@ void CKernel::setNetPackMap(){
 
 void CKernel::SLOT_DealPostIdentity(char *buf,int nlen){
     STRU_POST_IDENTITY *rs = (STRU_POST_IDENTITY*)buf;
-    if(rs->m_identity == zhugong){
-        MyPushButton *identity = new MyPushButton(":/res/Shenfen/zhugong.png");
-        identity->setParent(gamedlg);
-        identity->move(gamedlg->width()*0.5-identity->width()*0.5,gamedlg->height()*0.8-10);
-    }else if(rs->m_identity == zhongchen){
-        MyPushButton *identity = new MyPushButton(":/res/Shenfen/zhongchen.png");
-        identity->setParent(gamedlg);
-        identity->move(gamedlg->width()*0.5-identity->width()*0.5,gamedlg->height()*0.8-10);
-    }else if(rs->m_identity == neijian){
-        MyPushButton *identity = new MyPushButton(":/res/Shenfen/neijian.png");
-        identity->setParent(gamedlg);
-        identity->move(gamedlg->width()*0.5-identity->width()*0.5,gamedlg->height()*0.8-10);
-    }else if(rs->m_identity == fanzei){
-        MyPushButton *identity = new MyPushButton(":/res/Shenfen/fanzei.png");
-        identity->setParent(gamedlg);
-        identity->move(gamedlg->width()*0.5-identity->width()*0.5,gamedlg->height()*0.8-10);
+    switch(rs->m_identity){
+        case zhugong:
+        {
+            identity = new MyPushButton(":/res/Shenfen/主公.png");
+        }
+        break;
+        case zhongchen:
+        {
+            identity = new MyPushButton(":/res/Shenfen/忠臣.png");
+        }
+        break;
+        case neijian:
+        {
+            identity = new MyPushButton(":/res/Shenfen/内奸.png");
+        }
+        break;
+        case fanzei:
+        {
+            identity = new MyPushButton(":/res/Shenfen/反贼.png");
+        }
+        break;
     }
+        identity->setParent(gamingdlg);
+        identity->move(gamingdlg->width()*0.5-identity->width()*0.5-250,gamingdlg->height()*0.8-10);
+        identity->show();
+        gamingdlg->update();
 }
 
 
@@ -341,16 +341,17 @@ void CKernel::SLOT_DealSearchRoomRs(char *buf,int nlen){
                     strcpy(rq.m_userInfo.m_szName,this->m_szName.toStdString().c_str());
                     rq.m_userInfo.m_userid = this->m_id;
                     m_tcpClient->SendData((char*)&rq,sizeof(rq));
-                    gamedlg->roomid = roomid;
+                    gamingdlg->roomid = roomid;
                     startgame1 = new MyPushButton(":/res/icon/btnzhunbei.png",":/res/icon/btnzhunbei_1.png");
-                    startgame1->setParent(gamedlg);
-                    startgame1->move(gamedlg->width()*0.5-startgame1->width()*0.5,gamedlg->height()*0.8-10);
+                    startgame1->setParent(gamingdlg);
+                    startgame1->move(gamingdlg->width()*0.5-startgame1->width()*0.5,gamingdlg->height()*0.8-10);
                     m_MainScene->hide();
-                    gamedlg->setGeometry(m_MainScene->geometry());
-                    gamedlg->show();
+                    joinDialog->hide();
+                    gamingdlg->setGeometry(m_MainScene->geometry());
+                    gamingdlg->show();
                     connect(startgame1,&MyPushButton::clicked,[=](){
                         STRU_STARTGAME_RQ rq;
-                        rq.Room_id = gamedlg->roomid;
+                        rq.Room_id = gamingdlg->roomid;
                         rq.user_id = this->m_id;
                         startgame1->setIcon(QIcon(":/res/icon/yizhunbei.png"));
                         m_tcpClient->SendData((char*)&rq,sizeof(rq));
@@ -550,7 +551,9 @@ void CKernel::SLOT_DealLoginRs(char *buf,int nlen){
             //登录成功
             QMessageBox::about(m_Dialog,"提示","登录成功");
             m_Dialog->hide();
-            //m_MainScene = new MainScene;//大厅指针
+            //发送查询房间列表的包
+            STRU_ASKROOM_RQ rq;
+            m_tcpClient->SendData((char*)&rq,sizeof(rq));
             m_MainScene->setGeometry(m_Dialog->geometry());
             m_MainScene->show();
         }
@@ -613,16 +616,16 @@ void CKernel::SLOT_DealCreateRoom(char *buf,int nlen){
             str = QString("创建房间成功,房间号为%1").arg(rs->m_RoomId);
             QMessageBox::about(m_MainScene,"提示",str);
             startgame = new MyPushButton(":/res/icon/btnzhunbei.png");
-            startgame->setParent(gamedlg);
-            startgame->move(gamedlg->width()*0.5-startgame->width()*0.5,gamedlg->height()*0.8-10);
-            gamedlg->roomid = rs->m_RoomId;
+            startgame->setParent(gamingdlg);
+            startgame->move(gamingdlg->width()*0.5-startgame->width()*0.5,gamingdlg->height()*0.8-10);
+            gamingdlg->roomid = rs->m_RoomId;
             m_MainScene->hide();
-            gamedlg->setGeometry(m_MainScene->geometry());
-            gamedlg->show();
+            gamingdlg->setGeometry(m_MainScene->geometry());
+            gamingdlg->show();
             static bool flag = true;
             connect(startgame,&MyPushButton::clicked,[&](){
                 STRU_STARTGAME_RQ rq;
-                rq.Room_id = gamedlg->roomid;
+                rq.Room_id = gamingdlg->roomid;
                 rq.user_id = this->m_id;
                 if(flag){
                     QPixmap pix;

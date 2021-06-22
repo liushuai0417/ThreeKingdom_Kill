@@ -73,10 +73,6 @@
         <file>res/PAI/无中生有.png</file>
         <file>res/PAI/五谷丰登.png</file>
         <file>res/PAI/新卡牌背面.png</file>
-        <file>res/Shenfen/反贼.png</file>
-        <file>res/Shenfen/内奸.png</file>
-        <file>res/Shenfen/忠臣.png</file>
-        <file>res/Shenfen/主公.png</file>
         <file>res/TX/01.png</file>
         <file>res/TX/02.png</file>
         <file>res/TX/03.png</file>
@@ -217,5 +213,9 @@
         <file>res/Shenfen/neijian.png</file>
         <file>res/Shenfen/zhongchen.png</file>
         <file>res/Shenfen/zhugong.png</file>
+        <file>res/Shenfen/反贼.png</file>
+        <file>res/Shenfen/内奸.png</file>
+        <file>res/Shenfen/忠臣.png</file>
+        <file>res/Shenfen/主公.png</file>
     </qresource>
 </RCC>
