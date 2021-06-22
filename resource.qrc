@@ -217,5 +217,9 @@
         <file>res/Shenfen/内奸.png</file>
         <file>res/Shenfen/忠臣.png</file>
         <file>res/Shenfen/主公.png</file>
+        <file>res/BJ/提示_反贼.png</file>
+        <file>res/BJ/提示_内奸.png</file>
+        <file>res/BJ/提示_忠臣.png</file>
+        <file>res/BJ/提示_主公.png</file>
     </qresource>
 </RCC>

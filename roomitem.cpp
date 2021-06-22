@@ -28,7 +28,9 @@ RoomItem::~RoomItem()
 
 //双击事件
 void RoomItem::mouseDoubleClickEvent(QMouseEvent *event){
-
+    QString roomid = ui->lb_roomid->text();
+    qDebug()<<roomid;
+    Q_EMIT SIG_JoinRoom(roomid);
 }
 
 void RoomItem::setItem(int Roomid,QString RoomName,QString CreatorName,int num){

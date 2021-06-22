@@ -64,6 +64,8 @@ private:
     MyPushButton *startgame;
     MyPushButton *startgame1;
     vector<int>m_vecId;
+    int m_roomid;
+    int m_identity;
 public slots:
     void SLOT_DealLoginRs(char *buf,int nlen);//处理登录回复槽函数
     void SLOT_DealRegisterRs(char *buf,int nlen);//处理注册回复槽函数
@@ -79,6 +81,7 @@ public slots:
     void SLOT_DealJoinRoomRs(char *buf,int nlen);//处理加入房间
     void SLOT_DealStartGameRs(char *buf,int nlen);//处理开始游戏
     void SLOT_DealPostIdentity(char *buf,int nlen);
+    void SLOT_DealSelectHero(char *buf,int nlen);//选择英雄
     void SLOT_ReGetFriendList();//刷新好友列表
     void SLOT_ShowAlterInfo();//显示更改信息窗口的槽函数
     void SLOT_ShowCreateRoom();//显示创建房间窗口的槽函数
@@ -87,7 +90,6 @@ public slots:
     void SLOT_ReGetRoomTable();//刷新房间列表槽函数
     void SLOT_GetFriendList();//显示好友列表窗口槽函数
     void SLOT_SetCountZero();
-
 };
 
 #endif // CKERNEL_H

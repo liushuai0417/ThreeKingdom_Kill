@@ -12,7 +12,7 @@ class RoomItem : public QWidget
 {
     Q_OBJECT
 signals:
-
+    void SIG_JoinRoom(QString roomid);
 public:
     explicit RoomItem(QWidget *parent = 0);
     ~RoomItem();

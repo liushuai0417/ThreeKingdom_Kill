@@ -614,6 +614,7 @@ typedef struct STRU_OFFLINE_RQ
     }
     PackType   m_nType;   //包类型
     int m_UserID;
+
 }STRU_FORCE_OFFLINE*/;
 
 enum CARD_TYPE{
@@ -684,7 +685,9 @@ typedef struct STRU_CARD
 
 enum IDENTITY{zhugong = 1,zhongchen,fanzei,neijian};
 
-enum HERO{liubei = 1,sunquan,caocao,ganning,guanyu,huatuo};
+enum HEROID{huatuo = 0,diaochan,lvbu,guanyu,zhangfei,zhaoyun,huangyueying,zhugeliang,
+           machao,simayi,xiahoudun,xuchu,guojia,zhangliao,liubei,caocao,sunquan,};
+
 //发送身份
 typedef struct STRU_POST_IDENTITY
 {
@@ -714,9 +717,16 @@ typedef struct STRU_SELHERO_RS
 {
     STRU_SELHERO_RS(){
         m_nType = DEF_PACK_SELHERO_RS;
+        hero_id = -1;
+        room_id = 0;
+        user_id = 0;
+        isZG = false;
     }
     PackType m_nType;
     int hero_id;
+    int room_id;
+    int user_id;
+    bool isZG;
 }STRU_SELHERO_RS;
 
 #endif

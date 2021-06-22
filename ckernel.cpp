@@ -14,6 +14,7 @@
 #include<QPixmap>
 #include"gamingdialog.h"
 #include<QPushButton>
+#include<QTimer>
 #define NetPackMap(a) m_NetPackMap[(a)-DEF_PACK_BASE]
 CKernel::CKernel(QObject *parent) : QObject(parent)
 {
@@ -27,8 +28,8 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     addDialog = new AddFriendDialog;//添加好友窗口指针
     joinDialog = new JoinRoomDialog;//加入房间窗口指针
     gamingdlg = new GamingDialog;
-
     friendlistDialog = new FriendList;
+    item = new RoomItem;
     m_roomcount = 0;
     //窗口关闭槽函数
     connect(m_Dialog,&Dialog::SIG_CLOSE,[=](){
@@ -47,6 +48,7 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     void (JoinRoomDialog::*JoinRoomByNameSignal)(QString) = &JoinRoomDialog::SIG_JoinRoomByNameCommit;
     void (JoinRoomDialog::*JoinRoomByIdSignal)(QString) = &JoinRoomDialog::SIG_JoinRoomByIdCommit;
     void (GamingDialog::*LeaveRoomSignal)(int) = &GamingDialog::SIG_LeaveRoom;
+    void (RoomItem::*JoinRoom)(QString) = &RoomItem::SIG_JoinRoom;
     //网络指针接收包内容的槽函数
     connect(m_tcpClient,ReadyDataSignal,this,&CKernel::SLOT_ReadyData);
     //注册槽函数
@@ -140,6 +142,13 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
         m_roomcount++;
     });
 
+    //双击加入房间
+    connect(item,JoinRoom,[=](QString roomid){
+        qDebug()<<__func__<<roomid;
+        STRU_SEARCH_ROOM_RQ rq;
+        rq.m_Roomid = roomid.toInt();
+        m_tcpClient->SendData((char*)&rq,sizeof(rq));
+    });
     //离开房间槽函数
     connect(gamingdlg,LeaveRoomSignal,[=](int roomid){
         STRU_LEAVEROOM_RQ rq;
@@ -159,6 +168,7 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     connect(m_MainScene,&MainScene::SIG_GetFriendList,this,&CKernel::SLOT_GetFriendList);
     connect(friendlistDialog,&FriendList::SIG_ReGetFriendList,this,&CKernel::SLOT_ReGetFriendList);
     connect(joinDialog,&JoinRoomDialog::SIG_SetCountZero,this,&CKernel::SLOT_SetCountZero);
+
     //房间列表的第一行
     RoomItem *itemindex = new RoomItem;
     m_MainScene->Slot_AddUserItem(itemindex);
@@ -233,29 +243,52 @@ void CKernel::setNetPackMap(){
     NetPackMap(DEF_PACK_JOINROOM_RS) = &CKernel::SLOT_DealJoinRoomRs;
     NetPackMap(DEF_PACK_STARTGAME_RS) = &CKernel::SLOT_DealStartGameRs;
     NetPackMap(DEF_PACK_POST_IDENTITY) = &CKernel::SLOT_DealPostIdentity;
+    NetPackMap(DEF_PACK_SELHERO_RQ) = &CKernel::SLOT_DealSelectHero;
+}
+
+void CKernel::SLOT_DealSelectHero(char *buf,int nlen){
+    STRU_SELHERO_RQ *rq = (STRU_SELHERO_RQ*)buf;
+    //rq->m_HeroArr
+    STRU_SELHERO_RS rs;
+    rs.room_id = this->m_roomid;
+    rs.user_id = this->m_id;
+    if(this->m_identity == zhugong){
+        rs.isZG = true;
+    }else{
+        rs.isZG = false;
+    }
+    rs.hero_id = rq->m_HeroArr[0];
+    m_tcpClient->SendData((char*)&rs,sizeof(rs));
 }
 
 void CKernel::SLOT_DealPostIdentity(char *buf,int nlen){
     STRU_POST_IDENTITY *rs = (STRU_POST_IDENTITY*)buf;
+    MyPushButton *identityattention;//身份提示
+    this->m_identity = rs->m_identity;
     switch(rs->m_identity){
         case zhugong:
         {
             identity = new MyPushButton(":/res/Shenfen/主公.png");
+            identityattention = new MyPushButton(":/res/BJ/提示_主公.png");
+
         }
         break;
         case zhongchen:
         {
             identity = new MyPushButton(":/res/Shenfen/忠臣.png");
+            identityattention = new MyPushButton(":/res/BJ/提示_忠臣.png");
         }
         break;
         case neijian:
         {
             identity = new MyPushButton(":/res/Shenfen/内奸.png");
+            identityattention = new MyPushButton(":/res/BJ/提示_内奸.png");
         }
         break;
         case fanzei:
         {
             identity = new MyPushButton(":/res/Shenfen/反贼.png");
+            identityattention = new MyPushButton(":/res/BJ/提示_反贼.png");
         }
         break;
     }
@@ -263,6 +296,21 @@ void CKernel::SLOT_DealPostIdentity(char *buf,int nlen){
         identity->move(gamingdlg->width()*0.5-identity->width()*0.5-250,gamingdlg->height()*0.8-10);
         identity->show();
         gamingdlg->update();
+
+        QTimer::singleShot(2000,this,[=]{
+
+            identityattention->setParent(gamingdlg);
+            identityattention->move(gamingdlg->width()*0.5-identityattention->width(),gamingdlg->height()*0.5);
+            identityattention->show();
+            gamingdlg->update();
+        });
+
+        QTimer::singleShot(6000,this,[=]{
+            identityattention->hide();
+            delete identityattention;
+            gamingdlg->update();
+        });
+
 }
 
 
@@ -337,6 +385,7 @@ void CKernel::SLOT_DealSearchRoomRs(char *buf,int nlen){
                     STRU_JOINROOM_RQ rq;
                     rq.m_RoomID = roomid;
                     rq.m_userInfo.m_iconid = this->m_iconID;
+                    this->m_roomid = roomid;
                     strcpy(rq.m_userInfo.m_szFelling,this->m_feeling.toStdString().c_str());
                     strcpy(rq.m_userInfo.m_szName,this->m_szName.toStdString().c_str());
                     rq.m_userInfo.m_userid = this->m_id;
@@ -595,7 +644,7 @@ void CKernel::SLOT_DealAskRoomRs(char *buf,int nlen){
                 int roomid = rs->m_RoomList[i].m_Roomid;
                 QString roomcreator = QString(rs->m_RoomList[i].sz_RoomCreator);
                 int number = rs->m_RoomList[i].m_num;
-                RoomItem *item = new RoomItem;
+                item = new RoomItem;
                 vec_roomlist.push_back(item);
                 item->setItem(roomid,roomname,roomcreator,number);
                 m_MainScene->Slot_AddUserItem(item);
@@ -614,6 +663,7 @@ void CKernel::SLOT_DealCreateRoom(char *buf,int nlen){
     switch (rs->m_lResult) {
         case create_success:{
             str = QString("创建房间成功,房间号为%1").arg(rs->m_RoomId);
+            this->m_roomid  = rs->m_RoomId;
             QMessageBox::about(m_MainScene,"提示",str);
             startgame = new MyPushButton(":/res/icon/btnzhunbei.png");
             startgame->setParent(gamingdlg);
