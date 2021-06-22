@@ -64,6 +64,8 @@ private:
     MyPushButton *startgame;
     MyPushButton *startgame1;
     vector<int>m_vecId;
+    vector<MyPushButton*>vec_hero;
+    MyPushButton *myhero;
     int m_roomid;
     int m_identity;
 public slots:

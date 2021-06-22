@@ -141,14 +141,6 @@
         <file>res/yinyue/zhaoyun/龙胆1.mp3</file>
         <file>res/yinyue/zhaoyun/涯角1.mp3</file>
         <file>res/yinyue/zhaoyun/阵亡.mp3</file>
-        <file>res/YX/甘宁.png</file>
-        <file>res/YX/关羽.png</file>
-        <file>res/YX/华佗.png</file>
-        <file>res/YX/黄盖.png</file>
-        <file>res/YX/吕布.png</file>
-        <file>res/YX/张飞.png</file>
-        <file>res/YX/张辽.png</file>
-        <file>res/YX/赵云.png</file>
         <file>res/icon/loginbtn1.png</file>
         <file>res/icon/loginbtn2.png</file>
         <file>res/icon/startbtn1.png</file>
@@ -221,5 +213,24 @@
         <file>res/BJ/提示_内奸.png</file>
         <file>res/BJ/提示_忠臣.png</file>
         <file>res/BJ/提示_主公.png</file>
+        <file>res/YX/曹操.png</file>
+        <file>res/YX/貂蝉.png</file>
+        <file>res/YX/甘宁.png</file>
+        <file>res/YX/关羽.png</file>
+        <file>res/YX/郭嘉.png</file>
+        <file>res/YX/华佗.png</file>
+        <file>res/YX/黄月英.png</file>
+        <file>res/YX/刘备.png</file>
+        <file>res/YX/吕布.png</file>
+        <file>res/YX/吕蒙.png</file>
+        <file>res/YX/马超.png</file>
+        <file>res/YX/司马懿.png</file>
+        <file>res/YX/孙权.png</file>
+        <file>res/YX/夏侯惇.png</file>
+        <file>res/YX/许褚.png</file>
+        <file>res/YX/张飞.png</file>
+        <file>res/YX/张辽.png</file>
+        <file>res/YX/赵云.png</file>
+        <file>res/YX/诸葛亮.png</file>
     </qresource>
 </RCC>
