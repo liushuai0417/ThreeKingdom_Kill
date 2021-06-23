@@ -232,5 +232,8 @@
         <file>res/YX/张辽.png</file>
         <file>res/YX/赵云.png</file>
         <file>res/YX/诸葛亮.png</file>
+        <file>res/BJ/提示_选择英雄.png</file>
+        <file>res/icon/choosehero.png</file>
+        <file>res/icon/choosehero_1.png</file>
     </qresource>
 </RCC>

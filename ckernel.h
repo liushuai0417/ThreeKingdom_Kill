@@ -16,6 +16,7 @@
 #include"frienditem.h"
 #include"gamingdialog.h"
 #include"mypushbutton.h"
+#include"herobutton.h"
 class CKernel;
 typedef void (CKernel::*PFUN)(char*,int);
 class CKernel : public QObject
@@ -64,8 +65,9 @@ private:
     MyPushButton *startgame;
     MyPushButton *startgame1;
     vector<int>m_vecId;
-    vector<MyPushButton*>vec_hero;
-    MyPushButton *myhero;
+    vector<HeroButton*>vec_hero;
+    HeroButton *myhero;
+    MyPushButton *identityattention;//身份提示
     int m_roomid;
     int m_identity;
 public slots:

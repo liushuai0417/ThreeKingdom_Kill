@@ -15,6 +15,7 @@
 #include"gamingdialog.h"
 #include<QPushButton>
 #include<QTimer>
+#include"herobutton.h"
 #define NetPackMap(a) m_NetPackMap[(a)-DEF_PACK_BASE]
 CKernel::CKernel(QObject *parent) : QObject(parent)
 {
@@ -174,8 +175,6 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     //房间列表的第一行
     RoomItem *itemindex = new RoomItem;
     m_MainScene->Slot_AddUserItem(itemindex);
-
-
 }
 
 void CKernel::SLOT_SetCountZero(){
@@ -250,89 +249,123 @@ void CKernel::setNetPackMap(){
 
 void CKernel::SLOT_DealSelectHero(char *buf,int nlen){
     STRU_SELHERO_RQ *rq = (STRU_SELHERO_RQ*)buf;
-    MyPushButton *hero;
+    HeroButton *hero;
+    int chooseheroid = 0;
     for(int i=0;i<sizeof(rq->m_HeroArr)/sizeof(rq->m_HeroArr[0]);i++){
+        if(rq->m_HeroArr[i]!=-1){
+              qDebug()<<"英雄编号"<<rq->m_HeroArr[i];
         switch(rq->m_HeroArr[i]){
         case huatuo:
-            hero = new MyPushButton(":/res/YX/华佗.png");
+            hero = new HeroButton(":/res/YX/华佗.png");
             break;
         case diaochan:
-            hero = new MyPushButton(":/res/YX/貂蝉.png");
+            hero = new HeroButton(":/res/YX/貂蝉.png");
             break;
         case lvbu:
-            hero = new MyPushButton(":/res/YX/吕布.png");
+            hero = new HeroButton(":/res/YX/吕布.png");
             break;
         case guanyu:
-            hero = new MyPushButton(":/res/YX/关羽.png");
+            hero = new HeroButton(":/res/YX/关羽.png");
             break;
         case zhangfei:
-            hero = new MyPushButton(":/res/YX/张飞.png");
+            hero = new HeroButton(":/res/YX/张飞.png");
             break;
         case zhaoyun:
-            hero = new MyPushButton(":/res/YX/赵云.png");
+            hero = new HeroButton(":/res/YX/赵云.png");
             break;
         case huangyueying:
-            hero = new MyPushButton(":/res/YX/黄月英.png");
+            hero = new HeroButton(":/res/YX/黄月英.png");
             break;
         case zhugeliang:
-            hero = new MyPushButton(":/res/YX/诸葛亮.png");
+            hero = new HeroButton(":/res/YX/诸葛亮.png");
             break;
         case machao:
-            hero = new MyPushButton(":/res/YX/马超.png");
+            hero = new HeroButton(":/res/YX/马超.png");
             break;
         case simayi:
-            hero = new MyPushButton(":/res/YX/司马懿.png");
+            hero = new HeroButton(":/res/YX/司马懿.png");
             break;
         case xiahoudun:
-            hero = new MyPushButton(":/res/YX/夏侯惇.png");
+            hero = new HeroButton(":/res/YX/夏侯惇.png");
             break;
         case xuchu:
-            hero = new MyPushButton(":/res/YX/许褚.png");
+            hero = new HeroButton(":/res/YX/许褚.png");
             break;
         case guojia:
-            hero = new MyPushButton(":/res/YX/郭嘉.png");
+            hero = new HeroButton(":/res/YX/郭嘉.png");
             break;
         case zhangliao:
-            hero = new MyPushButton(":/res/YX/张辽.png");
+            hero = new HeroButton(":/res/YX/张辽.png");
             break;
         case liubei:
-            hero = new MyPushButton(":/res/YX/刘备.png");
+            hero = new HeroButton(":/res/YX/刘备.png");
             break;
         case caocao:
-            hero = new MyPushButton(":/res/YX/曹操.png");
+            hero = new HeroButton(":/res/YX/曹操.png");
             break;
         case sunquan:
-            hero = new MyPushButton(":/res/YX/孙权.png");
+            hero = new HeroButton(":/res/YX/孙权.png");
+            break;
+        default:
+            hero = new HeroButton(":/res/YX/吕蒙.png");
             break;
         }
+        connect(hero,&HeroButton::clicked,[=,&chooseheroid](){
+            if(hero->b_flagchoose){
+                hero->ChooseHero1();
+                chooseheroid = rq->m_HeroArr[i];
+            }else{
+                hero->ChooseHero();
+            }
+            hero->b_flagchoose = !hero->b_flagchoose;
+        });
         vec_hero.push_back(hero);
         hero->setParent(gamingdlg);
         hero->move(gamingdlg->width()*0.5-hero->width()*0.5-50+i*140,gamingdlg->height()*0.8-10);
         hero->show();
         gamingdlg->update();
+        }
     }
-    STRU_SELHERO_RS rs;
-    rs.room_id = this->m_roomid;
-    rs.user_id = this->m_id;
-    if(this->m_identity == zhugong){
-        rs.isZG = true;
-    }else{
-        rs.isZG = false;
-    }
-    rs.hero_id = rq->m_HeroArr[0];
-    m_tcpClient->SendData((char*)&rs,sizeof(rs));
+    MyPushButton *chooseheroattention = new MyPushButton(":/res/BJ/提示_选择英雄.png");
+    chooseheroattention->setParent(gamingdlg);
+    MyPushButton *choosehero = new MyPushButton(":/res/icon/choosehero.png",":/res/icon/choosehero_1.png");
+    choosehero->setParent(gamingdlg);
+    QTimer::singleShot(8000,this,[=]{
+        chooseheroattention->move(gamingdlg->width()*0.5-identityattention->width(),gamingdlg->height()*0.5);
+        chooseheroattention->show();
+        gamingdlg->update();
+    });
+
+    QTimer::singleShot(9000,this,[=]{
+        choosehero->move(gamingdlg->width()*0.5-choosehero->width()*0.5+100,gamingdlg->height()*0.5);
+        choosehero->show();
+        gamingdlg->update();
+    });
+
+    connect(choosehero,&MyPushButton::clicked,[=](){
+        chooseheroattention->hide();
+        STRU_SELHERO_RS rs;
+        rs.room_id = this->m_roomid;
+        rs.user_id = this->m_id;
+        if(this->m_identity == zhugong){
+            rs.isZG = true;
+        }else{
+            rs.isZG = false;
+        }
+        rs.hero_id = chooseheroid;
+        m_tcpClient->SendData((char*)&rs,sizeof(rs));
+    });
+
 }
 
 void CKernel::SLOT_DealPostIdentity(char *buf,int nlen){
     STRU_POST_IDENTITY *rs = (STRU_POST_IDENTITY*)buf;
-    MyPushButton *identityattention;//身份提示
     this->m_identity = rs->m_identity;
     switch(rs->m_identity){
         case zhugong:
         {
             identity = new MyPushButton(":/res/Shenfen/主公.png");
             identityattention = new MyPushButton(":/res/BJ/提示_主公.png");
-
         }
         break;
         case zhongchen:
@@ -360,7 +393,6 @@ void CKernel::SLOT_DealPostIdentity(char *buf,int nlen){
         gamingdlg->update();
 
         QTimer::singleShot(2000,this,[=]{
-
             identityattention->setParent(gamingdlg);
             identityattention->move(gamingdlg->width()*0.5-identityattention->width(),gamingdlg->height()*0.5);
             identityattention->show();
