@@ -71,6 +71,8 @@ private:
     int chooseid;
     int m_roomid;
     int m_identity;
+    int heroid[6];
+    int ZG_heroId;
 public slots:
     void SLOT_DealLoginRs(char *buf,int nlen);//处理登录回复槽函数
     void SLOT_DealRegisterRs(char *buf,int nlen);//处理注册回复槽函数

@@ -690,7 +690,6 @@ enum HEROID{huatuo = 0,diaochan,lvbu,guanyu,zhangfei,zhaoyun,huangyueying,zhugel
            machao,simayi,xiahoudun,xuchu,guojia,zhangliao,liubei,caocao,sunquan,};
 enum COUNTRY{wei = 1,shu,wu,qun};
 
-enum SEX{nan = 0,nv};
 
 //发送身份
 typedef struct STRU_POST_IDENTITY

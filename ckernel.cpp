@@ -31,6 +31,7 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     gamingdlg = new GamingDialog;
     friendlistDialog = new FriendList;
     item = new RoomItem;
+    chooseid = -1;
     m_roomcount = 0;
     //窗口关闭槽函数
     connect(m_Dialog,&Dialog::SIG_CLOSE,[=](){
@@ -249,13 +250,12 @@ void CKernel::setNetPackMap(){
 
 void CKernel::SLOT_DealSelectHero(char *buf,int nlen){
     STRU_SELHERO_RQ *rq = (STRU_SELHERO_RQ*)buf;
-
-    int chooseheroid = -1;
+    this->ZG_heroId = rq->ZG_heroid;
     for(int i=0;i<sizeof(rq->m_HeroArr)/sizeof(rq->m_HeroArr[0]);i++){
-
+        heroid[i] = rq->m_HeroArr[i];
         if(rq->m_HeroArr[i]!=-1){
             HeroButton *hero;
-            qDebug()<<"英雄编号"<<rq->m_HeroArr[i];
+            qDebug()<<"before英雄编号"<<rq->m_HeroArr[i];
         switch(rq->m_HeroArr[i]){
         case huatuo:
             hero = new HeroButton(":/res/YX/华佗.png");
@@ -313,17 +313,19 @@ void CKernel::SLOT_DealSelectHero(char *buf,int nlen){
             break;
         }
 
-        connect(hero,&HeroButton::clicked,[=,&chooseheroid](){
+        connect(hero,&HeroButton::clicked,[=](){
             if(hero->b_flagchoose){
                 hero->ChooseHero1();
             }else{
                 hero->ChooseHero();
             }
-            hero->chooseheroid = rq->m_HeroArr[i];
-            chooseid = rq->m_HeroArr[i];
+            hero->chooseheroid = i;
+            chooseid = i;
             hero->b_flagchoose = !hero->b_flagchoose;
-            qDebug()<<rq->m_HeroArr[i];
+            qDebug()<<"点击了"<<rq->m_HeroArr[i];
+            qDebug()<<"chooseid="<<chooseid;
         });
+        qDebug()<<"chooseid1="<<chooseid;
         vec_hero.push_back(hero);
         hero->setParent(gamingdlg);
         hero->move(gamingdlg->width()*0.5-hero->width()*0.5-50+i*140,gamingdlg->height()*0.8-10);
@@ -357,7 +359,7 @@ void CKernel::SLOT_DealSelectHero(char *buf,int nlen){
         }else{
             rs.isZG = false;
         }
-        rs.hero_id = chooseid;
+        rs.hero_id = this->heroid[chooseid];
         qDebug()<<"rs.hero_id"<<rs.hero_id;
         m_tcpClient->SendData((char*)&rs,sizeof(rs));
         auto ite = vec_hero.begin();
@@ -372,7 +374,10 @@ void CKernel::SLOT_DealSelectHero(char *buf,int nlen){
         myhero->show();
         gamingdlg->update();
     });
-
+    qDebug()<<"after"<<rq->m_HeroArr[0];
+    qDebug()<<"after"<<rq->m_HeroArr[1];
+    qDebug()<<"after"<<rq->m_HeroArr[2];
+    qDebug()<<"after"<<rq->m_HeroArr[3];
 }
 
 void CKernel::SLOT_DealPostIdentity(char *buf,int nlen){
