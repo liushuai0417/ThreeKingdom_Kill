@@ -14,6 +14,7 @@ using namespace std;
 #define DEF_PACK_BASE  (10000)
 
 
+
 typedef enum Net_PACK
 {
     DEF_PACK_REGISTER_RQ = 10000,               //注册请求
@@ -687,6 +688,9 @@ enum IDENTITY{zhugong = 1,zhongchen,fanzei,neijian};
 
 enum HEROID{huatuo = 0,diaochan,lvbu,guanyu,zhangfei,zhaoyun,huangyueying,zhugeliang,
            machao,simayi,xiahoudun,xuchu,guojia,zhangliao,liubei,caocao,sunquan,};
+enum COUNTRY{wei = 1,shu,wu,qun};
+
+enum SEX{nan = 0,nv};
 
 //发送身份
 typedef struct STRU_POST_IDENTITY
@@ -707,9 +711,12 @@ typedef struct STRU_SELHERO_RQ
     STRU_SELHERO_RQ()
     {
         m_nType = DEF_PACK_SELHERO_RQ;
+        memset(m_HeroArr,-1,sizeof(m_HeroArr));
+        ZG_heroid = -1;
     }
     PackType  m_nType;
     int m_HeroArr[6];
+    int ZG_heroid;
 }STRU_SELHERO_RQ;
 
 //选择英雄回复
@@ -721,12 +728,15 @@ typedef struct STRU_SELHERO_RS
         room_id = 0;
         user_id = 0;
         isZG = false;
+        iddentity = 0;
     }
     PackType m_nType;
     int hero_id;
     int room_id;
     int user_id;
+    int iddentity;
     bool isZG;
+
 }STRU_SELHERO_RS;
 
 #endif
