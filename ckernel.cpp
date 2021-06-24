@@ -249,11 +249,13 @@ void CKernel::setNetPackMap(){
 
 void CKernel::SLOT_DealSelectHero(char *buf,int nlen){
     STRU_SELHERO_RQ *rq = (STRU_SELHERO_RQ*)buf;
-    HeroButton *hero;
-    int chooseheroid = 0;
+
+    int chooseheroid = -1;
     for(int i=0;i<sizeof(rq->m_HeroArr)/sizeof(rq->m_HeroArr[0]);i++){
+
         if(rq->m_HeroArr[i]!=-1){
-              qDebug()<<"英雄编号"<<rq->m_HeroArr[i];
+            HeroButton *hero;
+            qDebug()<<"英雄编号"<<rq->m_HeroArr[i];
         switch(rq->m_HeroArr[i]){
         case huatuo:
             hero = new HeroButton(":/res/YX/华佗.png");
@@ -310,14 +312,17 @@ void CKernel::SLOT_DealSelectHero(char *buf,int nlen){
             hero = new HeroButton(":/res/YX/吕蒙.png");
             break;
         }
+
         connect(hero,&HeroButton::clicked,[=,&chooseheroid](){
             if(hero->b_flagchoose){
                 hero->ChooseHero1();
-                chooseheroid = rq->m_HeroArr[i];
             }else{
                 hero->ChooseHero();
             }
+            hero->chooseheroid = rq->m_HeroArr[i];
+            chooseid = rq->m_HeroArr[i];
             hero->b_flagchoose = !hero->b_flagchoose;
+            qDebug()<<rq->m_HeroArr[i];
         });
         vec_hero.push_back(hero);
         hero->setParent(gamingdlg);
@@ -331,7 +336,7 @@ void CKernel::SLOT_DealSelectHero(char *buf,int nlen){
     MyPushButton *choosehero = new MyPushButton(":/res/icon/choosehero.png",":/res/icon/choosehero_1.png");
     choosehero->setParent(gamingdlg);
     QTimer::singleShot(8000,this,[=]{
-        chooseheroattention->move(gamingdlg->width()*0.5-identityattention->width(),gamingdlg->height()*0.5);
+        chooseheroattention->move(gamingdlg->width()*0.5-chooseheroattention->width(),gamingdlg->height()*0.5);
         chooseheroattention->show();
         gamingdlg->update();
     });
@@ -352,8 +357,20 @@ void CKernel::SLOT_DealSelectHero(char *buf,int nlen){
         }else{
             rs.isZG = false;
         }
-        rs.hero_id = chooseheroid;
+        rs.hero_id = chooseid;
+        qDebug()<<"rs.hero_id"<<rs.hero_id;
         m_tcpClient->SendData((char*)&rs,sizeof(rs));
+        auto ite = vec_hero.begin();
+        while(ite != vec_hero.end()){
+            (*ite)->hide();
+            if((*ite)->chooseheroid == chooseid){
+                myhero = (*ite);
+            }
+            ++ite;
+        }
+        myhero->move(gamingdlg->width()*0.5-myhero->width()*0.5-50+140,gamingdlg->height()*0.8-10);
+        myhero->show();
+        gamingdlg->update();
     });
 
 }

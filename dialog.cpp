@@ -17,7 +17,7 @@ Dialog::Dialog(QWidget *parent) :
     ui(new Ui::Dialog)
 {
     ui->setupUi(this);
-    ui->tabWidget->setCurrentIndex(0);
+    ui->tabWidget->setCurrentIndex(1);
     this->setWindowIcon(QIcon(":/res/icon/icon.png"));
     this->setWindowTitle("三国Kill");
 

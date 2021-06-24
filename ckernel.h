@@ -68,6 +68,7 @@ private:
     vector<HeroButton*>vec_hero;
     HeroButton *myhero;
     MyPushButton *identityattention;//身份提示
+    int chooseid;
     int m_roomid;
     int m_identity;
 public slots:
