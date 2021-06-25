@@ -58,21 +58,21 @@ private:
     int m_friendid;//查询好友id
     bool m_roomcount;//限制room插件插入次数
     bool m_friendcount;//限制friend插件次数
-    vector<RoomItem *>vec_roomlist;
-    vector<FriendItem*>vec_frienditem;
-    vector<FriendItem*>vec_friendlist;
-    vector<RoomItem *>vec_roomitem;
-    MyPushButton *startgame;
-    MyPushButton *startgame1;
-    vector<int>m_vecId;
-    vector<HeroButton*>vec_hero;
-    HeroButton *myhero;
+    vector<RoomItem *>vec_roomlist;//房间列表的vector
+    vector<FriendItem*>vec_frienditem;//好友信息插件的vector
+    vector<FriendItem*>vec_friendlist;//好友表的vector
+    vector<RoomItem *>vec_roomitem;//房间信息插件的vector
+    MyPushButton *startgame;//房主的准备按钮
+    MyPushButton *startgame1;//其他成员的准备按钮
+    vector<int>m_vecId;//房间成员的id数组
+    vector<HeroButton*>vec_hero;//拷贝的选择英雄数组
+    HeroButton *myhero;//我的英雄牌
     MyPushButton *identityattention;//身份提示
-    int chooseid;
-    int m_roomid;
-    int m_identity;
-    int heroid[6];
-    int ZG_heroId;
+    int chooseid;//选择英雄的下标
+    int m_roomid;//房间id
+    int m_identity;//我的身份
+    int heroid[6];//选择英雄的编号数组
+    int ZG_heroId;//主公的id
 public slots:
     void SLOT_DealLoginRs(char *buf,int nlen);//处理登录回复槽函数
     void SLOT_DealRegisterRs(char *buf,int nlen);//处理注册回复槽函数

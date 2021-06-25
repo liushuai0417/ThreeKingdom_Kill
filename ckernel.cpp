@@ -248,6 +248,7 @@ void CKernel::setNetPackMap(){
     NetPackMap(DEF_PACK_SELHERO_RQ) = &CKernel::SLOT_DealSelectHero;
 }
 
+//处理选择英雄
 void CKernel::SLOT_DealSelectHero(char *buf,int nlen){
     STRU_SELHERO_RQ *rq = (STRU_SELHERO_RQ*)buf;
     this->ZG_heroId = rq->ZG_heroid;
@@ -255,7 +256,6 @@ void CKernel::SLOT_DealSelectHero(char *buf,int nlen){
         heroid[i] = rq->m_HeroArr[i];
         if(rq->m_HeroArr[i]!=-1){
             HeroButton *hero;
-            qDebug()<<"before英雄编号"<<rq->m_HeroArr[i];
         switch(rq->m_HeroArr[i]){
         case huatuo:
             hero = new HeroButton(":/res/YX/华佗.png");
@@ -322,8 +322,6 @@ void CKernel::SLOT_DealSelectHero(char *buf,int nlen){
             hero->chooseheroid = i;
             chooseid = i;
             hero->b_flagchoose = !hero->b_flagchoose;
-            qDebug()<<"点击了"<<rq->m_HeroArr[i];
-            qDebug()<<"chooseid="<<chooseid;
         });
         qDebug()<<"chooseid1="<<chooseid;
         vec_hero.push_back(hero);
@@ -360,7 +358,6 @@ void CKernel::SLOT_DealSelectHero(char *buf,int nlen){
             rs.isZG = false;
         }
         rs.hero_id = this->heroid[chooseid];
-        qDebug()<<"rs.hero_id"<<rs.hero_id;
         m_tcpClient->SendData((char*)&rs,sizeof(rs));
         auto ite = vec_hero.begin();
         while(ite != vec_hero.end()){
@@ -370,16 +367,14 @@ void CKernel::SLOT_DealSelectHero(char *buf,int nlen){
             }
             ++ite;
         }
+        choosehero->hide();
         myhero->move(gamingdlg->width()*0.5-myhero->width()*0.5-50+140,gamingdlg->height()*0.8-10);
         myhero->show();
         gamingdlg->update();
     });
-    qDebug()<<"after"<<rq->m_HeroArr[0];
-    qDebug()<<"after"<<rq->m_HeroArr[1];
-    qDebug()<<"after"<<rq->m_HeroArr[2];
-    qDebug()<<"after"<<rq->m_HeroArr[3];
 }
 
+//处理选择身份
 void CKernel::SLOT_DealPostIdentity(char *buf,int nlen){
     STRU_POST_IDENTITY *rs = (STRU_POST_IDENTITY*)buf;
     this->m_identity = rs->m_identity;
@@ -446,12 +441,12 @@ void CKernel::SLOT_DealStartGameRs(char *buf,int nlen){
                     delete startgame1;
                     startgame1 = NULL;
                 }
-                qDebug()<<"开始游戏";
             }
         break;
     }
 }
 
+//处理加入房间
 void CKernel::SLOT_DealJoinRoomRs(char *buf,int nlen){
     STRU_JOINROOM_RS *rs = (STRU_JOINROOM_RS *)buf;
     switch(rs->m_lResult){
