@@ -246,12 +246,25 @@ void CKernel::setNetPackMap(){
     NetPackMap(DEF_PACK_STARTGAME_RS) = &CKernel::SLOT_DealStartGameRs;
     NetPackMap(DEF_PACK_POST_IDENTITY) = &CKernel::SLOT_DealPostIdentity;
     NetPackMap(DEF_PACK_SELHERO_RQ) = &CKernel::SLOT_DealSelectHero;
+    NetPackMap(DEF_PACK_ALLSELHERO_RS) = &CKernel::SLOT_DealAllSelHeroRs;
+}
+
+//处理返回所有人选择的英雄和自身用户id
+void CKernel::SLOT_DealAllSelHeroRs(char *buf,int nlen){
+    STRU_ALLSEL_HERO_RS *rs = (STRU_ALLSEL_HERO_RS *)buf;
+    for(int i=0;i<sizeof(rs->heroarr)/sizeof(rs->heroarr[0]);i++){
+        this->m_mapIdtoHeroId[rs->user_idarr[i]] = this->m_mapIdtoHeroId[rs->heroarr[i]];
+    }
+    qDebug()<<__func__;
 }
 
 //处理选择英雄
 void CKernel::SLOT_DealSelectHero(char *buf,int nlen){
     STRU_SELHERO_RQ *rq = (STRU_SELHERO_RQ*)buf;
-    this->ZG_heroId = rq->ZG_heroid;
+    if(this->m_identity != zhugong){
+        this->ZG_HeroId = rq->ZG_heroid;
+    }
+
     for(int i=0;i<sizeof(rq->m_HeroArr)/sizeof(rq->m_HeroArr[0]);i++){
         heroid[i] = rq->m_HeroArr[i];
         if(rq->m_HeroArr[i]!=-1){
@@ -323,7 +336,6 @@ void CKernel::SLOT_DealSelectHero(char *buf,int nlen){
             chooseid = i;
             hero->b_flagchoose = !hero->b_flagchoose;
         });
-        qDebug()<<"chooseid1="<<chooseid;
         vec_hero.push_back(hero);
         hero->setParent(gamingdlg);
         hero->move(gamingdlg->width()*0.5-hero->width()*0.5-50+i*140,gamingdlg->height()*0.8-10);
@@ -347,6 +359,8 @@ void CKernel::SLOT_DealSelectHero(char *buf,int nlen){
         gamingdlg->update();
     });
 
+
+
     connect(choosehero,&MyPushButton::clicked,[=](){
         chooseheroattention->hide();
         STRU_SELHERO_RS rs;
@@ -358,6 +372,10 @@ void CKernel::SLOT_DealSelectHero(char *buf,int nlen){
             rs.isZG = false;
         }
         rs.hero_id = this->heroid[chooseid];
+        this->My_HeroId = this->heroid[chooseid];
+        if(this->m_identity == zhugong){
+            this->ZG_HeroId = this->My_HeroId;
+        }
         m_tcpClient->SendData((char*)&rs,sizeof(rs));
         auto ite = vec_hero.begin();
         while(ite != vec_hero.end()){
@@ -378,6 +396,7 @@ void CKernel::SLOT_DealSelectHero(char *buf,int nlen){
 void CKernel::SLOT_DealPostIdentity(char *buf,int nlen){
     STRU_POST_IDENTITY *rs = (STRU_POST_IDENTITY*)buf;
     this->m_identity = rs->m_identity;
+    this->ZG_Id = rs->m_ZG_userid;
     switch(rs->m_identity){
         case zhugong:
         {
@@ -458,6 +477,8 @@ void CKernel::SLOT_DealJoinRoomRs(char *buf,int nlen){
         break;
         case join_success:
             {
+                //座位号赋值
+                this->MySeatId = rs->place;
                 int i=0;
                 m_vecId.clear();
                 rs->m_userInfoarr[i].m_userid;
@@ -774,6 +795,7 @@ void CKernel::SLOT_DealCreateRoom(char *buf,int nlen){
     switch (rs->m_lResult) {
         case create_success:{
             str = QString("创建房间成功,房间号为%1").arg(rs->m_RoomId);
+            this->MySeatId = 1;
             this->m_roomid  = rs->m_RoomId;
             QMessageBox::about(m_MainScene,"提示",str);
             startgame = new MyPushButton(":/res/icon/btnzhunbei.png");

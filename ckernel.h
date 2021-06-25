@@ -17,6 +17,7 @@
 #include"gamingdialog.h"
 #include"mypushbutton.h"
 #include"herobutton.h"
+#include<map>
 class CKernel;
 typedef void (CKernel::*PFUN)(char*,int);
 class CKernel : public QObject
@@ -68,11 +69,15 @@ private:
     vector<HeroButton*>vec_hero;//拷贝的选择英雄数组
     HeroButton *myhero;//我的英雄牌
     MyPushButton *identityattention;//身份提示
+    map<int,vector<int>>m_mapIdtoHeroId;
     int chooseid;//选择英雄的下标
     int m_roomid;//房间id
     int m_identity;//我的身份
     int heroid[6];//选择英雄的编号数组
-    int ZG_heroId;//主公的id
+    int ZG_Id;//主公的账户id
+    int ZG_HeroId;//主公的英雄id
+    int My_HeroId;//我的英雄id
+    int MySeatId;//我的座位号
 public slots:
     void SLOT_DealLoginRs(char *buf,int nlen);//处理登录回复槽函数
     void SLOT_DealRegisterRs(char *buf,int nlen);//处理注册回复槽函数
@@ -97,6 +102,7 @@ public slots:
     void SLOT_ReGetRoomTable();//刷新房间列表槽函数
     void SLOT_GetFriendList();//显示好友列表窗口槽函数
     void SLOT_SetCountZero();
+    void SLOT_DealAllSelHeroRs(char *buf,int nlen);//处理返回所有人选择的英雄和自身用户id
 };
 
 #endif // CKERNEL_H
