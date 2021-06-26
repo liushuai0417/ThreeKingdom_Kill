@@ -347,19 +347,13 @@ void CKernel::SLOT_DealSelectHero(char *buf,int nlen){
     chooseheroattention->setParent(gamingdlg);
     MyPushButton *choosehero = new MyPushButton(":/res/icon/choosehero.png",":/res/icon/choosehero_1.png");
     choosehero->setParent(gamingdlg);
-    QTimer::singleShot(8000,this,[=]{
+    QTimer::singleShot(6000,this,[=]{
         chooseheroattention->move(gamingdlg->width()*0.5-chooseheroattention->width(),gamingdlg->height()*0.5);
         chooseheroattention->show();
-        gamingdlg->update();
-    });
-
-    QTimer::singleShot(9000,this,[=]{
         choosehero->move(gamingdlg->width()*0.5-choosehero->width()*0.5+100,gamingdlg->height()*0.5);
         choosehero->show();
         gamingdlg->update();
     });
-
-
 
     connect(choosehero,&MyPushButton::clicked,[=](){
         chooseheroattention->hide();
@@ -435,7 +429,7 @@ void CKernel::SLOT_DealPostIdentity(char *buf,int nlen){
             gamingdlg->update();
         });
 
-        QTimer::singleShot(6000,this,[=]{
+        QTimer::singleShot(4000,this,[=]{
             identityattention->hide();
             delete identityattention;
             gamingdlg->update();
