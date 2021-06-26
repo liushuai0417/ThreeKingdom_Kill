@@ -255,7 +255,6 @@ void CKernel::SLOT_DealAllSelHeroRs(char *buf,int nlen){
     for(int i=0;i<sizeof(rs->heroarr)/sizeof(rs->heroarr[0]);i++){
         this->m_mapIdtoHeroId[rs->user_idarr[i]] = this->m_mapIdtoHeroId[rs->heroarr[i]];
     }
-    qDebug()<<__func__;
 }
 
 //处理选择英雄
