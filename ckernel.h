@@ -30,6 +30,7 @@ public:
         return &pKernel;
     }
     void DestoryInstance();
+    QString GetHeroPath(int chooseheroid);//获取选择英雄的路径
 private:
     explicit CKernel(QObject *parent = 0);
     ~CKernel(){}
@@ -78,6 +79,7 @@ private:
     int ZG_HeroId;//主公的英雄id
     int My_HeroId;//我的英雄id
     int MySeatId;//我的座位号
+    QString myHeroPath;
 public slots:
     void SLOT_DealLoginRs(char *buf,int nlen);//处理登录回复槽函数
     void SLOT_DealRegisterRs(char *buf,int nlen);//处理注册回复槽函数
@@ -103,6 +105,7 @@ public slots:
     void SLOT_GetFriendList();//显示好友列表窗口槽函数
     void SLOT_SetCountZero();
     void SLOT_DealAllSelHeroRs(char *buf,int nlen);//处理返回所有人选择的英雄和自身用户id
+    void SLOT_DealGetCardRs(char *buf,int nlen);//处理抽卡回复
 };
 
 #endif // CKERNEL_H

@@ -247,14 +247,32 @@ void CKernel::setNetPackMap(){
     NetPackMap(DEF_PACK_POST_IDENTITY) = &CKernel::SLOT_DealPostIdentity;
     NetPackMap(DEF_PACK_SELHERO_RQ) = &CKernel::SLOT_DealSelectHero;
     NetPackMap(DEF_PACK_ALLSELHERO_RS) = &CKernel::SLOT_DealAllSelHeroRs;
+    NetPackMap(DEF_PACK_GETCARD_RS) = &CKernel::SLOT_DealGetCardRs;
+}
+
+//处理抽卡回复
+void CKernel::SLOT_DealGetCardRs(char *buf,int nlen){
+    STRU_GETCARD_RS* rs = (STRU_GETCARD_RS*)buf;
+    for(int i=0;i<sizeof(rs->m_card)/sizeof(rs->m_card[0]);i++){
+        qDebug()<<rs->m_card[i].id;
+    }
 }
 
 //处理返回所有人选择的英雄和自身用户id
 void CKernel::SLOT_DealAllSelHeroRs(char *buf,int nlen){
-    STRU_ALLSEL_HERO_RS *rs = (STRU_ALLSEL_HERO_RS *)buf;
-    for(int i=0;i<sizeof(rs->heroarr)/sizeof(rs->heroarr[0]);i++){
-        this->m_mapIdtoHeroId[rs->user_idarr[i]] = this->m_mapIdtoHeroId[rs->heroarr[i]];
-    }
+//    STRU_ALLSEL_HERO_RS *rs = (STRU_ALLSEL_HERO_RS *)buf;
+//    for(int i=0;i<sizeof(rs->heroarr)/sizeof(rs->heroarr[0]);i++){
+//        this->m_mapIdtoHeroId[rs->user_idarr[i]] = this->m_mapIdtoHeroId[rs->heroarr[i]];
+//    }
+//    //发送抽卡请求
+//    STRU_GETCARD_RQ rq;
+//    if(this->m_identity == zhugong){
+//        rq.num = 6;
+//    }else{
+//        rq.num = 4;
+//    }
+//    rq.m_roomid = this->m_roomid;
+//    rq.m_userid = this->m_id;
 }
 
 //处理选择英雄
@@ -333,6 +351,7 @@ void CKernel::SLOT_DealSelectHero(char *buf,int nlen){
             }
             hero->chooseheroid = i;
             chooseid = i;
+            this->myHeroPath = GetHeroPath(this->heroid[i]);
             hero->b_flagchoose = !hero->b_flagchoose;
         });
         vec_hero.push_back(hero);
@@ -373,12 +392,11 @@ void CKernel::SLOT_DealSelectHero(char *buf,int nlen){
         auto ite = vec_hero.begin();
         while(ite != vec_hero.end()){
             (*ite)->hide();
-            if((*ite)->chooseheroid == chooseid){
-                myhero = (*ite);
-            }
             ++ite;
         }
         choosehero->hide();
+        myhero = new HeroButton(this->myHeroPath,"");
+        myhero->setParent(gamingdlg);
         myhero->move(gamingdlg->width()*0.5-myhero->width()*0.5-50+140,gamingdlg->height()*0.8-10);
         myhero->show();
         gamingdlg->update();
@@ -436,7 +454,67 @@ void CKernel::SLOT_DealPostIdentity(char *buf,int nlen){
 
 }
 
-
+//获取选择英雄的路径
+QString CKernel::GetHeroPath(int chooseheroid){
+    QString result;
+    switch(chooseheroid){
+    case huatuo:
+        result = QString(":/res/YX/华佗.png");
+        break;
+    case diaochan:
+        result = QString(":/res/YX/貂蝉.png");
+        break;
+    case lvbu:
+        result = QString(":/res/YX/吕布.png");
+        break;
+    case guanyu:
+        result = QString(":/res/YX/关羽.png");
+        break;
+    case zhangfei:
+        result = QString(":/res/YX/张飞.png");
+        break;
+    case zhaoyun:
+        result = QString(":/res/YX/赵云.png");
+        break;
+    case huangyueying:
+        result = QString(":/res/YX/黄月英.png");
+        break;
+    case zhugeliang:
+        result = QString(":/res/YX/诸葛亮.png");
+        break;
+    case machao:
+        result = QString(":/res/YX/马超.png");
+        break;
+    case simayi:
+        result = QString(":/res/YX/司马懿.png");
+        break;
+    case xiahoudun:
+        result = QString(":/res/YX/夏侯惇.png");
+        break;
+    case xuchu:
+        result = QString(":/res/YX/许褚.png");
+        break;
+    case guojia:
+        result = QString(":/res/YX/郭嘉.png");
+        break;
+    case zhangliao:
+        result = QString(":/res/YX/张辽.png");
+        break;
+    case liubei:
+        result = QString(":/res/YX/刘备.png");
+        break;
+    case caocao:
+        result = QString(":/res/YX/曹操.png");
+        break;
+    case sunquan:
+        result = QString(":/res/YX/孙权.png");
+        break;
+    default:
+        result = QString(":/res/YX/吕蒙.png");
+        break;
+    }
+    return result;
+}
 
 void CKernel::SLOT_DealStartGameRs(char *buf,int nlen){
     STRU_STARTGAME_RS *rs = (STRU_STARTGAME_RS*)buf;
