@@ -351,6 +351,7 @@ void CKernel::SLOT_DealSelectHero(char *buf,int nlen){
             }
             hero->chooseheroid = i;
             chooseid = i;
+            //获取路径名
             this->myHeroPath = GetHeroPath(this->heroid[i]);
             hero->b_flagchoose = !hero->b_flagchoose;
         });
