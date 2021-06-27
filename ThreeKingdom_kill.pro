@@ -34,7 +34,8 @@ SOURCES += main.cpp\
     zhangliao.cpp \
     zhaoyun.cpp \
     gamingdialog.cpp \
-    herobutton.cpp
+    herobutton.cpp \
+    cardbutton.cpp
 
 HEADERS  += dialog.h \
     mainscene.h \
@@ -58,7 +59,8 @@ HEADERS  += dialog.h \
     zhangliao.h \
     zhaoyun.h \
     gamingdialog.h \
-    herobutton.h
+    herobutton.h \
+    cardbutton.h
 
 FORMS    += dialog.ui \
     mainscene.ui \

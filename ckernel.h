@@ -18,6 +18,7 @@
 #include"mypushbutton.h"
 #include"herobutton.h"
 #include<map>
+#include"cardbutton.h"
 class CKernel;
 typedef void (CKernel::*PFUN)(char*,int);
 class CKernel : public QObject
@@ -31,6 +32,9 @@ public:
     }
     void DestoryInstance();
     QString GetHeroPath(int chooseheroid);//获取选择英雄的路径
+    void InitCard();//初始化手牌
+    QString GetColorPath(int colorid);//获取花色路径
+    QString GetNumPath(int num);//获取点数路径
 private:
     explicit CKernel(QObject *parent = 0);
     ~CKernel(){}
@@ -68,6 +72,7 @@ private:
     MyPushButton *startgame1;//其他成员的准备按钮
     vector<int>m_vecId;//房间成员的id数组
     vector<HeroButton*>vec_hero;//拷贝的选择英雄数组
+    vector<CardButton*>vec_card;//手牌数组
     HeroButton *myhero;//我的英雄牌
     MyPushButton *identityattention;//身份提示
     map<int,vector<int>>m_mapIdtoHeroId;
@@ -75,6 +80,7 @@ private:
     int m_roomid;//房间id
     int m_identity;//我的身份
     int heroid[6];//选择英雄的编号数组
+    vector<int>card;//初始手牌编号数组
     int ZG_Id;//主公的账户id
     int ZG_HeroId;//主公的英雄id
     int My_HeroId;//我的英雄id

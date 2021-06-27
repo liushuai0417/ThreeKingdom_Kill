@@ -1,14 +1,14 @@
-#include "mypushbutton.h"
+#include "cardbutton.h"
 #include<QPixmap>
 #include<QPropertyAnimation>
-//自定义按钮类
-//MyPushButton::MyPushButton(QWidget *parent) : QPushButton(parent)
+#include<QDebug>
+//CardButton::CardButton(QWidget *parent) : QWidget(parent)
 //{
 
 //}
 
-
-MyPushButton::MyPushButton(QString normalImg,QString pressImg){
+CardButton::CardButton(QString normalImg,QString pressImg){
+    b_flagchoose = false;//默认是非选中状态
     this->normalImgPath = normalImg;
     this->pressImgPath = pressImg;
     //加载图片
@@ -30,14 +30,14 @@ MyPushButton::MyPushButton(QString normalImg,QString pressImg){
 }
 
 //重写按钮 按下和释放事件
-void MyPushButton::mousePressEvent(QMouseEvent *e){
+void CardButton::mousePressEvent(QMouseEvent *e){
     //传入的按下图片不为空 证明有需要按下的状态 切换图片
     if(this->pressImgPath != ""){
         QPixmap pix;
         //加载图片
         bool res = pix.load(this->pressImgPath);
         if(!res){
-            qDebug()<<__func__<<this->pressImgPath<<"图片加载失败";
+            qDebug()<<__func__<<pressImgPath<<"图片加载失败";
             return;
         }
 
@@ -54,14 +54,14 @@ void MyPushButton::mousePressEvent(QMouseEvent *e){
     return QPushButton::mousePressEvent(e);
 }
 
-void MyPushButton::mouseReleaseEvent(QMouseEvent *e){
+void CardButton::mouseReleaseEvent(QMouseEvent *e){
     //传入的按下图片不为空 证明有需要按下的状态 切换成原始的图片
     if(this->pressImgPath != ""){
         QPixmap pix;
         //加载图片
         bool res = pix.load(this->normalImgPath);
         if(!res){
-            qDebug()<<__func__<<this->normalImgPath<<"图片加载失败";
+            qDebug()<<__func__<<normalImgPath<<"图片加载失败";
             return;
         }
 
@@ -79,14 +79,14 @@ void MyPushButton::mouseReleaseEvent(QMouseEvent *e){
 }
 
 //向下跳
-void MyPushButton::zoom1(){
+void CardButton::zoom1(){
     //创建动画对象
     QPropertyAnimation *animation = new QPropertyAnimation(this,"geometry");
     //设置动画时间间隔
     //设置起始位置
     animation->setStartValue(QRect(this->x(),this->y(),this->width(),this->height()));
     //结束位置
-    animation->setEndValue(QRect(this->x(),this->y()+10,this->width(),this->height()));
+    animation->setEndValue(QRect(this->x(),this->y()+30,this->width(),this->height()));
     //设置弹跳曲线
     animation->setEasingCurve(QEasingCurve::OutBounce);
     //执行动画
@@ -94,15 +94,45 @@ void MyPushButton::zoom1(){
 }
 
 //向上跳
-void MyPushButton::zoom2(){
+void CardButton::zoom2(){
     //创建动画对象
     QPropertyAnimation *animation = new QPropertyAnimation(this,"geometry");
     //设置动画时间间隔
 
     //设置起始位置
-    animation->setStartValue(QRect(this->x(),this->y()+10,this->width(),this->height()));
+    animation->setStartValue(QRect(this->x(),this->y()+30,this->width(),this->height()));
     //结束位置
     animation->setEndValue(QRect(this->x(),this->y(),this->width(),this->height()));
+    //设置弹跳曲线
+    animation->setEasingCurve(QEasingCurve::OutBounce);
+    //执行动画
+    animation->start();
+}
+
+void CardButton::ChooseHero(){
+    //创建动画对象
+    QPropertyAnimation *animation = new QPropertyAnimation(this,"geometry");
+    //设置动画时间间隔
+
+    //设置起始位置
+    animation->setStartValue(QRect(this->x(),this->y(),this->width(),this->height()));
+    //结束位置
+    animation->setEndValue(QRect(this->x(),this->y()-30,this->width(),this->height()));
+    //设置弹跳曲线
+    animation->setEasingCurve(QEasingCurve::OutBounce);
+    //执行动画
+    animation->start();
+}
+
+void CardButton::ChooseHero1(){
+    //创建动画对象
+    QPropertyAnimation *animation = new QPropertyAnimation(this,"geometry");
+    //设置动画时间间隔
+
+    //设置起始位置
+    animation->setStartValue(QRect(this->x(),this->y(),this->width(),this->height()));
+    //结束位置
+    animation->setEndValue(QRect(this->x(),this->y()+30,this->width(),this->height()));
     //设置弹跳曲线
     animation->setEasingCurve(QEasingCurve::OutBounce);
     //执行动画

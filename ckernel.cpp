@@ -16,6 +16,7 @@
 #include<QPushButton>
 #include<QTimer>
 #include"herobutton.h"
+#include"cardbutton.h"
 #define NetPackMap(a) m_NetPackMap[(a)-DEF_PACK_BASE]
 CKernel::CKernel(QObject *parent) : QObject(parent)
 {
@@ -254,8 +255,203 @@ void CKernel::setNetPackMap(){
 void CKernel::SLOT_DealGetCardRs(char *buf,int nlen){
     STRU_GETCARD_RS* rs = (STRU_GETCARD_RS*)buf;
     for(int i=0;i<sizeof(rs->m_card)/sizeof(rs->m_card[0]);i++){
-        qDebug()<<rs->m_card[i].id;
+        CardButton *cardbtn;
+        card.push_back(rs->m_card[i].id);
+        switch(rs->m_card[i].id){
+            case SHA:
+                cardbtn = new CardButton(":/res/PAI/杀.png","");
+            break;
+            case SHAN:
+                cardbtn = new CardButton(":/res/PAI/闪.png","");
+            break;
+            case TAO:
+                cardbtn = new CardButton(":/res/PAI/桃.png","");
+                break;
+            case GUOHECHAIQIAO:
+                cardbtn = new CardButton(":/res/PAI/过河拆桥.png","");
+                break;
+            case SHUNSHOUQIANYANG:
+                cardbtn = new CardButton(":/res/PAI/顺手牵羊.png","");
+                break;
+            case JUEDOU:
+                cardbtn = new CardButton(":/res/PAI/决斗.png","");
+                break;
+            case JIEDAOSHAREN:
+                cardbtn = new CardButton(":/res/PAI/借刀杀人.png","");
+                break;
+            case WUZHONGSHENGYOU:
+                cardbtn = new CardButton(":/res/PAI/无中生有.png","");
+                break;
+            case WUXIEKEJI:
+                cardbtn = new CardButton(":/res/PAI/无懈可击.png","");
+                break;
+            case WANJIANQIFA:
+                cardbtn = new CardButton(":/res/PAI/万箭齐发.png","");
+                break;
+            case NANMANRUQIN:
+                cardbtn = new CardButton(":/res/PAI/南蛮入侵.png","");
+                break;
+            case TAOYUANJIEYI:
+                cardbtn = new CardButton(":/res/PAI/桃园结义.png","");
+                break;
+            case WUGUFENGDENG:
+                cardbtn = new CardButton(":/res/PAI/五谷丰登.png","");
+                break;
+            case SHANDIAN:
+                cardbtn = new CardButton(":/res/PAI/闪电.png","");
+                break;
+            case LEBUSISHU:
+                cardbtn = new CardButton(":/res/PAI/乐不思蜀.png"),"";
+            break;
+            case HANBINGJIAN:
+                cardbtn = new CardButton(":/res/WUQI/寒冰剑.png","");
+                break;
+            case CIXIONGSHUANGGUJIAN:
+                cardbtn = new CardButton(":/res/WUQI/雌雄双剑.png","");
+                break;
+            case QINGLONGYANYUEDAO:
+                cardbtn = new CardButton(":/res/WUQI/青龙偃月刀.png","");
+                break;
+            case QINGGANGJIAN:
+                cardbtn = new CardButton(":/res/WUQI/青钢剑.png","");
+                break;
+            case ZHANGBASHEMAO:
+                cardbtn = new CardButton(":/res/WUQI/丈八蛇矛.png","");
+                break;
+            case QILINGONG:
+                cardbtn = new CardButton(":/res/WUQI/麒麟弓.png","");
+                break;
+            case ZHUGELIANNU:
+                cardbtn = new CardButton(":/res/WUQI/诸葛连弩.png","");
+                break;
+            case GUANSHIFU:
+                cardbtn = new CardButton(":/res/WUQI/贯石斧.png","");
+                break;
+            case FANGTIANHUAJI:
+                cardbtn = new CardButton(":/res/WUQI/方天画戟.png","");
+                break;
+            case BAGUAZHEN:
+                cardbtn = new CardButton(":/res/WUQI/八卦阵.png","");
+                break;
+            case RENWANGDUN:
+                cardbtn = new CardButton(":/res/WUQI/仁王盾.png","");
+                break;
+            case CHITU:
+                cardbtn = new CardButton(":/res/MA/赤兔.png","");
+                break;
+            case DAYUAN:
+                cardbtn = new CardButton(":/res/MA/大宛.png","");
+                break;
+            case DILU:
+                cardbtn = new CardButton(":/res/MA/的卢.png","");
+                break;
+            case JUEYING:
+                cardbtn = new CardButton(":/res/MA/绝影.png","");
+                break;
+            case ZHUAHUANGFEIDIAN:
+                cardbtn = new CardButton(":/res/MA/爪黄飞电.png","");
+                break;
+            case ZIXIN:
+                cardbtn = new CardButton(":/res/MA/紫骍.png","");
+                break;
+         }
+        cardbtn->id = rs->m_card[i].id;
+        cardbtn->num = rs->m_card[i].num;
+        cardbtn->color = rs->m_card[i].col;
+        cardbtn->type = rs->m_card[i].type;
+        vec_card.push_back(cardbtn);
     }
+    InitCard();
+}
+
+void CKernel::InitCard(){
+    auto ite = vec_card.begin();
+    QString colorpath;
+    QString numpath;
+    int i=0;
+    while(ite!=vec_card.end()){
+        colorpath = GetColorPath((*ite)->color);
+        numpath = GetNumPath((*ite)->num);
+        MyPushButton *color = new MyPushButton(colorpath,"");
+        color->setParent(*ite);
+        color->move(10,10);
+        MyPushButton *num = new MyPushButton(numpath,"");
+        num->setParent(*ite);
+        num->move(10,30);
+        color->show();
+        num->show();
+        (*ite)->setParent(gamingdlg);
+        (*ite)->move(gamingdlg->width()*0.5-310+i*140,gamingdlg->height()*0.8-10);
+        (*ite)->show();
+        gamingdlg->update();
+        ++i;
+        ++ite;
+    }
+}
+
+QString CKernel::GetColorPath(int colorid){
+    QString colorpath;
+    switch(colorid){
+        case Spade1:
+            colorpath = QString(":/res/icon/heitao.png");
+        break;
+        case Hearts2:
+            colorpath = QString(":/res/icon/hongtao.png");
+        break;
+        case Club3:
+            colorpath = QString(":/res/icon/meihua.png");
+        break;
+        case Diamond4:
+            colorpath = QString(":/res/icon/fangkuai.png");
+        break;
+    }
+    return colorpath;
+}
+
+QString CKernel::GetNumPath(int num){
+    QString numpath;
+    switch(num){
+        case 1:
+            numpath = QString(":/res/Num/Num_A.png");
+        break;
+        case 2:
+            numpath = QString(":/res/Num/num_2.png");
+        break;
+        case 3:
+            numpath = QString(":/res/Num/Num_3.png");
+        break;
+        case 4:
+            numpath = QString(":/res/Num/Num_4.png");
+        break;
+        case 5:
+            numpath = QString(":/res/Num/Num_5.png");
+        break;
+        case 6:
+            numpath = QString(":/res/Num/Num_6.png");
+        break;
+        case 7:
+            numpath = QString(":/res/Num/Num_7.png");
+        break;
+        case 8:
+            numpath = QString(":/res/Num/Num_8.png");
+        break;
+        case 9:
+            numpath = QString(":/res/Num/Num_9.png");
+        break;
+        case 10:
+            numpath = QString(":/res/Num/Num_10.png");
+        break;
+        case 11:
+            numpath = QString(":/res/Num/Num_J.png");
+        break;
+        case 12:
+            numpath = QString(":/res/Num/Num_Q.png");
+        break;
+        case 13:
+            numpath = QString(":/res/Num/Num_K.png");
+        break;
+    }
+    return numpath;
 }
 
 //处理返回所有人选择的英雄和自身用户id
@@ -264,15 +460,6 @@ void CKernel::SLOT_DealAllSelHeroRs(char *buf,int nlen){
     for(int i=0;i<sizeof(rs->heroarr)/sizeof(rs->heroarr[0]);i++){
         this->m_mapIdtoHeroId[rs->user_idarr[i]] = this->m_mapIdtoHeroId[rs->heroarr[i]];
     }
-    //发送抽卡请求
-    STRU_GETCARD_RQ rq;
-    if(this->m_identity == zhugong){
-        rq.num = 6;
-    }else{
-        rq.num = 4;
-    }
-    rq.m_roomid = this->m_roomid;
-    rq.m_userid = this->m_id;
 }
 
 //处理选择英雄
@@ -398,7 +585,7 @@ void CKernel::SLOT_DealSelectHero(char *buf,int nlen){
         choosehero->hide();
         myhero = new HeroButton(this->myHeroPath,"");
         myhero->setParent(gamingdlg);
-        myhero->move(gamingdlg->width()*0.5-myhero->width()*0.5-50+140,gamingdlg->height()*0.8-10);
+        myhero->move(gamingdlg->width()*0.5-myhero->width()*0.5-440,gamingdlg->height()*0.8-10);
         myhero->show();
         gamingdlg->update();
     });
@@ -436,13 +623,13 @@ void CKernel::SLOT_DealPostIdentity(char *buf,int nlen){
         break;
     }
         identity->setParent(gamingdlg);
-        identity->move(gamingdlg->width()*0.5-identity->width()*0.5-250,gamingdlg->height()*0.8-10);
+        identity->move(gamingdlg->width()*0.5-identity->width()*0.5-600,gamingdlg->height()*0.8-10);
         identity->show();
         gamingdlg->update();
 
         QTimer::singleShot(2000,this,[=]{
             identityattention->setParent(gamingdlg);
-            identityattention->move(gamingdlg->width()*0.5-identityattention->width(),gamingdlg->height()*0.5);
+            identityattention->move(gamingdlg->width()*0.5-identityattention->width()*0.5,gamingdlg->height()*0.5);
             identityattention->show();
             gamingdlg->update();
         });

@@ -15,7 +15,7 @@ HeroButton::HeroButton(QString normalImg,QString pressImg){
     QPixmap pix;
     bool ret = pix.load(normalImg);
     if(!ret){
-        qDebug()<<__func__<<"图片加载失败";
+        qDebug()<<__func__<<normalImg<<"图片加载失败";
         return;
     }
 
@@ -37,7 +37,7 @@ void HeroButton::mousePressEvent(QMouseEvent *e){
         //加载图片
         bool res = pix.load(this->pressImgPath);
         if(!res){
-            qDebug()<<__func__<<"图片加载失败";
+            qDebug()<<__func__<<pressImgPath<<"图片加载失败";
             return;
         }
 
@@ -61,7 +61,7 @@ void HeroButton::mouseReleaseEvent(QMouseEvent *e){
         //加载图片
         bool res = pix.load(this->normalImgPath);
         if(!res){
-            qDebug()<<__func__<<"图片加载失败";
+            qDebug()<<__func__<<normalImgPath<<"图片加载失败";
             return;
         }
 
