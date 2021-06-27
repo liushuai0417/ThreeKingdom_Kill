@@ -57,22 +57,6 @@
         <file>res/Music/paiju.mp3</file>
         <file>res/Music/Win.mp3</file>
         <file>res/Music/WinButton.mp3</file>
-        <file>res/PAI/过河拆桥.png</file>
-        <file>res/PAI/借刀杀人.png</file>
-        <file>res/PAI/决斗.png</file>
-        <file>res/PAI/乐不思蜀.png</file>
-        <file>res/PAI/南蛮入侵.png</file>
-        <file>res/PAI/杀.png</file>
-        <file>res/PAI/闪.png</file>
-        <file>res/PAI/闪电.png</file>
-        <file>res/PAI/顺手牵羊.png</file>
-        <file>res/PAI/桃.png</file>
-        <file>res/PAI/桃园结义.png</file>
-        <file>res/PAI/万箭齐发.png</file>
-        <file>res/PAI/无懈可击.png</file>
-        <file>res/PAI/无中生有.png</file>
-        <file>res/PAI/五谷丰登.png</file>
-        <file>res/PAI/新卡牌背面.png</file>
         <file>res/TX/01.png</file>
         <file>res/TX/02.png</file>
         <file>res/TX/03.png</file>
@@ -235,5 +219,21 @@
         <file>res/BJ/提示_选择英雄.png</file>
         <file>res/icon/choosehero.png</file>
         <file>res/icon/choosehero_1.png</file>
+        <file>res/PAI/过河拆桥.png</file>
+        <file>res/PAI/借刀杀人.png</file>
+        <file>res/PAI/决斗.png</file>
+        <file>res/PAI/乐不思蜀.png</file>
+        <file>res/PAI/南蛮入侵.png</file>
+        <file>res/PAI/杀.png</file>
+        <file>res/PAI/闪.png</file>
+        <file>res/PAI/闪电.png</file>
+        <file>res/PAI/顺手牵羊.png</file>
+        <file>res/PAI/桃.png</file>
+        <file>res/PAI/桃园结义.png</file>
+        <file>res/PAI/万箭齐发.png</file>
+        <file>res/PAI/无懈可击.png</file>
+        <file>res/PAI/无中生有.png</file>
+        <file>res/PAI/五谷丰登.png</file>
+        <file>res/PAI/新卡牌背面.png</file>
     </qresource>
 </RCC>
