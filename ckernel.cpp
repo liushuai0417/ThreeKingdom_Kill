@@ -260,19 +260,19 @@ void CKernel::SLOT_DealGetCardRs(char *buf,int nlen){
 
 //处理返回所有人选择的英雄和自身用户id
 void CKernel::SLOT_DealAllSelHeroRs(char *buf,int nlen){
-//    STRU_ALLSEL_HERO_RS *rs = (STRU_ALLSEL_HERO_RS *)buf;
-//    for(int i=0;i<sizeof(rs->heroarr)/sizeof(rs->heroarr[0]);i++){
-//        this->m_mapIdtoHeroId[rs->user_idarr[i]] = this->m_mapIdtoHeroId[rs->heroarr[i]];
-//    }
-//    //发送抽卡请求
-//    STRU_GETCARD_RQ rq;
-//    if(this->m_identity == zhugong){
-//        rq.num = 6;
-//    }else{
-//        rq.num = 4;
-//    }
-//    rq.m_roomid = this->m_roomid;
-//    rq.m_userid = this->m_id;
+    STRU_ALLSEL_HERO_RS *rs = (STRU_ALLSEL_HERO_RS *)buf;
+    for(int i=0;i<sizeof(rs->heroarr)/sizeof(rs->heroarr[0]);i++){
+        this->m_mapIdtoHeroId[rs->user_idarr[i]] = this->m_mapIdtoHeroId[rs->heroarr[i]];
+    }
+    //发送抽卡请求
+    STRU_GETCARD_RQ rq;
+    if(this->m_identity == zhugong){
+        rq.num = 6;
+    }else{
+        rq.num = 4;
+    }
+    rq.m_roomid = this->m_roomid;
+    rq.m_userid = this->m_id;
 }
 
 //处理选择英雄
@@ -343,7 +343,7 @@ void CKernel::SLOT_DealSelectHero(char *buf,int nlen){
             break;
         }
 
-        connect(hero,&HeroButton::clicked,[=](){
+        connect(hero,&HeroButton::clicked,[=]()mutable{
             if(hero->b_flagchoose){
                 hero->ChooseHero1();
             }else{
@@ -550,16 +550,17 @@ void CKernel::SLOT_DealJoinRoomRs(char *buf,int nlen){
         case join_success:
             {
                 //座位号赋值
+                qDebug()<<rs->place;
                 this->MySeatId = rs->place;
-                int i=0;
-                m_vecId.clear();
-                rs->m_userInfoarr[i].m_userid;
-                while(rs->m_userInfoarr[i].m_userid != 0){
-                    if(rs->m_userInfoarr[i].m_userid!=this->m_id){
-                        m_vecId.push_back(rs->m_userInfoarr[i].m_userid);
-                    }
-                    i++;
-                }
+//                int i=0;
+//                m_vecId.clear();
+//                rs->m_userInfoarr[i].m_userid;
+//                while(rs->m_userInfoarr[i].m_userid != 0){
+//                    if(rs->m_userInfoarr[i].m_userid!=this->m_id){
+//                        m_vecId.push_back(rs->m_userInfoarr[i].m_userid);
+//                    }
+//                    i++;
+//                }
             }
         break;
     }

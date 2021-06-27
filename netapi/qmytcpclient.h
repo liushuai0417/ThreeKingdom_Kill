@@ -4,7 +4,7 @@
 #include <QObject>
 #include"TCPNet.h"
 
-#define DEF_SERVER_IP  "192.168.31.226"
+#define DEF_SERVER_IP  "172.20.10.8"
 #define DEF_TCP_PORT   8000
 class QMyTcpClient : public QObject,public ITcpMediator
 {
