@@ -750,6 +750,7 @@ void CKernel::SLOT_DealJoinRoomRs(char *buf,int nlen){
                 //座位号赋值
                 qDebug()<<rs->place;
                 this->MySeatId = rs->place;
+                this->m_mapIdToSeatId[this->m_id] = rs->place;
 //                int i=0;
 //                m_vecId.clear();
 //                rs->m_userInfoarr[i].m_userid;
