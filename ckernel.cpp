@@ -475,8 +475,7 @@ void CKernel::SLOT_DealAllSelHeroRs(char *buf,int nlen){
 
 //处理选择英雄
 void CKernel::SLOT_DealSelectHero(char *buf,int nlen){
-    //显示主公位置
-    ShowZgPosition();
+
     STRU_SELHERO_RQ *rq = (STRU_SELHERO_RQ*)buf;
     if(this->m_identity != zhugong){
         this->ZG_HeroId = rq->ZG_heroid;
@@ -653,7 +652,8 @@ void CKernel::SLOT_DealPostIdentity(char *buf,int nlen){
             delete identityattention;
             gamingdlg->update();
         });
-
+        //显示主公位置
+        ShowZgPosition();
 }
 
 void CKernel::ShowZgPosition(){
@@ -820,7 +820,7 @@ void CKernel::SLOT_DealJoinRoomRs(char *buf,int nlen){
             {
                 //座位号赋值
                 qDebug()<<rs->place;
-                this->MySeatId = rs->place;
+                this->MySeatId = rs->place+1;
                 this->m_mapIdToSeatId[this->m_id] = rs->place;
 //                int i=0;
 //                m_vecId.clear();
