@@ -173,7 +173,6 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     connect(m_MainScene,&MainScene::SIG_GetFriendList,this,&CKernel::SLOT_GetFriendList);
     connect(friendlistDialog,&FriendList::SIG_ReGetFriendList,this,&CKernel::SLOT_ReGetFriendList);
     connect(joinDialog,&JoinRoomDialog::SIG_SetCountZero,this,&CKernel::SLOT_SetCountZero);
-
     //房间列表的第一行
     RoomItem *itemindex = new RoomItem;
     m_MainScene->Slot_AddUserItem(itemindex);
@@ -249,6 +248,17 @@ void CKernel::setNetPackMap(){
     NetPackMap(DEF_PACK_SELHERO_RQ) = &CKernel::SLOT_DealSelectHero;
     NetPackMap(DEF_PACK_ALLSELHERO_RS) = &CKernel::SLOT_DealAllSelHeroRs;
     NetPackMap(DEF_PACK_GETCARD_RS) = &CKernel::SLOT_DealGetCardRs;
+    NetPackMap(DEF_PACK_ROOM_MEMBER_RS) = &CKernel::SLOT_DealRoomMemberRs;
+}
+
+//更新房间成员回复
+void CKernel::SLOT_DealRoomMemberRs(char *buf,int nlen){
+    STRU_ROOM_MEMBER_RS *rs = (STRU_ROOM_MEMBER_RS *)buf;
+    int i=0;
+    while(rs->m_userInfo[i].m_userid!=0){
+        m_mapIdToSeatId[rs->m_userInfo[i].m_userid] = rs->m_userInfo[i].m_place;
+        ++i;
+    }
 }
 
 //处理抽卡回复

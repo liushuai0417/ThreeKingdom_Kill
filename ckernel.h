@@ -75,7 +75,8 @@ private:
     vector<CardButton*>vec_card;//手牌数组
     HeroButton *myhero;//我的英雄牌
     MyPushButton *identityattention;//身份提示
-    map<int,vector<int>>m_mapIdtoHeroId;
+    map<int,vector<int>>m_mapIdtoHeroId;//用户id和英雄的映射
+    map<int,int>m_mapIdToSeatId;//用户id和座位号的映射
     int chooseid;//选择英雄的下标
     int m_roomid;//房间id
     int m_identity;//我的身份
@@ -112,6 +113,7 @@ public slots:
     void SLOT_SetCountZero();
     void SLOT_DealAllSelHeroRs(char *buf,int nlen);//处理返回所有人选择的英雄和自身用户id
     void SLOT_DealGetCardRs(char *buf,int nlen);//处理抽卡回复
+    void SLOT_DealRoomMemberRs(char *buf,int nlen);//更新房间成员回复
 };
 
 #endif // CKERNEL_H
