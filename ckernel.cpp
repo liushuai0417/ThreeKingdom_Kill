@@ -571,6 +571,7 @@ void CKernel::SLOT_DealSelectHero(char *buf,int nlen){
         }else{
             rs.isZG = false;
         }
+        rs.iddentity = this->m_identity;
         rs.hero_id = this->heroid[chooseid];
         this->My_HeroId = this->heroid[chooseid];
         if(this->m_identity == zhugong){
