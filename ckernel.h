@@ -78,7 +78,7 @@ private:
     HeroButton *myhero;//我的英雄牌
     MyPushButton *identityattention;//身份提示
     map<int,vector<int>>m_mapIdtoHeroId;//用户id和英雄的映射
-    map<int,int>m_mapIdToSeatId;//用户id和座位号的映射
+    map<int,int>m_mapSeatIdToId;//用户id和座位号的映射
     int chooseid;//选择英雄的下标
     int m_roomid;//房间id
     int m_identity;//我的身份

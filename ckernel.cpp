@@ -255,8 +255,9 @@ void CKernel::setNetPackMap(){
 void CKernel::SLOT_DealRoomMemberRs(char *buf,int nlen){
     STRU_ROOM_MEMBER_RS *rs = (STRU_ROOM_MEMBER_RS *)buf;
     for(int i=0;i<sizeof(rs->m_userInfo)/sizeof(rs->m_userInfo[0]);i++){
-        if(rs->m_userInfo[i].m_place!=-1){
-            m_mapIdToSeatId[rs->m_userInfo[i].m_userid] = rs->m_userInfo[i].m_place+1;
+        if(rs->m_userInfo[i].m_place!=-1 && rs->m_userInfo[i].m_userid!=0){
+            int k = rs->m_userInfo[i].m_place+1;
+            m_mapSeatIdToId[k] = rs->m_userInfo[i].m_userid;
         }
     }
 
@@ -654,16 +655,22 @@ void CKernel::SLOT_DealPostIdentity(char *buf,int nlen){
         });
         //显示主公位置
         ShowZgPosition();
+        qDebug()<<"attention"<<this->m_mapSeatIdToId[1];
+        qDebug()<<"attention"<<this->m_mapSeatIdToId[2];
+        qDebug()<<"attention"<<this->m_mapSeatIdToId[3];
+        qDebug()<<"attention"<<this->m_mapSeatIdToId[4];
+        qDebug()<<"attention"<<this->m_mapSeatIdToId[5];
+        qDebug()<<"myidentity"<<this->identity;
 }
 
 void CKernel::ShowZgPosition(){
     int myposition = 0;
-    auto ite = m_mapIdToSeatId.begin();
-    int size = m_mapIdToSeatId.size();
+    auto ite = m_mapSeatIdToId.begin();
+    int size = m_mapSeatIdToId.size();
     int index = 0;
     int mark = 1;
-    while(ite != m_mapIdToSeatId.end()){
-        if((*ite).first == this->m_id){
+    while(ite != m_mapSeatIdToId.end()){
+        if((*ite).first == this->MySeatId){
             myposition = index;
             break;
         }
@@ -674,14 +681,15 @@ void CKernel::ShowZgPosition(){
     ++index;
 
     for(int i=index;i<size;i++){
-        ShowZGIdentity(mark,(*ite).first);
+        ShowZGIdentity(mark,(*ite).second);
         ++mark;
         ++ite;
     }
-    auto ite1 = m_mapIdToSeatId.begin();
+    auto ite1 = m_mapSeatIdToId.begin();
+    int temp = mark;
     if(mark<5){
-        for(int j=0;j<size-mark;j++){
-            ShowZGIdentity(mark,(*ite1).first);
+        for(int j=0;j<size-temp;j++){
+            ShowZGIdentity(mark,(*ite1).second);
             ++mark;
             ++ite1;
         }
@@ -705,19 +713,19 @@ void CKernel::ShowZGIdentity(int mark,int id){
     }else if(mark == 2){
         identitybutton = new MyPushButton(path,"");
         identitybutton->setParent(this->gamingdlg);
-        identitybutton->move(180,30);
+        identitybutton->move(500,30);
         identitybutton->show();
         gamingdlg->update();
     }else if(mark == 3){
         identitybutton = new MyPushButton(path,"");
         identitybutton->setParent(this->gamingdlg);
-        identitybutton->move(360,30);
+        identitybutton->move(gamingdlg->width()-640,30);
         identitybutton->show();
         gamingdlg->update();
     }else{
         identitybutton = new MyPushButton(path,"");
         identitybutton->setParent(gamingdlg);
-        identitybutton->move(800,30);
+        identitybutton->move(gamingdlg->width()-200,gamingdlg->height()*0.5-95);
         identitybutton->show();
         gamingdlg->update();
     }
@@ -821,7 +829,8 @@ void CKernel::SLOT_DealJoinRoomRs(char *buf,int nlen){
                 //座位号赋值
                 qDebug()<<rs->place;
                 this->MySeatId = rs->place+1;
-                this->m_mapIdToSeatId[this->m_id] = rs->place;
+                int k = rs->place+1;
+                this->m_mapSeatIdToId[k] = this->m_id;
 //                int i=0;
 //                m_vecId.clear();
 //                rs->m_userInfoarr[i].m_userid;
@@ -1137,7 +1146,7 @@ void CKernel::SLOT_DealCreateRoom(char *buf,int nlen){
     QString str;
     switch (rs->m_lResult) {
         case create_success:{
-            this->m_mapIdToSeatId[this->m_id] = 1;
+            this->m_mapSeatIdToId[1] = this->m_id;
             str = QString("创建房间成功,房间号为%1").arg(rs->m_RoomId);
             this->MySeatId = 1;
             this->m_roomid  = rs->m_RoomId;
