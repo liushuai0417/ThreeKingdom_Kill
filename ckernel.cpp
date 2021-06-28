@@ -254,11 +254,12 @@ void CKernel::setNetPackMap(){
 //更新房间成员回复
 void CKernel::SLOT_DealRoomMemberRs(char *buf,int nlen){
     STRU_ROOM_MEMBER_RS *rs = (STRU_ROOM_MEMBER_RS *)buf;
-    int i=0;
-    while(rs->m_userInfo[i].m_userid!=0){
-        m_mapIdToSeatId[rs->m_userInfo[i].m_userid] = rs->m_userInfo[i].m_place;
-        ++i;
+    for(int i=0;i<sizeof(rs->m_userInfo)/sizeof(rs->m_userInfo[0]);i++){
+        if(rs->m_userInfo[i].m_place!=-1){
+            m_mapIdToSeatId[rs->m_userInfo[i].m_userid] = rs->m_userInfo[i].m_place+1;
+        }
     }
+
 }
 
 //处理抽卡回复
@@ -474,6 +475,8 @@ void CKernel::SLOT_DealAllSelHeroRs(char *buf,int nlen){
 
 //处理选择英雄
 void CKernel::SLOT_DealSelectHero(char *buf,int nlen){
+    //显示主公位置
+    ShowZgPosition();
     STRU_SELHERO_RQ *rq = (STRU_SELHERO_RQ*)buf;
     if(this->m_identity != zhugong){
         this->ZG_HeroId = rq->ZG_heroid;
@@ -650,6 +653,74 @@ void CKernel::SLOT_DealPostIdentity(char *buf,int nlen){
             delete identityattention;
             gamingdlg->update();
         });
+
+}
+
+void CKernel::ShowZgPosition(){
+    int myposition = 0;
+    auto ite = m_mapIdToSeatId.begin();
+    int size = m_mapIdToSeatId.size();
+    int index = 0;
+    int mark = 1;
+    while(ite != m_mapIdToSeatId.end()){
+        if((*ite).first == this->m_id){
+            myposition = index;
+            break;
+        }
+        ++ite;
+        ++index;
+    }
+    ++ite;
+    ++index;
+
+    for(int i=index;i<size;i++){
+        ShowZGIdentity(mark,(*ite).first);
+        ++mark;
+        ++ite;
+    }
+    auto ite1 = m_mapIdToSeatId.begin();
+    if(mark<5){
+        for(int j=0;j<size-mark;j++){
+            ShowZGIdentity(mark,(*ite1).first);
+            ++mark;
+            ++ite1;
+        }
+    }
+}
+
+void CKernel::ShowZGIdentity(int mark,int id){
+    QString path;
+    MyPushButton *identitybutton;
+    if(id == this->ZG_Id){
+        path = QString(":/res/Shenfen/主公.png");
+    }else{
+        path = QString(":/res/Shenfen/身份背面.jpg");
+    }
+    if(mark == 1){
+        identitybutton = new MyPushButton(path,"");
+        identitybutton->setParent(gamingdlg);
+        identitybutton->move(30,gamingdlg->height()*0.5-95);
+        identitybutton->show();
+        gamingdlg->update();
+    }else if(mark == 2){
+        identitybutton = new MyPushButton(path,"");
+        identitybutton->setParent(this->gamingdlg);
+        identitybutton->move(180,30);
+        identitybutton->show();
+        gamingdlg->update();
+    }else if(mark == 3){
+        identitybutton = new MyPushButton(path,"");
+        identitybutton->setParent(this->gamingdlg);
+        identitybutton->move(360,30);
+        identitybutton->show();
+        gamingdlg->update();
+    }else{
+        identitybutton = new MyPushButton(path,"");
+        identitybutton->setParent(gamingdlg);
+        identitybutton->move(800,30);
+        identitybutton->show();
+        gamingdlg->update();
+    }
 
 }
 
@@ -1066,6 +1137,7 @@ void CKernel::SLOT_DealCreateRoom(char *buf,int nlen){
     QString str;
     switch (rs->m_lResult) {
         case create_success:{
+            this->m_mapIdToSeatId[this->m_id] = 1;
             str = QString("创建房间成功,房间号为%1").arg(rs->m_RoomId);
             this->MySeatId = 1;
             this->m_roomid  = rs->m_RoomId;

@@ -35,6 +35,8 @@ public:
     void InitCard();//初始化手牌
     QString GetColorPath(int colorid);//获取花色路径
     QString GetNumPath(int num);//获取点数路径
+    void ShowZgPosition();//显示主公位置
+    void ShowZGIdentity(int mark,int id);
 private:
     explicit CKernel(QObject *parent = 0);
     ~CKernel(){}
