@@ -279,15 +279,16 @@ void CKernel::SLOT_DealRoomMemberRs(char *buf,int nlen){
 void CKernel::SLOT_DealGetCardRs(char *buf,int nlen){
     STRU_GETCARD_RS* rs = (STRU_GETCARD_RS*)buf;
     for(int i=0;i<sizeof(rs->m_card)/sizeof(rs->m_card[0]);i++){
-        CardButton *cardbtn;
-        card.push_back(rs->m_card[i].id);
-        switch(rs->m_card[i].id){
+        if(rs->m_card[i].id != 0){
+            CardButton *cardbtn;
+            card.push_back(rs->m_card[i].id);
+            switch(rs->m_card[i].id){
             case SHA:
                 cardbtn = new CardButton(":/res/PAI/杀.png","");
-            break;
+                break;
             case SHAN:
                 cardbtn = new CardButton(":/res/PAI/闪.png","");
-            break;
+                break;
             case TAO:
                 cardbtn = new CardButton(":/res/PAI/桃.png","");
                 break;
@@ -326,7 +327,7 @@ void CKernel::SLOT_DealGetCardRs(char *buf,int nlen){
                 break;
             case LEBUSISHU:
                 cardbtn = new CardButton(":/res/PAI/乐不思蜀.png"),"";
-            break;
+                break;
             case HANBINGJIAN:
                 cardbtn = new CardButton(":/res/WUQI/寒冰剑.png","");
                 break;
@@ -378,12 +379,14 @@ void CKernel::SLOT_DealGetCardRs(char *buf,int nlen){
             case ZIXIN:
                 cardbtn = new CardButton(":/res/MA/紫骍.png","");
                 break;
-         }
-        cardbtn->id = rs->m_card[i].id;
-        cardbtn->num = rs->m_card[i].num;
-        cardbtn->color = rs->m_card[i].col;
-        cardbtn->type = rs->m_card[i].type;
-        vec_card.push_back(cardbtn);
+            }
+
+            cardbtn->id = rs->m_card[i].id;
+            cardbtn->num = rs->m_card[i].num;
+            cardbtn->color = rs->m_card[i].col;
+            cardbtn->type = rs->m_card[i].type;
+            vec_card.push_back(cardbtn);
+        }
     }
     InitCard();
 }
@@ -398,10 +401,10 @@ void CKernel::InitCard(){
         numpath = GetNumPath((*ite)->num);
         MyPushButton *color = new MyPushButton(colorpath,"");
         color->setParent(*ite);
-        color->move(10,10);
+        color->move(12,11);
         MyPushButton *num = new MyPushButton(numpath,"");
         num->setParent(*ite);
-        num->move(10,30);
+        num->move(11,30);
         color->show();
         num->show();
         (*ite)->setParent(gamingdlg);
