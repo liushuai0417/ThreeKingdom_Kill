@@ -120,6 +120,7 @@ public slots:
     void SLOT_DealAllSelHeroRs(char *buf,int nlen);//处理返回所有人选择的英雄和自身用户id
     void SLOT_DealGetCardRs(char *buf,int nlen);//处理抽卡回复
     void SLOT_DealRoomMemberRs(char *buf,int nlen);//更新房间成员回复
+    void SLOT_DealTurnBeginRs(char *buf,int nlen);//处理回合开始
 };
 
 #endif // CKERNEL_H

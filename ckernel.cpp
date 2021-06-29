@@ -249,7 +249,19 @@ void CKernel::setNetPackMap(){
     NetPackMap(DEF_PACK_ALLSELHERO_RS) = &CKernel::SLOT_DealAllSelHeroRs;
     NetPackMap(DEF_PACK_GETCARD_RS) = &CKernel::SLOT_DealGetCardRs;
     NetPackMap(DEF_PACK_ROOM_MEMBER_RS) = &CKernel::SLOT_DealRoomMemberRs;
+    NetPackMap(DEF_PACK_TURN_BEGIN) = &CKernel::SLOT_DealTurnBeginRs;
 }
+
+//处理回合开始
+void CKernel::SLOT_DealTurnBeginRs(char *buf,int nlen){
+    //发送请求抽卡包
+    STRU_GETCARD_RQ rq;
+    rq.m_roomid = this->m_roomid;
+    rq.m_userid = this->m_id;
+    rq.num = 2;
+    m_tcpClient->SendData((char*)&rq,sizeof(rq));
+}
+
 
 //更新房间成员回复
 void CKernel::SLOT_DealRoomMemberRs(char *buf,int nlen){
