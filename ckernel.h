@@ -36,7 +36,9 @@ public:
     QString GetColorPath(int colorid);//获取花色路径
     QString GetNumPath(int num);//获取点数路径
     void ShowZgPosition();//显示主公位置
-    void ShowZGIdentity(int mark,int id);
+    void ShowHero();//显示所有人选择的英雄
+    void ShowZGIdentity(int mark,int id,int seatid);//显示所有人的身份牌
+    int FindSeatIdById(int myid);//通过用户id查找座位id
 private:
     explicit CKernel(QObject *parent = 0);
     ~CKernel(){}
@@ -78,7 +80,9 @@ private:
     HeroButton *myhero;//我的英雄牌
     MyPushButton *identityattention;//身份提示
     map<int,vector<int>>m_mapIdtoHeroId;//用户id和英雄的映射
+    map<int,int>m_mapSeatIdToHeroId;//座位号和英雄id的映射
     map<int,int>m_mapSeatIdToId;//用户id和座位号的映射
+    map<int,vector<int>>m_mapSeatIdToPosition;//座位号和位置坐标的映射
     int chooseid;//选择英雄的下标
     int m_roomid;//房间id
     int m_identity;//我的身份

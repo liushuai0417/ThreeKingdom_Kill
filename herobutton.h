@@ -27,6 +27,7 @@ public slots:
 public:
     QString heroname;//英雄名字
     int index;
+    int seatid;
 private:
     QString normalImgPath;//按钮按下前的图片路径
     QString pressImgPath;//按钮按下后的图片路径

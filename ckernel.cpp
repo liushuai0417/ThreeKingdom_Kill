@@ -470,8 +470,38 @@ QString CKernel::GetNumPath(int num){
 void CKernel::SLOT_DealAllSelHeroRs(char *buf,int nlen){
     STRU_ALLSEL_HERO_RS *rs = (STRU_ALLSEL_HERO_RS *)buf;
     for(int i=0;i<sizeof(rs->heroarr)/sizeof(rs->heroarr[0]);i++){
-        this->m_mapIdtoHeroId[rs->user_idarr[i]] = this->m_mapIdtoHeroId[rs->heroarr[i]];
+        int seatid = FindSeatIdById(rs->user_idarr[i]);
+        this->m_mapSeatIdToHeroId[seatid] = rs->heroarr[i];
     }
+    ShowHero();
+}
+
+//显示所有人选择的英雄
+void CKernel::ShowHero(){
+    auto ite = this->m_mapSeatIdToHeroId.begin();
+    while(ite!= this->m_mapSeatIdToHeroId.end()){
+        if((*ite).first != this->MySeatId && (*ite).second != this->ZG_Id){
+            QString path = GetHeroPath((*ite).second);
+            HeroButton *hero = new HeroButton(path,"");
+            hero->seatid = (*ite).first;
+            hero->setParent(gamingdlg);
+            hero->move(this->m_mapSeatIdToPosition[(*ite).first][0]+140,this->m_mapSeatIdToPosition[(*ite).first][1]);
+            hero->show();
+            gamingdlg->update();
+        }
+        ++ite;
+    }
+}
+
+int CKernel::FindSeatIdById(int myid){
+    auto ite = this->m_mapSeatIdToId.begin();
+    while(ite != this->m_mapSeatIdToId.end()){
+        if((*ite).second == myid){
+            return (*ite).first;
+        }
+        ++ite;
+    }
+    return 0;
 }
 
 //处理选择英雄
@@ -480,8 +510,18 @@ void CKernel::SLOT_DealSelectHero(char *buf,int nlen){
     STRU_SELHERO_RQ *rq = (STRU_SELHERO_RQ*)buf;
     if(this->m_identity != zhugong){
         this->ZG_HeroId = rq->ZG_heroid;
+        //显示主公
+        //通过主公id找主公座位号
+        int SeatIdofZG = FindSeatIdById(this->ZG_Id);
+        //显示主公英雄
+        QString path = GetHeroPath(ZG_HeroId);
+        HeroButton *hero = new HeroButton(path,"");
+        hero->seatid = SeatIdofZG;
+        hero->setParent(gamingdlg);
+        hero->move(this->m_mapSeatIdToPosition[SeatIdofZG][0]+140,this->m_mapSeatIdToPosition[SeatIdofZG][1]);
+        hero->show();
+        gamingdlg->update();
     }
-
     for(int i=0;i<sizeof(rq->m_HeroArr)/sizeof(rq->m_HeroArr[0]);i++){
         heroid[i] = rq->m_HeroArr[i];
         if(rq->m_HeroArr[i]!=-1){
@@ -545,9 +585,28 @@ void CKernel::SLOT_DealSelectHero(char *buf,int nlen){
 
         connect(hero,&HeroButton::clicked,[=]()mutable{
             if(hero->b_flagchoose){
-                hero->ChooseHero1();
+//                auto ite = vec_hero.begin();
+//                while(ite!=vec_hero.end()){
+//                    if((*ite)!=hero){
+//                        if(!(*ite)->b_flagchoose){
+//                            (*ite)->ChooseHero();
+//                        }
+//                    }
+//                    ++ite;
+//                }
+                hero->ChooseHero1();//向下
             }else{
-                hero->ChooseHero();
+                auto ite = vec_hero.begin();
+                while(ite!=vec_hero.end()){
+                    if((*ite)!=hero){
+                        if((*ite)->b_flagchoose){
+                            (*ite)->ChooseHero1();
+                            (*ite)->b_flagchoose = !(*ite)->b_flagchoose;
+                        }
+                    }
+                    ++ite;
+                }
+                hero->ChooseHero();//向上
             }
             hero->chooseheroid = i;
             chooseid = i;
@@ -655,12 +714,6 @@ void CKernel::SLOT_DealPostIdentity(char *buf,int nlen){
         });
         //显示主公位置
         ShowZgPosition();
-        qDebug()<<"attention"<<this->m_mapSeatIdToId[1];
-        qDebug()<<"attention"<<this->m_mapSeatIdToId[2];
-        qDebug()<<"attention"<<this->m_mapSeatIdToId[3];
-        qDebug()<<"attention"<<this->m_mapSeatIdToId[4];
-        qDebug()<<"attention"<<this->m_mapSeatIdToId[5];
-        qDebug()<<"myidentity"<<this->identity;
 }
 
 void CKernel::ShowZgPosition(){
@@ -681,7 +734,7 @@ void CKernel::ShowZgPosition(){
     ++index;
 
     for(int i=index;i<size;i++){
-        ShowZGIdentity(mark,(*ite).second);
+        ShowZGIdentity(mark,(*ite).second,(*ite).first);
         ++mark;
         ++ite;
     }
@@ -689,14 +742,14 @@ void CKernel::ShowZgPosition(){
     int temp = mark;
     if(mark<5){
         for(int j=0;j<size-temp;j++){
-            ShowZGIdentity(mark,(*ite1).second);
+            ShowZGIdentity(mark,(*ite1).second,(*ite1).first);
             ++mark;
             ++ite1;
         }
     }
 }
 
-void CKernel::ShowZGIdentity(int mark,int id){
+void CKernel::ShowZGIdentity(int mark,int id,int seatid){
     QString path;
     MyPushButton *identitybutton;
     if(id == this->ZG_Id){
@@ -710,24 +763,40 @@ void CKernel::ShowZGIdentity(int mark,int id){
         identitybutton->move(30,gamingdlg->height()*0.5-95);
         identitybutton->show();
         gamingdlg->update();
+        vector<int>positon;
+        positon.push_back(30);
+        positon.push_back(gamingdlg->height()*0.5-95);
+        m_mapSeatIdToPosition[seatid] = positon;
     }else if(mark == 2){
         identitybutton = new MyPushButton(path,"");
         identitybutton->setParent(this->gamingdlg);
         identitybutton->move(500,30);
         identitybutton->show();
         gamingdlg->update();
+        vector<int>positon;
+        positon.push_back(500);
+        positon.push_back(30);
+        m_mapSeatIdToPosition[seatid] = positon;
     }else if(mark == 3){
         identitybutton = new MyPushButton(path,"");
         identitybutton->setParent(this->gamingdlg);
         identitybutton->move(gamingdlg->width()-640,30);
         identitybutton->show();
         gamingdlg->update();
+        vector<int>positon;
+        positon.push_back(gamingdlg->width()-640);
+        positon.push_back(30);
+        m_mapSeatIdToPosition[seatid] = positon;
     }else{
         identitybutton = new MyPushButton(path,"");
         identitybutton->setParent(gamingdlg);
-        identitybutton->move(gamingdlg->width()-200,gamingdlg->height()*0.5-95);
+        identitybutton->move(gamingdlg->width()-500,gamingdlg->height()*0.5-95);
         identitybutton->show();
         gamingdlg->update();
+        vector<int>positon;
+        positon.push_back(gamingdlg->width()-500);
+        positon.push_back(gamingdlg->height()*0.5-95);
+        m_mapSeatIdToPosition[seatid] = positon;
     }
 
 }

@@ -109,6 +109,7 @@ void HeroButton::zoom2(){
     animation->start();
 }
 
+//向上
 void HeroButton::ChooseHero(){
     //创建动画对象
     QPropertyAnimation *animation = new QPropertyAnimation(this,"geometry");
