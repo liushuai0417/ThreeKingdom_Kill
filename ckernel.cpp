@@ -288,7 +288,7 @@ void CKernel::SLOT_DealRoomMemberRs(char *buf,int nlen){
 void CKernel::SLOT_DealGetCardRs(char *buf,int nlen){
     MyPushButton *chupai = new MyPushButton(":/res/icon/chupai.png",":/res/icon/chupai_1.png");
     chupai->setParent(gamingdlg);
-    chupai->move(gamingdlg->width()*0.5-chupai->width()*0.5-100,gamingdlg->height()*0.8-50);
+    chupai->move(gamingdlg->width()*0.5-chupai->width()*0.5+40,gamingdlg->height()*0.8-50);
     chupai->show();
     //出牌按钮的槽函数
     connect(chupai,&MyPushButton::clicked,[=](){
@@ -320,7 +320,7 @@ void CKernel::SLOT_DealGetCardRs(char *buf,int nlen){
     });
     MyPushButton *qipai = new MyPushButton(":/res/icon/qipai.png",":/res/icon/qipai_1.png");
     qipai->setParent(gamingdlg);
-    qipai->move(gamingdlg->width()*0.5-qipai->width()*0.5+100,gamingdlg->height()*0.8-50);
+    qipai->move(gamingdlg->width()*0.5-qipai->width()*0.5+200,gamingdlg->height()*0.8-50);
     qipai->show();
     gamingdlg->update();
     STRU_GETCARD_RS* rs = (STRU_GETCARD_RS*)buf;
@@ -463,7 +463,7 @@ void CKernel::InitCard(){
         color->show();
         num->show();
         (*ite)->setParent(gamingdlg);
-        (*ite)->move(gamingdlg->width()*0.5-310+i*140,gamingdlg->height()*0.8-10);
+        (*ite)->move(gamingdlg->width()*0.5-160+i*140,gamingdlg->height()*0.8-10);
         (*ite)->show();
         gamingdlg->update();
         ++i;
@@ -542,8 +542,46 @@ void CKernel::SLOT_DealAllSelHeroRs(char *buf,int nlen){
     for(int i=0;i<sizeof(rs->m_playerarr)/sizeof(rs->m_playerarr[0]);i++){
         int seatid = FindSeatIdById(rs->m_playerarr[i].user_id);
         this->m_mapSeatIdToHeroId[seatid] = rs->m_playerarr[i].hero_id;
+        this->m_mapSeatIdToHp[seatid] = rs->m_playerarr[i].hp;
     }
     ShowHero();
+    ShowHp();
+}
+
+//显示所有人的血量
+void CKernel::ShowHp(){
+    auto ite = this->m_mapSeatIdToHp.begin();
+    QString path;
+    while(ite!= this->m_mapSeatIdToHp.end()){
+        switch((*ite).second){
+        case 1:
+            path = QString(":/res/blood/一血.png");
+            break;
+        case 2:
+            path = QString(":/res/blood/二血.png");
+            break;
+        case 3:
+            path = QString(":/res/blood/三血.png");
+            break;
+        case 4:
+            path = QString(":/res/blood/四血.png");
+            break;
+        case 5:
+            path = QString(":/res/blood/五血.png");
+                break;
+        }
+
+        MyPushButton *blood = new MyPushButton(path,"");
+        blood->setParent(gamingdlg);
+        if(this->MySeatId == (*ite).first){
+            blood->move(gamingdlg->width()*0.5-blood->width()*0.5-300,gamingdlg->height()*0.8-10);
+        }else{
+            blood->move(this->m_mapSeatIdToPosition[(*ite).first][0]+300,this->m_mapSeatIdToPosition[(*ite).first][1]);
+        }
+        blood->show();
+        ++ite;
+    }
+    gamingdlg->update();
 }
 
 //显示所有人选择的英雄

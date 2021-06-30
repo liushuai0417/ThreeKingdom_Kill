@@ -4,11 +4,6 @@
         <file>res/BJ/loading_bg.png</file>
         <file>res/BJ/task_level_map.png</file>
         <file>res/BJ/zhugeliang.png</file>
-        <file>res/blood/二血.png</file>
-        <file>res/blood/三血.png</file>
-        <file>res/blood/四血.png</file>
-        <file>res/blood/五血.png</file>
-        <file>res/blood/一血.png</file>
         <file>res/icon/BackButton.png</file>
         <file>res/icon/BackButtonSelected.png</file>
         <file>res/icon/icon.png</file>
@@ -257,5 +252,10 @@
         <file>res/icon/qipai.png</file>
         <file>res/icon/qipai_1.png</file>
         <file>res/icon/头像框.png</file>
+        <file>res/blood/二血.png</file>
+        <file>res/blood/三血.png</file>
+        <file>res/blood/四血.png</file>
+        <file>res/blood/五血.png</file>
+        <file>res/blood/一血.png</file>
     </qresource>
 </RCC>

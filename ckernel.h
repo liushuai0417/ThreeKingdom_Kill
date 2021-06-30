@@ -39,12 +39,7 @@ public:
     void ShowHero();//显示所有人选择的英雄
     void ShowZGIdentity(int mark,int id,int seatid);//显示所有人的身份牌
     int FindSeatIdById(int myid);//通过用户id查找座位id
-    int usecardtoid1;//出牌对象1
-    int usecardtoid2;//出牌对象2
-    STRU_CARD choosecard;//要打出的手牌结构体
-    int cardnum;//手牌数量
-    CardButton *pushCard;//打出的牌
-    int b_choosefirstpeople;//是否选择了第一个人
+    void ShowHp();//显示所有人的血量
 private:
     explicit CKernel(QObject *parent = 0);
     ~CKernel(){}
@@ -87,6 +82,7 @@ private:
     MyPushButton *identityattention;//身份提示
     map<int,vector<int>>m_mapIdtoHeroId;//用户id和英雄的映射
     map<int,int>m_mapSeatIdToHeroId;//座位号和英雄id的映射
+    map<int,int>m_mapSeatIdToHp;//座位号和血量的映射
     map<int,int>m_mapSeatIdToId;//用户id和座位号的映射
     map<int,vector<int>>m_mapSeatIdToPosition;//座位号和位置坐标的映射
     int chooseid;//选择英雄的下标
@@ -100,6 +96,12 @@ private:
     int MySeatId;//我的座位号
     QString myHeroPath;
     MyPushButton *headerborder;//头像框
+    int usecardtoid1;//出牌对象1
+    int usecardtoid2;//出牌对象2
+    STRU_CARD choosecard;//要打出的手牌结构体
+    int cardnum;//手牌数量
+    CardButton *pushCard;//打出的牌
+    int b_choosefirstpeople;//是否选择了第一个人
 public slots:
     void SLOT_DealLoginRs(char *buf,int nlen);//处理登录回复槽函数
     void SLOT_DealRegisterRs(char *buf,int nlen);//处理注册回复槽函数
