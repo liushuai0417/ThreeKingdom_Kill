@@ -44,6 +44,7 @@ public:
     STRU_CARD choosecard;//要打出的手牌结构体
     int cardnum;//手牌数量
     CardButton *pushCard;//打出的牌
+    int b_choosefirstpeople;//是否选择了第一个人
 private:
     explicit CKernel(QObject *parent = 0);
     ~CKernel(){}

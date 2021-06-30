@@ -36,6 +36,7 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     m_roomcount = 0;
     usecardtoid1 = 0;//出牌对象1
     usecardtoid2 = 0;//出牌对象2
+    b_choosefirstpeople = false;
     //窗口关闭槽函数
     connect(m_Dialog,&Dialog::SIG_CLOSE,[=](){
         DestoryInstance();
@@ -314,6 +315,8 @@ void CKernel::SLOT_DealGetCardRs(char *buf,int nlen){
         rq.m_touser1id = usecardtoid1;
         rq.m_touser2id = usecardtoid2;
         rq.last_cardnum = this->cardnum;
+        this->b_choosefirstpeople = false;
+        m_tcpClient->SendData((char*)&rq,sizeof(rq));
     });
     MyPushButton *qipai = new MyPushButton(":/res/icon/qipai.png",":/res/icon/qipai_1.png");
     qipai->setParent(gamingdlg);
@@ -536,9 +539,9 @@ QString CKernel::GetNumPath(int num){
 //处理返回所有人选择的英雄和自身用户id
 void CKernel::SLOT_DealAllSelHeroRs(char *buf,int nlen){
     STRU_ALLSEL_HERO_RS *rs = (STRU_ALLSEL_HERO_RS *)buf;
-    for(int i=0;i<sizeof(rs->heroarr)/sizeof(rs->heroarr[0]);i++){
-        int seatid = FindSeatIdById(rs->user_idarr[i]);
-        this->m_mapSeatIdToHeroId[seatid] = rs->heroarr[i];
+    for(int i=0;i<sizeof(rs->m_playerarr)/sizeof(rs->m_playerarr[0]);i++){
+        int seatid = FindSeatIdById(rs->m_playerarr[i].user_id);
+        this->m_mapSeatIdToHeroId[seatid] = rs->m_playerarr[i].hero_id;
     }
     ShowHero();
 }
@@ -554,6 +557,16 @@ void CKernel::ShowHero(){
             hero->setParent(gamingdlg);
             hero->move(this->m_mapSeatIdToPosition[(*ite).first][0]+140,this->m_mapSeatIdToPosition[(*ite).first][1]);
             hero->show();
+            connect(hero,&HeroButton::clicked,[=](){
+                if(this->b_choosefirstpeople){
+                    //如果没选择第一个人
+                    this->usecardtoid1 = this->m_mapSeatIdToHeroId[hero->seatid];
+                    this->b_choosefirstpeople = true;
+                }else{
+                    //如果选择了第一个人
+                    this->usecardtoid2 = this->m_mapSeatIdToHeroId[hero->seatid];
+                }
+            });
             gamingdlg->update();
         }
         ++ite;
