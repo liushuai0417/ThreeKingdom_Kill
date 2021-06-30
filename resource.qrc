@@ -252,5 +252,10 @@
         <file>res/PAI/乐不思蜀.png</file>
         <file>res/PAI/闪电.png</file>
         <file>res/Shenfen/身份背面.jpg</file>
+        <file>res/icon/chupai.png</file>
+        <file>res/icon/chupai_1.png</file>
+        <file>res/icon/qipai.png</file>
+        <file>res/icon/qipai_1.png</file>
+        <file>res/icon/头像框.png</file>
     </qresource>
 </RCC>

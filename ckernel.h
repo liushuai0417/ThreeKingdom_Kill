@@ -93,6 +93,7 @@ private:
     int My_HeroId;//我的英雄id
     int MySeatId;//我的座位号
     QString myHeroPath;
+    MyPushButton *headerborder;//头像框
 public slots:
     void SLOT_DealLoginRs(char *buf,int nlen);//处理登录回复槽函数
     void SLOT_DealRegisterRs(char *buf,int nlen);//处理注册回复槽函数

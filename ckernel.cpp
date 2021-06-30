@@ -260,6 +260,12 @@ void CKernel::SLOT_DealTurnBeginRs(char *buf,int nlen){
     rq.m_userid = this->m_id;
     rq.num = 2;
     m_tcpClient->SendData((char*)&rq,sizeof(rq));
+    //设置头像框
+    headerborder = new MyPushButton(":/res/icon/头像框.png","");
+    headerborder->setParent(gamingdlg);
+    headerborder->move(gamingdlg->width()*0.5-myhero->width()*0.5-445,gamingdlg->height()*0.8-20);
+    headerborder->show();
+    gamingdlg->update();
 }
 
 
@@ -277,6 +283,15 @@ void CKernel::SLOT_DealRoomMemberRs(char *buf,int nlen){
 
 //处理抽卡回复
 void CKernel::SLOT_DealGetCardRs(char *buf,int nlen){
+    MyPushButton *chupai = new MyPushButton(":/res/icon/chupai.png",":/res/icon/chupai_1.png");
+    chupai->setParent(gamingdlg);
+    chupai->move(gamingdlg->width()*0.5-chupai->width()*0.5-100,gamingdlg->height()*0.8-50);
+    chupai->show();
+    MyPushButton *qipai = new MyPushButton(":/res/icon/qipai.png",":/res/icon/qipai_1.png");
+    qipai->setParent(gamingdlg);
+    qipai->move(gamingdlg->width()*0.5-qipai->width()*0.5+100,gamingdlg->height()*0.8-50);
+    qipai->show();
+    gamingdlg->update();
     STRU_GETCARD_RS* rs = (STRU_GETCARD_RS*)buf;
     for(int i=0;i<sizeof(rs->m_card)/sizeof(rs->m_card[0]);i++){
         if(rs->m_card[i].id != 0){
@@ -385,6 +400,14 @@ void CKernel::SLOT_DealGetCardRs(char *buf,int nlen){
             cardbtn->num = rs->m_card[i].num;
             cardbtn->color = rs->m_card[i].col;
             cardbtn->type = rs->m_card[i].type;
+            connect(cardbtn,&CardButton::clicked,[=](){
+                if(cardbtn->b_flagchoose){
+                    cardbtn->ChooseHero1();//向下
+                }else{
+                    cardbtn->ChooseHero();//向上
+                }
+                cardbtn->b_flagchoose = !cardbtn->b_flagchoose;
+            });
             vec_card.push_back(cardbtn);
         }
     }
@@ -600,15 +623,6 @@ void CKernel::SLOT_DealSelectHero(char *buf,int nlen){
 
         connect(hero,&HeroButton::clicked,[=]()mutable{
             if(hero->b_flagchoose){
-//                auto ite = vec_hero.begin();
-//                while(ite!=vec_hero.end()){
-//                    if((*ite)!=hero){
-//                        if(!(*ite)->b_flagchoose){
-//                            (*ite)->ChooseHero();
-//                        }
-//                    }
-//                    ++ite;
-//                }
                 hero->ChooseHero1();//向下
             }else{
                 auto ite = vec_hero.begin();
