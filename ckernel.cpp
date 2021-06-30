@@ -34,6 +34,8 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     item = new RoomItem;
     chooseid = -1;
     m_roomcount = 0;
+    usecardtoid1 = 0;//出牌对象1
+    usecardtoid2 = 0;//出牌对象2
     //窗口关闭槽函数
     connect(m_Dialog,&Dialog::SIG_CLOSE,[=](){
         DestoryInstance();
@@ -287,6 +289,32 @@ void CKernel::SLOT_DealGetCardRs(char *buf,int nlen){
     chupai->setParent(gamingdlg);
     chupai->move(gamingdlg->width()*0.5-chupai->width()*0.5-100,gamingdlg->height()*0.8-50);
     chupai->show();
+    //出牌按钮的槽函数
+    connect(chupai,&MyPushButton::clicked,[=](){
+        auto ite = this->vec_card.begin();
+        while(ite!=this->vec_card.end()){
+            if((*ite)->b_flagchoose){
+                pushCard = *ite;
+                (*ite)->PushCard();
+                (*ite)->setEnabled(true);
+                //(*ite)->hide();
+                ite = this->vec_card.erase(ite);
+                this->cardnum--;
+            }else{
+                ++ite;
+            }
+        }
+        STRU_POSTCARD_RQ rq;
+        rq.m_roomid = this->m_roomid;
+        rq.m_userid = this->m_id;
+        rq.m_card.col = this->choosecard.col;
+        rq.m_card.id = this->choosecard.id;
+        rq.m_card.num = this->choosecard.num;
+        rq.m_card.type = this->choosecard.type;
+        rq.m_touser1id = usecardtoid1;
+        rq.m_touser2id = usecardtoid2;
+        rq.last_cardnum = this->cardnum;
+    });
     MyPushButton *qipai = new MyPushButton(":/res/icon/qipai.png",":/res/icon/qipai_1.png");
     qipai->setParent(gamingdlg);
     qipai->move(gamingdlg->width()*0.5-qipai->width()*0.5+100,gamingdlg->height()*0.8-50);
@@ -411,6 +439,7 @@ void CKernel::SLOT_DealGetCardRs(char *buf,int nlen){
             vec_card.push_back(cardbtn);
         }
     }
+    this->cardnum = vec_card.size();
     InitCard();
 }
 
