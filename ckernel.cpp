@@ -253,6 +253,130 @@ void CKernel::setNetPackMap(){
     NetPackMap(DEF_PACK_GETCARD_RS) = &CKernel::SLOT_DealGetCardRs;
     NetPackMap(DEF_PACK_ROOM_MEMBER_RS) = &CKernel::SLOT_DealRoomMemberRs;
     NetPackMap(DEF_PACK_TURN_BEGIN) = &CKernel::SLOT_DealTurnBeginRs;
+    NetPackMap(DEF_PACK_POSTCARD_RS) = &CKernel::SLOT_DealPostCardRs;
+    NetPackMap(DEF_PACK_RESPOSE_CARD_RQ) = &CKernel::SLOT_DealReposeCardRq;
+}
+
+//处理请求出牌
+void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
+    STRU_RESPOSE_CARD_RQ *rq = (STRU_RESPOSE_CARD_RQ *)buf;
+    QString checkname = GetCardName(rq->check_card_id);
+    QString resposename = GetCardName(rq->respose_card_id);
+    QLabel *label = new QLabel;
+    label->setText(QString("您需要出一张%1").arg(resposename));
+    label->setGeometry(100,100,250, 250);
+    label->setParent(gamingdlg);
+    label->show();
+    gamingdlg->update();
+}
+
+QString CKernel::GetCardName(int cardid){
+    QString result;
+    switch(cardid){
+    case SHA:
+        result = QString("杀");
+        break;
+    case SHAN:
+        result = QString("闪");
+        break;
+    case TAO:
+        result = QString("桃");
+        break;
+    case GUOHECHAIQIAO:
+        result = QString("过河拆桥");
+        break;
+    case SHUNSHOUQIANYANG:
+        result = QString("顺手牵羊");
+        break;
+    case JUEDOU:
+        result = QString("决斗");
+        break;
+    case JIEDAOSHAREN:
+        result = QString("借刀杀人");
+        break;
+    case WUZHONGSHENGYOU:
+        result = QString("无中生有");
+        break;
+    case WUXIEKEJI:
+        result = QString("无懈可击");
+        break;
+    case WANJIANQIFA:
+        result = QString("万箭齐发");
+        break;
+    case NANMANRUQIN:
+        result = QString("南蛮入侵");
+        break;
+    case TAOYUANJIEYI:
+        result = QString("桃园结义");
+        break;
+    case WUGUFENGDENG:
+        result = QString("五谷丰登");
+        break;
+    case SHANDIAN:
+        result = QString("闪电");
+        break;
+    case LEBUSISHU:
+        result = QString("乐不思蜀");
+        break;
+    case HANBINGJIAN:
+        result = QString("寒冰箭");
+        break;
+    case CIXIONGSHUANGGUJIAN:
+        result = QString("雌雄双股剑");
+        break;
+    case QINGLONGYANYUEDAO:
+        result = QString("青龙偃月刀");
+        break;
+    case QINGGANGJIAN:
+        result = QString("青钢剑");
+        break;
+    case ZHANGBASHEMAO:
+        result = QString("丈八蛇矛");
+        break;
+    case QILINGONG:
+        result = QString("麒麟弓");
+        break;
+    case ZHUGELIANNU:
+        result = QString("诸葛连弩");
+        break;
+    case GUANSHIFU:
+        result = QString("贯石斧");
+        break;
+    case FANGTIANHUAJI:
+        result = QString("方天画戟");
+        break;
+    case BAGUAZHEN:
+        result = QString("八卦阵");
+        break;
+    case RENWANGDUN:
+        result = QString("仁王盾");
+        break;
+    case CHITU:
+        result = QString("赤兔");
+        break;
+    case DAYUAN:
+        result = QString("大宛");
+        break;
+    case DILU:
+        result = QString("的卢");
+        break;
+    case JUEYING:
+        result = QString("绝影");
+        break;
+    case ZHUAHUANGFEIDIAN:
+        result = QString("爪黄飞电");
+        break;
+    case ZIXIN:
+        result = QString("紫骍");
+        break;
+    }
+}
+
+//DEF_PACK_RESPOSE_CARD_RQ
+//DEF_PACK_RESPOSE_CARD_RS
+void CKernel::SLOT_DealPostCardRs(char *buf,int nlen){
+    STRU_POSTCARD_RS *rs = (STRU_POSTCARD_RS *)buf;
+
 }
 
 //处理回合开始
@@ -438,6 +562,10 @@ void CKernel::SLOT_DealGetCardRs(char *buf,int nlen){
                     cardbtn->ChooseHero();//向上
                 }
                 cardbtn->b_flagchoose = !cardbtn->b_flagchoose;
+                choosecard.id = cardbtn->id;
+                choosecard.num = cardbtn->num;
+                choosecard.col = cardbtn->color;
+                choosecard.type = cardbtn->type;
             });
             vec_card.push_back(cardbtn);
         }
@@ -596,13 +724,13 @@ void CKernel::ShowHero(){
             hero->move(this->m_mapSeatIdToPosition[(*ite).first][0]+140,this->m_mapSeatIdToPosition[(*ite).first][1]);
             hero->show();
             connect(hero,&HeroButton::clicked,[=](){
-                if(this->b_choosefirstpeople){
+                if(!this->b_choosefirstpeople){
                     //如果没选择第一个人
-                    this->usecardtoid1 = this->m_mapSeatIdToHeroId[hero->seatid];
+                    this->usecardtoid1 = this->m_mapSeatIdToId[hero->seatid];
                     this->b_choosefirstpeople = true;
                 }else{
                     //如果选择了第一个人
-                    this->usecardtoid2 = this->m_mapSeatIdToHeroId[hero->seatid];
+                    this->usecardtoid2 = this->m_mapSeatIdToId[hero->seatid];
                 }
             });
             gamingdlg->update();

@@ -40,6 +40,7 @@ public:
     void ShowZGIdentity(int mark,int id,int seatid);//显示所有人的身份牌
     int FindSeatIdById(int myid);//通过用户id查找座位id
     void ShowHp();//显示所有人的血量
+    QString GetCardName(int cardid);//通过牌的id获取牌名
 private:
     explicit CKernel(QObject *parent = 0);
     ~CKernel(){}
@@ -78,6 +79,7 @@ private:
     vector<int>m_vecId;//房间成员的id数组
     vector<HeroButton*>vec_hero;//拷贝的选择英雄数组
     vector<CardButton*>vec_card;//手牌数组
+    vector<CardButton*>vec_pushcard;//打出的手牌数组
     HeroButton *myhero;//我的英雄牌
     MyPushButton *identityattention;//身份提示
     map<int,vector<int>>m_mapIdtoHeroId;//用户id和英雄的映射
@@ -130,6 +132,8 @@ public slots:
     void SLOT_DealGetCardRs(char *buf,int nlen);//处理抽卡回复
     void SLOT_DealRoomMemberRs(char *buf,int nlen);//更新房间成员回复
     void SLOT_DealTurnBeginRs(char *buf,int nlen);//处理回合开始
+    void SLOT_DealPostCardRs(char *buf,int nlen);//处理出牌回复
+    void SLOT_DealReposeCardRq(char *buf,int nlen);//处理请求出牌
 };
 
 #endif // CKERNEL_H
