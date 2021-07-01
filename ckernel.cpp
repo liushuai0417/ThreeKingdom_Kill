@@ -36,6 +36,13 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     m_roomcount = 0;
     usecardtoid1 = 0;//出牌对象1
     usecardtoid2 = 0;//出牌对象2
+    chupai = new MyPushButton(":/res/icon/chupai.png",":/res/icon/chupai_1.png");
+    chupai->setParent(gamingdlg);
+    chupai->move(gamingdlg->width()*0.5-chupai->width()*0.5+40,gamingdlg->height()*0.8-150);
+
+    qipai = new MyPushButton(":/res/icon/qipai.png",":/res/icon/qipai_1.png");
+    qipai->setParent(gamingdlg);
+    qipai->move(gamingdlg->width()*0.5-qipai->width()*0.5+200,gamingdlg->height()*0.8-150);
     b_choosefirstpeople = false;
     //窗口关闭槽函数
     connect(m_Dialog,&Dialog::SIG_CLOSE,[=](){
@@ -265,15 +272,20 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
     //QString resposename = GetCardName(rq);
     auto ite = this->m_mapSeatIdToId.begin();
     while(ite != this->m_mapSeatIdToId.end()){
-        if((*ite).second != this->m_id){
+        if((*ite).second == rq->m_userid){
             QString path;
-            path = GetCardName(rq->m_card.id);
+            path = GetCardPath(rq->m_card.id);
             CardButton *card = new CardButton(path,"");
+            card->num = rq->m_card.num;
+            card->id = rq->m_card.id;
+            card->color = rq->m_card.col;
+            card->type = rq->m_card.type;
             card->setParent(this->gamingdlg);
             card->move(this->m_mapSeatIdToPosition[(*ite).first][0]+290,this->m_mapSeatIdToPosition[(*ite).first][1]);
             card->show();
             gamingdlg->update();
             card->PushCard();
+            break;
         }
         ++ite;
     }
@@ -289,6 +301,109 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
         gamingdlg->update();
     }
 
+}
+
+QString CKernel::GetCardPath(int cardid){
+    QString path;
+    switch(cardid){
+    case SHA:
+        path = QString(":/res/PAI/杀.png");
+        break;
+    case SHAN:
+        path = QString(":/res/PAI/闪.png");
+        break;
+    case TAO:
+        path = QString(":/res/PAI/桃.png");
+        break;
+    case GUOHECHAIQIAO:
+        path = QString(":/res/PAI/过河拆桥.png");
+        break;
+    case SHUNSHOUQIANYANG:
+        path = QString(":/res/PAI/顺手牵羊.png");
+        break;
+    case JUEDOU:
+        path = QString(":/res/PAI/决斗.png");
+        break;
+    case JIEDAOSHAREN:
+        path = QString(":/res/PAI/借刀杀人.png");
+        break;
+    case WUZHONGSHENGYOU:
+        path = QString(":/res/PAI/无中生有.png");
+        break;
+    case WUXIEKEJI:
+        path = QString(":/res/PAI/无懈可击.png");
+        break;
+    case WANJIANQIFA:
+        path = QString(":/res/PAI/万箭齐发.png");
+        break;
+    case NANMANRUQIN:
+        path = QString(":/res/PAI/南蛮入侵.png");
+        break;
+    case TAOYUANJIEYI:
+        path = QString(":/res/PAI/桃园结义.png");
+        break;
+    case WUGUFENGDENG:
+        path = QString(":/res/PAI/五谷丰登.png");
+        break;
+    case SHANDIAN:
+        path = QString(":/res/PAI/闪电.png");
+        break;
+    case LEBUSISHU:
+        path = QString(":/res/PAI/乐不思蜀.png");
+        break;
+    case HANBINGJIAN:
+        path = QString(":/res/WUQI/寒冰剑.png");
+        break;
+    case CIXIONGSHUANGGUJIAN:
+        path = QString(":/res/WUQI/雌雄双剑.png");
+        break;
+    case QINGLONGYANYUEDAO:
+        path = QString(":/res/WUQI/青龙偃月刀.png");
+        break;
+    case QINGGANGJIAN:
+        path = QString(":/res/WUQI/青钢剑.png");
+        break;
+    case ZHANGBASHEMAO:
+        path = QString(":/res/WUQI/丈八蛇矛.png");
+        break;
+    case QILINGONG:
+        path = QString(":/res/WUQI/麒麟弓.png");
+        break;
+    case ZHUGELIANNU:
+        path = QString(":/res/WUQI/诸葛连弩.png");
+        break;
+    case GUANSHIFU:
+        path = QString(":/res/WUQI/贯石斧.png");
+        break;
+    case FANGTIANHUAJI:
+        path = QString(":/res/WUQI/方天画戟.png");
+        break;
+    case BAGUAZHEN:
+        path = QString(":/res/WUQI/八卦阵.png");
+        break;
+    case RENWANGDUN:
+        path = QString(":/res/WUQI/仁王盾.png");
+        break;
+    case CHITU:
+        path = QString(":/res/MA/赤兔.png");
+        break;
+    case DAYUAN:
+        path = QString(":/res/MA/大宛.png");
+        break;
+    case DILU:
+        path = QString(":/res/MA/的卢.png");
+        break;
+    case JUEYING:
+        path = QString(":/res/MA/绝影.png");
+        break;
+    case ZHUAHUANGFEIDIAN:
+        path = QString(":/res/MA/爪黄飞电.png");
+        break;
+    case ZIXIN:
+        path = QString(":/res/MA/紫骍.png");
+        break;
+    }
+    return path;
 }
 
 QString CKernel::GetCardName(int cardid){
@@ -391,6 +506,7 @@ QString CKernel::GetCardName(int cardid){
         result = QString("紫骍");
         break;
     }
+    return result;
 }
 
 //DEF_PACK_RESPOSE_CARD_RQ
@@ -403,11 +519,20 @@ void CKernel::SLOT_DealPostCardRs(char *buf,int nlen){
 //处理回合开始
 void CKernel::SLOT_DealTurnBeginRs(char *buf,int nlen){
     //发送请求抽卡包
-    STRU_GETCARD_RQ rq;
-    rq.m_roomid = this->m_roomid;
-    rq.m_userid = this->m_id;
-    rq.num = 2;
-    m_tcpClient->SendData((char*)&rq,sizeof(rq));
+    STRU_TURN_BEGIN *rs = (STRU_TURN_BEGIN *)buf;
+    if(rs->user_id == this->m_id){
+        chupai->show();
+        qipai->show();
+        STRU_GETCARD_RQ rq;
+        rq.m_roomid = this->m_roomid;
+        rq.m_userid = this->m_id;
+        rq.num = 2;
+        m_tcpClient->SendData((char*)&rq,sizeof(rq));
+    }else{
+        chupai->hide();
+        qipai->hide();
+    }
+
     //设置头像框
     headerborder = new MyPushButton(":/res/icon/头像框.png","");
     headerborder->setParent(gamingdlg);
@@ -431,9 +556,6 @@ void CKernel::SLOT_DealRoomMemberRs(char *buf,int nlen){
 
 //处理抽卡回复
 void CKernel::SLOT_DealGetCardRs(char *buf,int nlen){
-    MyPushButton *chupai = new MyPushButton(":/res/icon/chupai.png",":/res/icon/chupai_1.png");
-    chupai->setParent(gamingdlg);
-    chupai->move(gamingdlg->width()*0.5-chupai->width()*0.5+40,gamingdlg->height()*0.8-50);
     chupai->show();
     //出牌按钮的槽函数
     connect(chupai,&MyPushButton::clicked,[=](){
@@ -463,9 +585,7 @@ void CKernel::SLOT_DealGetCardRs(char *buf,int nlen){
         this->b_choosefirstpeople = false;
         m_tcpClient->SendData((char*)&rq,sizeof(rq));
     });
-    MyPushButton *qipai = new MyPushButton(":/res/icon/qipai.png",":/res/icon/qipai_1.png");
-    qipai->setParent(gamingdlg);
-    qipai->move(gamingdlg->width()*0.5-qipai->width()*0.5+200,gamingdlg->height()*0.8-50);
+
     qipai->show();
     gamingdlg->update();
     STRU_GETCARD_RS* rs = (STRU_GETCARD_RS*)buf;

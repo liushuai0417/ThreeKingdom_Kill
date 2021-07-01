@@ -41,6 +41,7 @@ public:
     int FindSeatIdById(int myid);//通过用户id查找座位id
     void ShowHp();//显示所有人的血量
     QString GetCardName(int cardid);//通过牌的id获取牌名
+    QString GetCardPath(int cardid);//通过id获取牌的路径
 private:
     explicit CKernel(QObject *parent = 0);
     ~CKernel(){}
@@ -60,6 +61,8 @@ private:
     FriendList* friendlistDialog;//好友列表窗口
     GamingDialog *gamingdlg;//游戏界面指针
     MyPushButton *identity;//身份牌
+    MyPushButton *chupai;
+    MyPushButton *qipai;
     PFUN m_NetPackMap[DEF_PACK_COUNT];//协议映射数组
     RoomItem *item;
     int m_id;//用户id 唯一标识
