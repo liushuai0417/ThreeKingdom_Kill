@@ -19,6 +19,7 @@
 #include"herobutton.h"
 #include<map>
 #include"cardbutton.h"
+#include<QLabel>
 class CKernel;
 typedef void (CKernel::*PFUN)(char*,int);
 class CKernel : public QObject
@@ -63,6 +64,7 @@ private:
     MyPushButton *identity;//身份牌
     MyPushButton *chupai;
     MyPushButton *qipai;
+    QLabel *label;//提示标签
     PFUN m_NetPackMap[DEF_PACK_COUNT];//协议映射数组
     RoomItem *item;
     int m_id;//用户id 唯一标识
@@ -107,6 +109,7 @@ private:
     int cardnum;//手牌数量
     CardButton *pushCard;//打出的牌
     int b_choosefirstpeople;//是否选择了第一个人
+    bool b_flagpush;//是否主动出牌
 public slots:
     void SLOT_DealLoginRs(char *buf,int nlen);//处理登录回复槽函数
     void SLOT_DealRegisterRs(char *buf,int nlen);//处理注册回复槽函数

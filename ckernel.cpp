@@ -36,6 +36,7 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     m_roomcount = 0;
     usecardtoid1 = 0;//出牌对象1
     usecardtoid2 = 0;//出牌对象2
+    b_flagpush = true;
     chupai = new MyPushButton(":/res/icon/chupai.png",":/res/icon/chupai_1.png");
 
 
@@ -288,17 +289,68 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
         ++ite;
     }
     if(rq->m_touser1id == this->m_id){
-        QLabel *label = new QLabel;
+        label = new QLabel;
         label->setText(QString("您需要出一张%1").arg(checkname));
         QFont font("华文行楷",20,QFont::Bold);
         label->setFont(font);
         label->setStyleSheet("color:white;");
-        label->setGeometry(100,100,250,250);
+        label->setGeometry(800,800,250,250);
         label->setParent(gamingdlg);
         label->show();
         gamingdlg->update();
+        chupai->show();
+        qipai->show();
+        b_flagpush = false;//被动出牌
     }
 
+    //出牌按钮的槽函数
+    connect(chupai,&MyPushButton::clicked,[=](){
+        auto ite = this->vec_card.begin();
+        while(ite!=this->vec_card.end()){
+            if((*ite)->b_flagchoose){
+                pushCard = *ite;
+                (*ite)->PushCard();
+                (*ite)->setEnabled(true);
+                //(*ite)->hide();
+                ite = this->vec_card.erase(ite);
+                this->cardnum--;
+            }else{
+                ++ite;
+            }
+        }
+        if(this->b_flagpush){
+            STRU_POSTCARD_RQ rq1;
+            rq1.m_roomid = this->m_roomid;
+            rq1.m_userid = this->m_id;
+            rq1.m_card.col = this->choosecard.col;
+            rq1.m_card.id = this->choosecard.id;
+            rq1.m_card.num = this->choosecard.num;
+            rq1.m_card.type = this->choosecard.type;
+            rq1.m_touser1id = usecardtoid1;
+            rq1.m_touser2id = usecardtoid2;
+            rq1.last_cardnum = this->cardnum;
+            this->b_choosefirstpeople = false;
+            m_tcpClient->SendData((char*)&rq1,sizeof(rq1));
+        }else{
+            STRU_POSTCARD_RS_S rs;
+            rs.m_card.col = this->choosecard.col;
+            rs.m_card.id = this->choosecard.id;
+            rs.m_card.num = this->choosecard.num;
+            rs.m_card.type = this->choosecard.type;
+            if(rq->m_card.id == SHA){
+                if(this->choosecard.id != SHAN){
+                    return;
+                }
+            }
+            rs.room_id = this->m_roomid;
+            rs.user_id = this->m_id;
+            rs.y_card = rq->m_card;
+            rs.y_user_id = rq->m_userid;
+            rs.m_lResult = 1;
+            m_tcpClient->SendData((char*)&rs,sizeof(rs));
+        }
+
+    });
 }
 
 QString CKernel::GetCardPath(int cardid){
@@ -558,43 +610,14 @@ void CKernel::SLOT_DealRoomMemberRs(char *buf,int nlen){
 
 //处理抽卡回复
 void CKernel::SLOT_DealGetCardRs(char *buf,int nlen){
+    STRU_GETCARD_RS* rs = (STRU_GETCARD_RS*)buf;
     chupai->move(gamingdlg->width()*0.5-chupai->width()*0.5+40,gamingdlg->height()*0.8-150);
     chupai->setParent(this->gamingdlg);
     qipai->move(gamingdlg->width()*0.5-qipai->width()*0.5+200,gamingdlg->height()*0.8-150);
     qipai->setParent(this->gamingdlg);
     chupai->show();
-    //出牌按钮的槽函数
-    connect(chupai,&MyPushButton::clicked,[=](){
-        auto ite = this->vec_card.begin();
-        while(ite!=this->vec_card.end()){
-            if((*ite)->b_flagchoose){
-                pushCard = *ite;
-                (*ite)->PushCard();
-                (*ite)->setEnabled(true);
-                //(*ite)->hide();
-                ite = this->vec_card.erase(ite);
-                this->cardnum--;
-            }else{
-                ++ite;
-            }
-        }
-        STRU_POSTCARD_RQ rq;
-        rq.m_roomid = this->m_roomid;
-        rq.m_userid = this->m_id;
-        rq.m_card.col = this->choosecard.col;
-        rq.m_card.id = this->choosecard.id;
-        rq.m_card.num = this->choosecard.num;
-        rq.m_card.type = this->choosecard.type;
-        rq.m_touser1id = usecardtoid1;
-        rq.m_touser2id = usecardtoid2;
-        rq.last_cardnum = this->cardnum;
-        this->b_choosefirstpeople = false;
-        m_tcpClient->SendData((char*)&rq,sizeof(rq));
-    });
-
     qipai->show();
     gamingdlg->update();
-    STRU_GETCARD_RS* rs = (STRU_GETCARD_RS*)buf;
     for(int i=0;i<sizeof(rs->m_card)/sizeof(rs->m_card[0]);i++){
         if(rs->m_card[i].id != 0){
             CardButton *cardbtn;
