@@ -594,9 +594,22 @@ void CKernel::SLOT_DealTurnBeginRs(char *buf,int nlen){
     }
 
     //设置头像框
+    int curseatid;
+    auto ite = this->m_mapSeatIdToId.begin();
+    while(ite != this->m_mapSeatIdToId.end()){
+        if((*ite).second == rs->user_id){
+            curseatid = (*ite).first;
+            break;
+        }
+        ++ite;
+    }
     headerborder = new MyPushButton(":/res/icon/头像框.png","");
     headerborder->setParent(gamingdlg);
-    headerborder->move(gamingdlg->width()*0.5-myhero->width()*0.5-445,gamingdlg->height()*0.8-20);
+    if(curseatid == this->MySeatId){
+        headerborder->move(gamingdlg->width()*0.5-myhero->width()*0.5-445,gamingdlg->height()*0.8-20);
+    }else{
+        headerborder->move(this->m_mapSeatIdToPosition[curseatid][0]+150,this->m_mapSeatIdToPosition[curseatid][1]);
+    }
     headerborder->show();
     gamingdlg->update();
 }
