@@ -37,10 +37,10 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     usecardtoid1 = 0;//出牌对象1
     usecardtoid2 = 0;//出牌对象2
     chupai = new MyPushButton(":/res/icon/chupai.png",":/res/icon/chupai_1.png");
-    chupai->setParent(gamingdlg);
+
 
     qipai = new MyPushButton(":/res/icon/qipai.png",":/res/icon/qipai_1.png");
-    qipai->setParent(gamingdlg);
+
     b_choosefirstpeople = false;
     //窗口关闭槽函数
     connect(m_Dialog,&Dialog::SIG_CLOSE,[=](){
@@ -520,8 +520,10 @@ void CKernel::SLOT_DealTurnBeginRs(char *buf,int nlen){
     STRU_TURN_BEGIN *rs = (STRU_TURN_BEGIN *)buf;
     if(rs->user_id == this->m_id){
         chupai->move(gamingdlg->width()*0.5-chupai->width()*0.5+40,gamingdlg->height()*0.8-150);
+        chupai->setParent(gamingdlg);
         chupai->show();
         qipai->move(gamingdlg->width()*0.5-qipai->width()*0.5+200,gamingdlg->height()*0.8-150);
+        qipai->setParent(gamingdlg);
         qipai->show();
         STRU_GETCARD_RQ rq;
         rq.m_roomid = this->m_roomid;
@@ -557,7 +559,9 @@ void CKernel::SLOT_DealRoomMemberRs(char *buf,int nlen){
 //处理抽卡回复
 void CKernel::SLOT_DealGetCardRs(char *buf,int nlen){
     chupai->move(gamingdlg->width()*0.5-chupai->width()*0.5+40,gamingdlg->height()*0.8-150);
+    chupai->setParent(this->gamingdlg);
     qipai->move(gamingdlg->width()*0.5-qipai->width()*0.5+200,gamingdlg->height()*0.8-150);
+    qipai->setParent(this->gamingdlg);
     chupai->show();
     //出牌按钮的槽函数
     connect(chupai,&MyPushButton::clicked,[=](){
