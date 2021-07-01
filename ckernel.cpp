@@ -303,35 +303,15 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
         b_flagpush = false;//被动出牌
     }
 
+    chupai->move(gamingdlg->width()*0.5-chupai->width()*0.5+40,gamingdlg->height()*0.8-150);
+    chupai->setParent(this->gamingdlg);
+    qipai->move(gamingdlg->width()*0.5-qipai->width()*0.5+200,gamingdlg->height()*0.8-150);
+    qipai->setParent(this->gamingdlg);
+    chupai->show();
+    qipai->show();
+    gamingdlg->update();
     //出牌按钮的槽函数
     connect(chupai,&MyPushButton::clicked,[=](){
-        auto ite = this->vec_card.begin();
-        while(ite!=this->vec_card.end()){
-            if((*ite)->b_flagchoose){
-                pushCard = *ite;
-                (*ite)->PushCard();
-                (*ite)->setEnabled(true);
-                //(*ite)->hide();
-                ite = this->vec_card.erase(ite);
-                this->cardnum--;
-            }else{
-                ++ite;
-            }
-        }
-        if(this->b_flagpush){
-            STRU_POSTCARD_RQ rq1;
-            rq1.m_roomid = this->m_roomid;
-            rq1.m_userid = this->m_id;
-            rq1.m_card.col = this->choosecard.col;
-            rq1.m_card.id = this->choosecard.id;
-            rq1.m_card.num = this->choosecard.num;
-            rq1.m_card.type = this->choosecard.type;
-            rq1.m_touser1id = usecardtoid1;
-            rq1.m_touser2id = usecardtoid2;
-            rq1.last_cardnum = this->cardnum;
-            this->b_choosefirstpeople = false;
-            m_tcpClient->SendData((char*)&rq1,sizeof(rq1));
-        }else{
             STRU_POSTCARD_RS_S rs;
             rs.m_card.col = this->choosecard.col;
             rs.m_card.id = this->choosecard.id;
@@ -348,8 +328,6 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
             rs.y_user_id = rq->m_userid;
             rs.m_lResult = 1;
             m_tcpClient->SendData((char*)&rs,sizeof(rs));
-        }
-
     });
 }
 
@@ -577,6 +555,34 @@ void CKernel::SLOT_DealTurnBeginRs(char *buf,int nlen){
         qipai->move(gamingdlg->width()*0.5-qipai->width()*0.5+200,gamingdlg->height()*0.8-150);
         qipai->setParent(gamingdlg);
         qipai->show();
+        connect(chupai,&MyPushButton::clicked,[=](){
+            auto ite = this->vec_card.begin();
+            while(ite!=this->vec_card.end()){
+                if((*ite)->b_flagchoose){
+                    pushCard = *ite;
+                    (*ite)->PushCard();
+                    (*ite)->setEnabled(true);
+                    //(*ite)->hide();
+                    ite = this->vec_card.erase(ite);
+                    this->cardnum--;
+                }else{
+                    ++ite;
+                }
+            }
+            gamingdlg->update();
+            STRU_POSTCARD_RQ rq1;
+            rq1.m_roomid = this->m_roomid;
+            rq1.m_userid = this->m_id;
+            rq1.m_card.col = this->choosecard.col;
+            rq1.m_card.id = this->choosecard.id;
+            rq1.m_card.num = this->choosecard.num;
+            rq1.m_card.type = this->choosecard.type;
+            rq1.m_touser1id = usecardtoid1;
+            rq1.m_touser2id = usecardtoid2;
+            rq1.last_cardnum = this->cardnum;
+            this->b_choosefirstpeople = false;
+            m_tcpClient->SendData((char*)&rq1,sizeof(rq1));
+        });
         STRU_GETCARD_RQ rq;
         rq.m_roomid = this->m_roomid;
         rq.m_userid = this->m_id;
@@ -611,13 +617,7 @@ void CKernel::SLOT_DealRoomMemberRs(char *buf,int nlen){
 //处理抽卡回复
 void CKernel::SLOT_DealGetCardRs(char *buf,int nlen){
     STRU_GETCARD_RS* rs = (STRU_GETCARD_RS*)buf;
-    chupai->move(gamingdlg->width()*0.5-chupai->width()*0.5+40,gamingdlg->height()*0.8-150);
-    chupai->setParent(this->gamingdlg);
-    qipai->move(gamingdlg->width()*0.5-qipai->width()*0.5+200,gamingdlg->height()*0.8-150);
-    qipai->setParent(this->gamingdlg);
-    chupai->show();
-    qipai->show();
-    gamingdlg->update();
+
     for(int i=0;i<sizeof(rs->m_card)/sizeof(rs->m_card[0]);i++){
         if(rs->m_card[i].id != 0){
             CardButton *cardbtn;
