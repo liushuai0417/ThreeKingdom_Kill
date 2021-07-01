@@ -178,6 +178,7 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     connect(joinDialog,&JoinRoomDialog::SIG_SetCountZero,this,&CKernel::SLOT_SetCountZero);
     //房间列表的第一行
     RoomItem *itemindex = new RoomItem;
+
     m_MainScene->Slot_AddUserItem(itemindex);
 }
 
@@ -254,20 +255,40 @@ void CKernel::setNetPackMap(){
     NetPackMap(DEF_PACK_ROOM_MEMBER_RS) = &CKernel::SLOT_DealRoomMemberRs;
     NetPackMap(DEF_PACK_TURN_BEGIN) = &CKernel::SLOT_DealTurnBeginRs;
     NetPackMap(DEF_PACK_POSTCARD_RS) = &CKernel::SLOT_DealPostCardRs;
-    NetPackMap(DEF_PACK_RESPOSE_CARD_RQ) = &CKernel::SLOT_DealReposeCardRq;
+    NetPackMap(DEF_PACK_POSTCARD_RQ) = &CKernel::SLOT_DealReposeCardRq;
 }
 
-//处理请求出牌
+//同步出牌动画
 void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
-    STRU_RESPOSE_CARD_RQ *rq = (STRU_RESPOSE_CARD_RQ *)buf;
-    QString checkname = GetCardName(rq->check_card_id);
-    QString resposename = GetCardName(rq->respose_card_id);
-    QLabel *label = new QLabel;
-    label->setText(QString("您需要出一张%1").arg(resposename));
-    label->setGeometry(100,100,250, 250);
-    label->setParent(gamingdlg);
-    label->show();
-    gamingdlg->update();
+    STRU_POSTCARD_RQ *rq = (STRU_POSTCARD_RQ *)buf;
+    QString checkname = GetCardName(rq->m_card.id);
+    //QString resposename = GetCardName(rq);
+    auto ite = this->m_mapSeatIdToId.begin();
+    while(ite != this->m_mapSeatIdToId.end()){
+        if((*ite).second != this->m_id){
+            QString path;
+            path = GetCardName(rq->m_card.id);
+            CardButton *card = new CardButton(path,"");
+            card->setParent(this->gamingdlg);
+            card->move(this->m_mapSeatIdToPosition[(*ite).first][0]+290,this->m_mapSeatIdToPosition[(*ite).first][1]);
+            card->show();
+            gamingdlg->update();
+            card->PushCard();
+        }
+        ++ite;
+    }
+    if(rq->m_touser1id == this->m_id){
+        QLabel *label = new QLabel;
+        label->setText(QString("您需要出一张%1").arg(checkname));
+        QFont font("华文行楷",20,QFont::Bold);
+        label->setFont(font);
+        label->setStyleSheet("color:white;");
+        label->setGeometry(100,100,250,250);
+        label->setParent(gamingdlg);
+        label->show();
+        gamingdlg->update();
+    }
+
 }
 
 QString CKernel::GetCardName(int cardid){
