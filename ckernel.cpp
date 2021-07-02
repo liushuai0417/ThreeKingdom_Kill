@@ -424,6 +424,7 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
         connect(BuChu,&MyPushButton::clicked,[=](){
             STRU_POSTCARD_RS_S rs;
             rs.m_lResult = post_failed;
+            m_tcpClient->SendData((char*)&rs,sizeof(rs));
             ChuPai->hide();
             BuChu->hide();
             gamingdlg->update();
