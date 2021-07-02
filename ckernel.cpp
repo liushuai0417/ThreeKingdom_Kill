@@ -272,6 +272,7 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
     auto ite = this->m_mapSeatIdToId.begin();
     while(ite != this->m_mapSeatIdToId.end()){
         if((*ite).second == rq->m_userid){
+            //找到出牌的那个人
             QString path;
             path = GetCardPath(rq->m_card.id);
             CardButton *card = new CardButton(path,"");
@@ -282,12 +283,33 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
             card->setParent(this->gamingdlg);
             card->move(this->m_mapSeatIdToPosition[(*ite).first][0]+290,this->m_mapSeatIdToPosition[(*ite).first][1]);
             card->show();
+            if(rq->m_touser1id!=0){
+                MyPushButton *killaction = new MyPushButton(":/res/icon/杀指向.png","");
+                killaction->setParent(gamingdlg);
+                if(rq->m_touser1id != this->m_id){
+                    //显示攻击动画
+                    int seatid = FindSeatIdById(rq->m_touser1id);
+                    killaction->move(gamingdlg->width()*0.5-killaction->width()*0.5-50,gamingdlg->height()*0.8-100);
+                    killaction->show();
+                    gamingdlg->update();
+                    killaction->KillAction(this->m_mapSeatIdToPosition[seatid][0]+290,this->m_mapSeatIdToPosition[seatid][1]-100);
+                }else{
+                    //显示攻击动画
+                    int seatid = FindSeatIdById(rq->m_userid);
+                    killaction->move(this->m_mapSeatIdToPosition[seatid][0]+290,this->m_mapSeatIdToPosition[seatid][1]);
+                    killaction->show();
+                    gamingdlg->update();
+                    killaction->KillAction(gamingdlg->width()*0.5-killaction->width()*0.5-50,gamingdlg->height()*0.8-100);
+                }
+            }
+
             gamingdlg->update();
             card->PushCard();
             break;
         }
         ++ite;
     }
+    //如果被使用牌的是自己 弹出一个QLabel 并执行动画
     if(rq->m_touser1id == this->m_id){
         label = new QLabel;
         label->setText(QString("您需要出一张%1").arg(checkname));
@@ -298,37 +320,56 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
         label->setParent(gamingdlg);
         label->show();
         gamingdlg->update();
+        //显示出牌弃牌按钮
+        chupai->move(gamingdlg->width()*0.5-chupai->width()*0.5+40,gamingdlg->height()*0.8-150);
+        chupai->setParent(this->gamingdlg);
+        qipai->move(gamingdlg->width()*0.5-qipai->width()*0.5+200,gamingdlg->height()*0.8-150);
+        qipai->setParent(this->gamingdlg);
         chupai->show();
         qipai->show();
+        gamingdlg->update();
+        //出牌按钮的槽函数
+        connect(chupai,&MyPushButton::clicked,[=](){
+                STRU_POSTCARD_RS_S rs;
+                rs.m_card.col = this->choosecard.col;
+                rs.m_card.id = this->choosecard.id;
+                rs.m_card.num = this->choosecard.num;
+                rs.m_card.type = this->choosecard.type;
+                if(rq->m_card.id == SHA){
+                    if(this->choosecard.id != SHAN){
+                        return;
+                    }
+                }
+                rs.room_id = this->m_roomid;
+                rs.user_id = this->m_id;
+                rs.y_card = rq->m_card;
+                rs.y_user_id = rq->m_userid;
+                rs.m_lResult = 1;
+                m_tcpClient->SendData((char*)&rs,sizeof(rs));
+                //将出的牌弹到桌面中间
+                auto ite = this->vec_card.begin();
+                while(ite!=this->vec_card.end()){
+                    if((*ite)->b_flagchoose){
+                        pushCard = *ite;
+                        (*ite)->PushCard();
+                        (*ite)->setEnabled(true);
+                        ite = this->vec_card.erase(ite);
+                        this->cardnum--;
+                    }else{
+                        ++ite;
+                    }
+                }
+                gamingdlg->update();
+        });
         b_flagpush = false;//被动出牌
+    }else{//如果不是对自己使用的牌 隐藏按钮
+        chupai->hide();
+        qipai->hide();
+        gamingdlg->update();
     }
 
-    chupai->move(gamingdlg->width()*0.5-chupai->width()*0.5+40,gamingdlg->height()*0.8-150);
-    chupai->setParent(this->gamingdlg);
-    qipai->move(gamingdlg->width()*0.5-qipai->width()*0.5+200,gamingdlg->height()*0.8-150);
-    qipai->setParent(this->gamingdlg);
-    chupai->show();
-    qipai->show();
-    gamingdlg->update();
-    //出牌按钮的槽函数
-    connect(chupai,&MyPushButton::clicked,[=](){
-            STRU_POSTCARD_RS_S rs;
-            rs.m_card.col = this->choosecard.col;
-            rs.m_card.id = this->choosecard.id;
-            rs.m_card.num = this->choosecard.num;
-            rs.m_card.type = this->choosecard.type;
-            if(rq->m_card.id == SHA){
-                if(this->choosecard.id != SHAN){
-                    return;
-                }
-            }
-            rs.room_id = this->m_roomid;
-            rs.user_id = this->m_id;
-            rs.y_card = rq->m_card;
-            rs.y_user_id = rq->m_userid;
-            rs.m_lResult = 1;
-            m_tcpClient->SendData((char*)&rs,sizeof(rs));
-    });
+
+
 }
 
 QString CKernel::GetCardPath(int cardid){
@@ -562,6 +603,17 @@ void CKernel::SLOT_DealTurnBeginRs(char *buf,int nlen){
                     pushCard = *ite;
                     (*ite)->PushCard();
                     (*ite)->setEnabled(true);
+                    //显示攻击动画
+                    if(usecardtoid1!=0){
+                        int seatid = FindSeatIdById(usecardtoid1);
+                        MyPushButton *killaction = new MyPushButton(":/res/icon/杀指向.png","");
+                        killaction->setParent(gamingdlg);
+                        killaction->move(gamingdlg->width()*0.5-killaction->width()*0.5-50,gamingdlg->height()*0.8-100);
+                        killaction->show();
+                        gamingdlg->update();
+                        killaction->KillAction(this->m_mapSeatIdToPosition[seatid][0]+290,this->m_mapSeatIdToPosition[seatid][1]);
+                    }
+
                     //(*ite)->hide();
                     ite = this->vec_card.erase(ite);
                     this->cardnum--;
@@ -899,7 +951,8 @@ void CKernel::ShowHp(){
 void CKernel::ShowHero(){
     auto ite = this->m_mapSeatIdToHeroId.begin();
     while(ite!= this->m_mapSeatIdToHeroId.end()){
-        if((*ite).first != this->MySeatId && (*ite).second != this->ZG_Id){
+        //如果
+        if((*ite).first != this->MySeatId && (*ite).second != this->ZG_HeroId){
             QString path = GetHeroPath((*ite).second);
             HeroButton *hero = new HeroButton(path,"");
             hero->seatid = (*ite).first;
