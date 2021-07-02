@@ -84,7 +84,8 @@ private:
     vector<int>m_vecId;//房间成员的id数组
     vector<HeroButton*>vec_hero;//拷贝的选择英雄数组
     vector<CardButton*>vec_card;//手牌数组
-    vector<CardButton*>vec_pushcard;//打出的手牌数组
+    vector<CardButton*>vec_pushcard;//自己打出的手牌数组
+    vector<CardButton*>vec_otherpushcard;//别人打出的手牌数组
     HeroButton *myhero;//我的英雄牌
     MyPushButton *identityattention;//身份提示
     map<int,vector<int>>m_mapIdtoHeroId;//用户id和英雄的映射

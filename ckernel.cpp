@@ -357,7 +357,14 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
             }
 
             gamingdlg->update();
+            if(vec_otherpushcard.size()>0){
+                for(int i=0;i<vec_otherpushcard.size();i++){
+                    vec_otherpushcard[i]->hide();
+                    gamingdlg->update();
+                }
+            }
             card->PushCard();
+            this->vec_otherpushcard.push_back(card);
             break;
         }
         ++ite;
@@ -386,6 +393,18 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
         gamingdlg->update();
         //出牌按钮的槽函数
         connect(ChuPai,&MyPushButton::clicked,[=](){
+                if(this->vec_pushcard.size()>0){
+                    for(int i=0;i<vec_pushcard.size();i++){
+                        vec_pushcard[i]->hide();
+                        gamingdlg->update();
+                    }
+                }
+                if(this->vec_otherpushcard.size()>0){
+                    for(int i=0;i<vec_otherpushcard.size();i++){
+                        vec_otherpushcard[i]->hide();
+                        gamingdlg->update();
+                    }
+                }
                 STRU_POSTCARD_RS_S rs;
                 rs.m_lResult = post_success;
                 rs.m_card.col = this->choosecard.col;
@@ -408,8 +427,9 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
                 while(ite!=this->vec_card.end()){
                     if((*ite)->b_flagchoose){
                         pushCard = *ite;
-                        (*ite)->PushCard();
-                        (*ite)->setEnabled(true);
+                        pushCard->PushCard();
+                        pushCard->setEnabled(true);
+                        this->vec_pushcard.push_back(pushCard);
                         ite = this->vec_card.erase(ite);
                         this->cardnum--;
                     }else{
@@ -424,6 +444,10 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
         connect(BuChu,&MyPushButton::clicked,[=](){
             STRU_POSTCARD_RS_S rs;
             rs.m_lResult = post_failed;
+            rs.room_id = this->m_roomid;
+            rs.user_id = this->m_id;
+            rs.y_card = rq->m_card;
+            rs.y_user_id = rq->m_userid;
             m_tcpClient->SendData((char*)&rs,sizeof(rs));
             ChuPai->hide();
             BuChu->hide();
