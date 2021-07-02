@@ -311,7 +311,7 @@ void CKernel::SLOT_CommitStatus(char *buf,int nlen){
     STRU_COMMIT_STATUS *rs = (STRU_COMMIT_STATUS *)buf;
     int seatid = FindSeatIdById(rs->user_id);
     //改变映射的值
-    this->m_mapSeatIdToHeroId[seatid] = rs->hp_change;
+    this->m_mapSeatIdToHp[seatid] = rs->hp_change;
     this->ShowHp();
 }
 
