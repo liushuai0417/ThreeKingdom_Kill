@@ -140,6 +140,7 @@ public slots:
     void SLOT_DealTurnBeginRs(char *buf,int nlen);//处理回合开始
     void SLOT_DealPostCardRs(char *buf,int nlen);//处理出牌回复
     void SLOT_DealReposeCardRq(char *buf,int nlen);//处理请求出牌
+    void SLOT_CommitStatus(char *buf,int nlen);//同步血量
 };
 
 #endif // CKERNEL_H

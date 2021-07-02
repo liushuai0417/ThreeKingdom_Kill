@@ -303,12 +303,22 @@ void CKernel::setNetPackMap(){
     NetPackMap(DEF_PACK_TURN_BEGIN) = &CKernel::SLOT_DealTurnBeginRs;
     NetPackMap(DEF_PACK_POSTCARD_RS) = &CKernel::SLOT_DealPostCardRs;
     NetPackMap(DEF_PACK_POSTCARD_RQ) = &CKernel::SLOT_DealReposeCardRq;
+    NetPackMap(DEF_PACK_COMMIT_STATUS) = &CKernel::SLOT_CommitStatus;
+}
+
+//如果有人掉血了 同步所有人的血量
+void CKernel::SLOT_CommitStatus(char *buf,int nlen){
+    STRU_COMMIT_STATUS *rs = (STRU_COMMIT_STATUS *)buf;
+    int seatid = FindSeatIdById(rs->user_id);
+    //改变映射的值
+    this->m_mapSeatIdToHeroId[seatid] = rs->hp_change;
+    this->ShowHp();
 }
 
 //同步出牌动画
 void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
     MyPushButton *ChuPai;
-    MyPushButton *QiPai;
+    MyPushButton *BuChu;
     STRU_POSTCARD_RQ *rq = (STRU_POSTCARD_RQ *)buf;
     QString checkname = GetCardName(rq->m_card.id);
     //QString resposename = GetCardName(rq);
@@ -366,17 +376,18 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
 //        gamingdlg->update();
         //显示出牌弃牌按钮
         ChuPai = new MyPushButton(":/res/icon/chupai.png",":/res/icon/chupai_1.png");
-        QiPai = new MyPushButton(":/res/icon/qipai.png",":/res/icon/qipai_1.png");
+        BuChu = new MyPushButton(":/res/icon/qipai.png",":/res/icon/qipai_1.png");
         ChuPai->setParent(this->gamingdlg);
         ChuPai->move(gamingdlg->width()*0.5-ChuPai->width()*0.5+40,gamingdlg->height()*0.8-150);
-        QiPai->setParent(this->gamingdlg);
-        QiPai->move(gamingdlg->width()*0.5-QiPai->width()*0.5+200,gamingdlg->height()*0.8-150);
+        BuChu->setParent(this->gamingdlg);
+        BuChu->move(gamingdlg->width()*0.5-BuChu->width()*0.5+200,gamingdlg->height()*0.8-150);
         ChuPai->show();
-        QiPai->show();
+        BuChu->show();
         gamingdlg->update();
         //出牌按钮的槽函数
         connect(ChuPai,&MyPushButton::clicked,[=](){
                 STRU_POSTCARD_RS_S rs;
+                rs.m_lResult = post_success;
                 rs.m_card.col = this->choosecard.col;
                 rs.m_card.id = this->choosecard.id;
                 rs.m_card.num = this->choosecard.num;
@@ -406,8 +417,16 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
                     }
                 }
                 ChuPai->hide();
-                QiPai->hide();
+                BuChu->hide();
                 gamingdlg->update();
+        });
+
+        connect(BuChu,&MyPushButton::clicked,[=](){
+            STRU_POSTCARD_RS_S rs;
+            rs.m_lResult = post_failed;
+            ChuPai->hide();
+            BuChu->hide();
+            gamingdlg->update();
         });
         gamingdlg->update();
         b_flagpush = false;//被动出牌
