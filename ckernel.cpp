@@ -320,6 +320,8 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
     MyPushButton *ChuPai;
     MyPushButton *BuChu;
     STRU_POSTCARD_RQ *rq = (STRU_POSTCARD_RQ *)buf;
+    STRU_CARD killcard = rq->m_card;
+    int m_userid = rq->m_userid;
     QString checkname = GetCardName(rq->m_card.id);
     //QString resposename = GetCardName(rq);
     auto ite = this->m_mapSeatIdToId.begin();
@@ -383,7 +385,7 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
 //        gamingdlg->update();
         //显示出牌弃牌按钮
         ChuPai = new MyPushButton(":/res/icon/chupai.png",":/res/icon/chupai_1.png");
-        BuChu = new MyPushButton(":/res/icon/qipai.png",":/res/icon/qipai_1.png");
+        BuChu = new MyPushButton(":/res/icon/buchu.png",":/res/icon/buchu_1.png");
         ChuPai->setParent(this->gamingdlg);
         ChuPai->move(gamingdlg->width()*0.5-ChuPai->width()*0.5+40,gamingdlg->height()*0.8-150);
         BuChu->setParent(this->gamingdlg);
@@ -418,8 +420,8 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
                 }
                 rs.room_id = this->m_roomid;
                 rs.user_id = this->m_id;
-                rs.y_card = rq->m_card;
-                rs.y_user_id = rq->m_userid;
+                rs.y_card = killcard;
+                rs.y_user_id = m_userid;
                 rs.m_lResult = 1;
                 m_tcpClient->SendData((char*)&rs,sizeof(rs));
                 //将出的牌弹到桌面中间
@@ -446,8 +448,8 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
             rs.m_lResult = post_failed;
             rs.room_id = this->m_roomid;
             rs.user_id = this->m_id;
-            rs.y_card = rq->m_card;
-            rs.y_user_id = rq->m_userid;
+            rs.y_card = killcard;
+            rs.y_user_id = m_userid;
             m_tcpClient->SendData((char*)&rs,sizeof(rs));
             ChuPai->hide();
             BuChu->hide();

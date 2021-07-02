@@ -258,5 +258,7 @@
         <file>res/blood/五血.png</file>
         <file>res/blood/一血.png</file>
         <file>res/icon/杀指向.png</file>
+        <file>res/icon/buchu.png</file>
+        <file>res/icon/buchu_1.png</file>
     </qresource>
 </RCC>
