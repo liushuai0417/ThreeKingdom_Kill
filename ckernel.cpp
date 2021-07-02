@@ -1010,6 +1010,7 @@ void CKernel::ShowHp(){
             blood->move(this->m_mapSeatIdToPosition[(*ite).first][0]+300,this->m_mapSeatIdToPosition[(*ite).first][1]);
         }
         blood->show();
+        gamingdlg->update();
         ++ite;
     }
     gamingdlg->update();
