@@ -307,6 +307,8 @@ void CKernel::setNetPackMap(){
 
 //同步出牌动画
 void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
+    MyPushButton *ChuPai;
+    MyPushButton *QiPai;
     STRU_POSTCARD_RQ *rq = (STRU_POSTCARD_RQ *)buf;
     QString checkname = GetCardName(rq->m_card.id);
     //QString resposename = GetCardName(rq);
@@ -352,22 +354,23 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
     }
     //如果被使用牌的是自己 弹出一个QLabel 并执行动画
     if(rq->m_touser1id == this->m_id){
-        label = new QLabel;
-        label->setText(QString("您需要出一张%1").arg(checkname));
-        QFont font("华文行楷",20,QFont::Bold);
-        label->setFont(font);
-        label->setStyleSheet("color:white;");
-        label->setGeometry(800,800,250,250);
-        label->setParent(gamingdlg);
-        label->show();
-        gamingdlg->update();
+//        label = new QLabel;
+//        label->setText(QString("您需要出一张%1").arg(checkname));
+//        QFont font("华文行楷",20,QFont::Bold);
+//        label->setFont(font);
+//        label->setParent(gamingdlg);
+//        label->setStyleSheet("color:white;");
+//        label->setGeometry(800,800,250,250);
+
+//        label->show();
+//        gamingdlg->update();
         //显示出牌弃牌按钮
-        MyPushButton *ChuPai = new MyPushButton(":/res/icon/chupai.png",":/res/icon/chupai_1.png");
-        MyPushButton *QiPai = new MyPushButton(":/res/icon/qipai.png",":/res/icon/qipai_1.png");
-        ChuPai->move(gamingdlg->width()*0.5-ChuPai->width()*0.5+40,gamingdlg->height()*0.8-150);
+        ChuPai = new MyPushButton(":/res/icon/chupai.png",":/res/icon/chupai_1.png");
+        QiPai = new MyPushButton(":/res/icon/qipai.png",":/res/icon/qipai_1.png");
         ChuPai->setParent(this->gamingdlg);
-        QiPai->move(gamingdlg->width()*0.5-QiPai->width()*0.5+200,gamingdlg->height()*0.8-150);
+        ChuPai->move(gamingdlg->width()*0.5-ChuPai->width()*0.5+40,gamingdlg->height()*0.8-150);
         QiPai->setParent(this->gamingdlg);
+        QiPai->move(gamingdlg->width()*0.5-QiPai->width()*0.5+200,gamingdlg->height()*0.8-150);
         ChuPai->show();
         QiPai->show();
         gamingdlg->update();
@@ -402,10 +405,10 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
                         ++ite;
                     }
                 }
+                ChuPai->hide();
+                QiPai->hide();
                 gamingdlg->update();
         });
-        ChuPai->hide();
-        QiPai->hide();
         gamingdlg->update();
         b_flagpush = false;//被动出牌
     }else{//如果不是对自己使用的牌 隐藏按钮
@@ -628,16 +631,16 @@ QString CKernel::GetCardName(int cardid){
 //DEF_PACK_RESPOSE_CARD_RS
 void CKernel::SLOT_DealPostCardRs(char *buf,int nlen){
     STRU_POSTCARD_RS *rs = (STRU_POSTCARD_RS *)buf;
-    switch(rs->m_nType){
+    switch(rs->m_lResult){
         case WAIT_POST_CARD:
-            chupai->hide();;
+            chupai->hide();
             qipai->hide();
-            gamingdlg->hide();
+            gamingdlg->update();
         break;
         case POST_CARD_CONTINUE:
         chupai->show();
         qipai->show();
-        gamingdlg->hide();
+        gamingdlg->update();
         break;
     }
 }
