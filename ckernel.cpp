@@ -222,6 +222,10 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
                     rq1.last_cardnum = this->cardnum;
                     this->b_choosefirstpeople = false;
                     m_tcpClient->SendData((char*)&rq1,sizeof(rq1));
+                    for(int i=0;i<this->vec_card.size();i++){
+                        vec_card[i]->hide();
+                    }
+                    InitCard();
                     break;
                 }
             }else{
@@ -290,6 +294,10 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
             rq.m_user_id = this->m_id;
             rq.m_roomid = this->m_roomid;
             m_tcpClient->SendData((char*)&rq,sizeof(rq));
+            for(int i=0;i<this->vec_card.size();i++){
+                vec_card[i]->hide();
+            }
+            InitCard();
             queding->hide();
             chupai->hide();
             qipai->hide();
@@ -574,6 +582,10 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
                         ++ite;
                     }
                 }
+                for(int i=0;i<this->vec_card.size();i++){
+                    vec_card[i]->hide();
+                }
+                InitCard();
                 ChuPai->hide();
                 BuChu->hide();
                 gamingdlg->update();
@@ -851,23 +863,14 @@ void CKernel::SLOT_DealTurnBeginRs(char *buf,int nlen){
     }
 
     //设置头像框
-    int curseatid;
-    auto ite = this->m_mapSeatIdToId.begin();
-    while(ite != this->m_mapSeatIdToId.end()){
-        if((*ite).second == rs->user_id){
-            curseatid = (*ite).first;
-            break;
-        }
-        ++ite;
-    }
+    int curseatid = FindSeatIdById(rs->user_id);
     turnlogo = new MyPushButton(":/res/icon/turnlogo.png","");
     turnlogo->setParent(gamingdlg);
     if(curseatid == this->MySeatId){
         turnlogo->move(gamingdlg->width()*0.5-turnlogo->width()*0.5-445,gamingdlg->height()*0.8-55);
     }else{
-        turnlogo->move(this->m_mapSeatIdToPosition[curseatid][0],this->m_mapSeatIdToPosition[curseatid][1]+55);
+        turnlogo->move(this->m_mapSeatIdToPosition[curseatid][0]+55,this->m_mapSeatIdToPosition[curseatid][1]);
     }
-
     turnlogo->show();
     gamingdlg->update();
 }
@@ -1462,6 +1465,7 @@ void CKernel::ShowZGIdentity(int mark,int id,int seatid){
         positon.push_back(30);
         positon.push_back(gamingdlg->height()*0.5-95);
         m_mapSeatIdToPosition[seatid] = positon;
+        m_mapSeatIdToLength[seatid] = 1;
     }else if(mark == 2){
         identitybutton = new MyPushButton(path,"");
         identitybutton->setParent(this->gamingdlg);
@@ -1472,6 +1476,7 @@ void CKernel::ShowZGIdentity(int mark,int id,int seatid){
         positon.push_back(500);
         positon.push_back(30);
         m_mapSeatIdToPosition[seatid] = positon;
+        m_mapSeatIdToLength[seatid] = 2;
     }else if(mark == 3){
         identitybutton = new MyPushButton(path,"");
         identitybutton->setParent(this->gamingdlg);
@@ -1482,6 +1487,7 @@ void CKernel::ShowZGIdentity(int mark,int id,int seatid){
         positon.push_back(gamingdlg->width()-640);
         positon.push_back(30);
         m_mapSeatIdToPosition[seatid] = positon;
+        m_mapSeatIdToLength[seatid] = 2;
     }else{
         identitybutton = new MyPushButton(path,"");
         identitybutton->setParent(gamingdlg);
@@ -1492,6 +1498,7 @@ void CKernel::ShowZGIdentity(int mark,int id,int seatid){
         positon.push_back(gamingdlg->width()-500);
         positon.push_back(gamingdlg->height()*0.5-95);
         m_mapSeatIdToPosition[seatid] = positon;
+        m_mapSeatIdToLength[seatid] = 1;
     }
 
 }
