@@ -106,7 +106,8 @@ private:
     int My_HeroId;//我的英雄id
     int MySeatId;//我的座位号
     QString myHeroPath;
-    MyPushButton *headerborder;//头像框
+    MyPushButton *turnlogo;//回合标识
+    MyPushButton *killaction;//动画效果
     int usecardtoid1;//出牌对象1
     int usecardtoid2;//出牌对象2
     STRU_CARD choosecard;//要打出的手牌结构体

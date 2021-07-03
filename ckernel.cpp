@@ -32,6 +32,7 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     gamingdlg = new GamingDialog;
     friendlistDialog = new FriendList;
     item = new RoomItem;
+    killaction = new MyPushButton(":/res/icon/杀指向.png","");
     chooseid = -1;
     m_roomcount = 0;
     usecardtoid1 = 0;//出牌对象1
@@ -176,17 +177,34 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
             if((*ite)->b_flagchoose){
                 if((*ite)->id != SHA || ((*ite)->id == SHA && this->b_isKill == false)){
                     pushCard = *ite;
+                    if(vec_otherpushcard.size()>0){
+                        for(int i=0;i<vec_otherpushcard.size();i++){
+                            vec_otherpushcard[i]->hide();
+                            gamingdlg->update();
+                        }
+                    }
+
+                    if(this->vec_pushcard.size()>0){
+                        for(int i=0;i<vec_pushcard.size();i++){
+                            vec_pushcard[i]->hide();
+                            gamingdlg->update();
+                        }
+                    }
                     (*ite)->PushCard();
                     (*ite)->setEnabled(true);
                     //显示攻击动画
                     if(usecardtoid1!=0){
                         int seatid = FindSeatIdById(usecardtoid1);
-                        MyPushButton *killaction = new MyPushButton(":/res/icon/杀指向.png","");
                         killaction->setParent(gamingdlg);
                         killaction->move(gamingdlg->width()*0.5-killaction->width()*0.5-50,gamingdlg->height()*0.8-100);
                         killaction->show();
                         gamingdlg->update();
                         killaction->KillAction(this->m_mapSeatIdToPosition[seatid][0]+290,this->m_mapSeatIdToPosition[seatid][1]);
+                        gamingdlg->update();
+                        QTimer::singleShot(2000,this,[=]{
+                            killaction->hide();
+                            gamingdlg->update();
+                        });
                     }
                     ite = this->vec_card.erase(ite);
                     this->cardnum--;
@@ -273,6 +291,8 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
             rq.m_roomid = this->m_roomid;
             m_tcpClient->SendData((char*)&rq,sizeof(rq));
             queding->hide();
+            chupai->hide();
+            qipai->hide();
         }
     });
     //弃牌槽函数
@@ -453,23 +473,31 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
             card->move(this->m_mapSeatIdToPosition[(*ite).first][0]+290,this->m_mapSeatIdToPosition[(*ite).first][1]);
             card->show();
             if(rq->m_touser1id!=0){
-                MyPushButton *killaction = new MyPushButton(":/res/icon/杀指向.png","");
-                killaction->setParent(gamingdlg);
                 if(rq->isShow){
                     if(rq->m_touser1id != this->m_id){
                         //显示攻击动画
                         int seatid = FindSeatIdById(rq->m_touser1id);
+                        killaction->setParent(gamingdlg);
                         killaction->move(gamingdlg->width()*0.5-killaction->width()*0.5-50,gamingdlg->height()*0.8-100);
                         killaction->show();
                         gamingdlg->update();
                         killaction->KillAction(this->m_mapSeatIdToPosition[seatid][0]+290,this->m_mapSeatIdToPosition[seatid][1]-100);
+                        QTimer::singleShot(2000,this,[=]{
+                            killaction->hide();
+                            gamingdlg->update();
+                        });
                     }else{
                         //显示攻击动画
+                        killaction->setParent(gamingdlg);
                         int seatid = FindSeatIdById(rq->m_userid);
                         killaction->move(this->m_mapSeatIdToPosition[seatid][0]+290,this->m_mapSeatIdToPosition[seatid][1]);
                         killaction->show();
                         gamingdlg->update();
                         killaction->KillAction(gamingdlg->width()*0.5-killaction->width()*0.5-50,gamingdlg->height()*0.8-100);
+                        QTimer::singleShot(2000,this,[=]{
+                            killaction->hide();
+                            gamingdlg->update();
+                        });
                     }
                 }
             }
@@ -481,17 +509,19 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
                     gamingdlg->update();
                 }
             }
+
+            //if(vec_pushcard)
             card->PushCard();
             this->vec_otherpushcard.push_back(card);
             break;
         }
         ++ite;
     }
+    ChuPai = new MyPushButton(":/res/icon/chupai.png",":/res/icon/chupai_1.png");
+    BuChu = new MyPushButton(":/res/icon/buchu.png",":/res/icon/buchu_1.png");
     //如果被使用牌的是自己 弹出一个QLabel 并执行动画
     if(rq->m_touser1id == this->m_id){
         //显示出牌弃牌按钮
-        ChuPai = new MyPushButton(":/res/icon/chupai.png",":/res/icon/chupai_1.png");
-        BuChu = new MyPushButton(":/res/icon/buchu.png",":/res/icon/buchu_1.png");
         ChuPai->setParent(this->gamingdlg);
         ChuPai->move(gamingdlg->width()*0.5-ChuPai->width()*0.5+40,gamingdlg->height()*0.8-150);
         BuChu->setParent(this->gamingdlg);
@@ -808,7 +838,7 @@ void CKernel::SLOT_DealTurnBeginRs(char *buf,int nlen){
         qipai->move(gamingdlg->width()*0.5-qipai->width()*0.5+200,gamingdlg->height()*0.8-150);
         qipai->setParent(gamingdlg);
         qipai->show();
-
+        gamingdlg->update();
         STRU_GETCARD_RQ rq;
         rq.m_roomid = this->m_roomid;
         rq.m_userid = this->m_id;
@@ -817,6 +847,7 @@ void CKernel::SLOT_DealTurnBeginRs(char *buf,int nlen){
     }else{
         chupai->hide();
         qipai->hide();
+        gamingdlg->update();
     }
 
     //设置头像框
@@ -829,14 +860,15 @@ void CKernel::SLOT_DealTurnBeginRs(char *buf,int nlen){
         }
         ++ite;
     }
-    headerborder = new MyPushButton(":/res/icon/头像框.png","");
-    headerborder->setParent(gamingdlg);
+    turnlogo = new MyPushButton(":/res/icon/turnlogo.png","");
+    turnlogo->setParent(gamingdlg);
     if(curseatid == this->MySeatId){
-        headerborder->move(gamingdlg->width()*0.5-myhero->width()*0.5-445,gamingdlg->height()*0.8-20);
+        turnlogo->move(gamingdlg->width()*0.5-turnlogo->width()*0.5-445,gamingdlg->height()*0.8-55);
     }else{
-        headerborder->move(this->m_mapSeatIdToPosition[curseatid][0]+150,this->m_mapSeatIdToPosition[curseatid][1]);
+        turnlogo->move(this->m_mapSeatIdToPosition[curseatid][0],this->m_mapSeatIdToPosition[curseatid][1]+55);
     }
-    headerborder->show();
+
+    turnlogo->show();
     gamingdlg->update();
 }
 
@@ -1143,7 +1175,9 @@ void CKernel::ShowHero(){
                 }else{
                     //如果选择了第一个人
                     this->usecardtoid2 = this->m_mapSeatIdToId[hero->seatid];
+                    this->b_choosefirstpeople = false;
                 }
+
             });
             gamingdlg->update();
         }
@@ -1152,6 +1186,7 @@ void CKernel::ShowHero(){
 }
 
 int CKernel::FindSeatIdById(int myid){
+    //QMessageBox::about(gamingdlg,"ttt","sss");
     auto ite = this->m_mapSeatIdToId.begin();
     while(ite != this->m_mapSeatIdToId.end()){
         if((*ite).second == myid){
@@ -1174,6 +1209,17 @@ void CKernel::SLOT_DealSelectHero(char *buf,int nlen){
         //显示主公英雄
         QString path = GetHeroPath(ZG_HeroId);
         HeroButton *hero = new HeroButton(path,"");
+        connect(hero,&MyPushButton::clicked,[=](){
+            if(!this->b_choosefirstpeople){
+                //如果没选择第一个人
+                this->usecardtoid1 = this->m_mapSeatIdToId[hero->seatid];
+                this->b_choosefirstpeople = true;
+            }else{
+                //如果选择了第一个人
+                this->usecardtoid2 = this->m_mapSeatIdToId[hero->seatid];
+                this->b_choosefirstpeople = false;
+            }
+        });
         hero->seatid = SeatIdofZG;
         hero->setParent(gamingdlg);
         hero->move(this->m_mapSeatIdToPosition[SeatIdofZG][0]+140,this->m_mapSeatIdToPosition[SeatIdofZG][1]);

@@ -262,5 +262,6 @@
         <file>res/icon/buchu_1.png</file>
         <file>res/icon/queding.png</file>
         <file>res/icon/queding_1.png</file>
+        <file>res/icon/turnlogo.png</file>
     </qresource>
 </RCC>
