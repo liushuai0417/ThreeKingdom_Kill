@@ -37,11 +37,10 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     usecardtoid1 = 0;//出牌对象1
     usecardtoid2 = 0;//出牌对象2
     b_flagpush = true;
+    b_isKill = false;//默认没出过杀
     chupai = new MyPushButton(":/res/icon/chupai.png",":/res/icon/chupai_1.png");
-
-
     qipai = new MyPushButton(":/res/icon/qipai.png",":/res/icon/qipai_1.png");
-
+    queding = new MyPushButton(":/res/icon/queding.png",":/res/icon/queding_1.png");
     b_choosefirstpeople = false;
     //窗口关闭槽函数
     connect(m_Dialog,&Dialog::SIG_CLOSE,[=](){
@@ -102,7 +101,6 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
 
     //创建房间的槽函数
     connect(createDialog,CreateRoomSignal,[=](QString roomname){
-        qDebug()<<"发送创建房间";
         STRU_CREATEROOM_RQ rq;
         strcpy(rq.m_RoomName,roomname.toStdString().c_str());
         strcpy(rq.m_szUser,this->m_szName.toStdString().c_str());
@@ -156,7 +154,6 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
 
     //双击加入房间
     connect(item,JoinRoom,[=](QString roomid){
-        qDebug()<<__func__<<roomid;
         STRU_SEARCH_ROOM_RQ rq;
         rq.m_Roomid = roomid.toInt();
         m_tcpClient->SendData((char*)&rq,sizeof(rq));
@@ -177,42 +174,114 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
         auto ite = this->vec_card.begin();
         while(ite!=this->vec_card.end()){
             if((*ite)->b_flagchoose){
-                pushCard = *ite;
-                (*ite)->PushCard();
-                (*ite)->setEnabled(true);
-                //显示攻击动画
-                if(usecardtoid1!=0){
-                    int seatid = FindSeatIdById(usecardtoid1);
-                    MyPushButton *killaction = new MyPushButton(":/res/icon/杀指向.png","");
-                    killaction->setParent(gamingdlg);
-                    killaction->move(gamingdlg->width()*0.5-killaction->width()*0.5-50,gamingdlg->height()*0.8-100);
-                    killaction->show();
+                if((*ite)->id != SHA || ((*ite)->id == SHA && this->b_isKill == false)){
+                    pushCard = *ite;
+                    (*ite)->PushCard();
+                    (*ite)->setEnabled(true);
+                    //显示攻击动画
+                    if(usecardtoid1!=0){
+                        int seatid = FindSeatIdById(usecardtoid1);
+                        MyPushButton *killaction = new MyPushButton(":/res/icon/杀指向.png","");
+                        killaction->setParent(gamingdlg);
+                        killaction->move(gamingdlg->width()*0.5-killaction->width()*0.5-50,gamingdlg->height()*0.8-100);
+                        killaction->show();
+                        gamingdlg->update();
+                        killaction->KillAction(this->m_mapSeatIdToPosition[seatid][0]+290,this->m_mapSeatIdToPosition[seatid][1]);
+                    }
+                    ite = this->vec_card.erase(ite);
+                    this->cardnum--;
                     gamingdlg->update();
-                    killaction->KillAction(this->m_mapSeatIdToPosition[seatid][0]+290,this->m_mapSeatIdToPosition[seatid][1]);
-                }
 
-                //(*ite)->hide();
-                ite = this->vec_card.erase(ite);
-                this->cardnum--;
+                    STRU_POSTCARD_RQ rq1;
+                    rq1.m_roomid = this->m_roomid;
+                    rq1.m_userid = this->m_id;
+                    rq1.m_card.col = this->choosecard.col;
+                    rq1.m_card.id = this->choosecard.id;
+                    rq1.m_card.num = this->choosecard.num;
+                    rq1.m_card.type = this->choosecard.type;
+                    rq1.m_touser1id = usecardtoid1;
+                    rq1.m_touser2id = usecardtoid2;
+                    rq1.last_cardnum = this->cardnum;
+                    this->b_choosefirstpeople = false;
+                    m_tcpClient->SendData((char*)&rq1,sizeof(rq1));
+                    break;
+                }
             }else{
                 ++ite;
             }
         }
-        gamingdlg->update();
-        STRU_POSTCARD_RQ rq1;
-        rq1.m_roomid = this->m_roomid;
-        rq1.m_userid = this->m_id;
-        rq1.m_card.col = this->choosecard.col;
-        rq1.m_card.id = this->choosecard.id;
-        rq1.m_card.num = this->choosecard.num;
-        rq1.m_card.type = this->choosecard.type;
-        rq1.m_touser1id = usecardtoid1;
-        rq1.m_touser2id = usecardtoid2;
-        rq1.last_cardnum = this->cardnum;
-        this->b_choosefirstpeople = false;
-        m_tcpClient->SendData((char*)&rq1,sizeof(rq1));
+
     });
 
+    connect(queding,&MyPushButton::clicked,[=](){
+        STRU_OFFCARD_RQ rq;
+        if(this->vec_pushcard.size()>0){
+            for(int i=0;i<vec_pushcard.size();i++){
+                vec_pushcard[i]->hide();
+                gamingdlg->update();
+            }
+        }
+        if(this->vec_otherpushcard.size()>0){
+            for(int i=0;i<vec_otherpushcard.size();i++){
+                vec_otherpushcard[i]->hide();
+                gamingdlg->update();
+            }
+        }
+        //需要弃牌的数量
+        int needquit = this->vec_card.size()-this->myhp;
+        if(needquit>0){
+            auto ite = this->vec_card.begin();
+            while(ite!=this->vec_card.end()){
+                if((*ite)->b_flagchoose){
+                    pushCard = *ite;
+                    //放入弃牌队列
+                    this->m_queQuitCard.push(pushCard);
+                    //如果弃牌队列数量大于needquit
+                    //删除队首 并让队首的牌向下移动
+                    while(this->m_queQuitCard.size()>needquit){
+                        CardButton *pMark = this->m_queQuitCard.front();
+                        this->m_queQuitCard.pop();
+                        pMark->zoom1();
+                    }
+                    //删除牌
+                    ite = this->vec_card.erase(ite);
+                    this->cardnum--;
+                }else{
+                    ++ite;
+                }
+            }
+        }
+        while(!m_queQuitCard.empty()){
+            int i=0;
+            CardButton *pPush = this->m_queQuitCard.front();
+            //弃牌数组赋值
+            rq.m_offcard[i].col = pPush->color;
+            rq.m_offcard[i].id = pPush->id;
+            rq.m_offcard[i].num = pPush->num;
+            rq.m_offcard[i].type = pPush->type;
+            this->m_queQuitCard.pop();
+            pPush->PushCard();
+            pPush->setEnabled(true);
+            this->vec_pushcard.push_back(pPush);
+            gamingdlg->update();
+            i++;
+        }
+        if(this->myhp<this->vec_card.size()){
+            QMessageBox::about(gamingdlg,"提示","弃牌数量过少");
+        }else{
+            rq.m_user_id = this->m_id;
+            rq.m_roomid = this->m_roomid;
+            m_tcpClient->SendData((char*)&rq,sizeof(rq));
+            queding->hide();
+        }
+    });
+    //弃牌槽函数
+    connect(qipai,&MyPushButton::clicked,[=](){
+        queding->setParent(gamingdlg);
+        queding->move(gamingdlg->width()*0.5-queding->width()*0.5+200,gamingdlg->height()*0.8-150);
+        queding->show();
+        gamingdlg->update();
+    });
     //加入房间槽函数
 
     connect(m_MainScene,&MainScene::SIG_ReGetRoomTable,this,&CKernel::SLOT_ReGetRoomTable);
@@ -225,7 +294,6 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     connect(joinDialog,&JoinRoomDialog::SIG_SetCountZero,this,&CKernel::SLOT_SetCountZero);
     //房间列表的第一行
     RoomItem *itemindex = new RoomItem;
-
     m_MainScene->Slot_AddUserItem(itemindex);
 }
 
@@ -251,7 +319,6 @@ void CKernel::SLOT_ReGetFriendList(){
 void CKernel::SLOT_ReadyData(char *buf,int nlen){
     //获取包类型
     int type = *(int*)buf;
-    qDebug()<<type;
     if(type>=DEF_PACK_BASE && type<=DEF_PACK_BASE+DEF_PACK_COUNT){
         PFUN fun = m_NetPackMap[type-DEF_PACK_BASE];
         if(fun){
@@ -304,15 +371,62 @@ void CKernel::setNetPackMap(){
     NetPackMap(DEF_PACK_POSTCARD_RS) = &CKernel::SLOT_DealPostCardRs;
     NetPackMap(DEF_PACK_POSTCARD_RQ) = &CKernel::SLOT_DealReposeCardRq;
     NetPackMap(DEF_PACK_COMMIT_STATUS) = &CKernel::SLOT_CommitStatus;
+    NetPackMap(DEF_PACK_OFFCARD_RQ) = &CKernel::SLOT_OffCardRq;
+}
+
+//同步弃牌动画
+void CKernel::SLOT_OffCardRq(char *buf,int nlen){
+    STRU_OFFCARD_RQ *rq = (STRU_OFFCARD_RQ *)buf;
+    if(vec_otherpushcard.size()>0){
+        for(int i=0;i<vec_otherpushcard.size();i++){
+            vec_otherpushcard[i]->hide();
+            gamingdlg->update();
+        }
+    }
+
+    if(this->vec_pushcard.size()>0){
+        for(int i=0;i<vec_pushcard.size();i++){
+            vec_pushcard[i]->hide();
+            gamingdlg->update();
+        }
+    }
+    int seatid = FindSeatIdById(rq->m_user_id);
+    int i=0;
+    while(rq->m_offcard[i].id>0){
+        QString path;
+        path = GetCardPath(rq->m_offcard[i].id);
+        CardButton *card = new CardButton(path,"");
+        card->num = rq->m_offcard[i].num;
+        card->id = rq->m_offcard[i].id;
+        card->color = rq->m_offcard[i].col;
+        card->type = rq->m_offcard[i].type;
+        card->setParent(gamingdlg);
+        card->move(this->m_mapSeatIdToPosition[seatid][0]+290,this->m_mapSeatIdToPosition[seatid][1]);
+        card->show();
+        i++;
+        if(vec_otherpushcard.size()>0){
+            for(int i=0;i<vec_otherpushcard.size();i++){
+                vec_otherpushcard[i]->hide();
+                gamingdlg->update();
+            }
+        }
+        card->PushCard();
+        this->vec_otherpushcard.push_back(card);
+        gamingdlg->update();
+    }
 }
 
 //如果有人掉血了 同步所有人的血量
 void CKernel::SLOT_CommitStatus(char *buf,int nlen){
     STRU_COMMIT_STATUS *rs = (STRU_COMMIT_STATUS *)buf;
     int seatid = FindSeatIdById(rs->user_id);
+    if(seatid == this->MySeatId){
+        this->myhp = rs->hp_change;
+    }
     //改变映射的值
     this->m_mapSeatIdToHp[seatid] = rs->hp_change;
     this->ShowHp();
+
 }
 
 //同步出牌动画
@@ -341,20 +455,22 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
             if(rq->m_touser1id!=0){
                 MyPushButton *killaction = new MyPushButton(":/res/icon/杀指向.png","");
                 killaction->setParent(gamingdlg);
-                if(rq->m_touser1id != this->m_id){
-                    //显示攻击动画
-                    int seatid = FindSeatIdById(rq->m_touser1id);
-                    killaction->move(gamingdlg->width()*0.5-killaction->width()*0.5-50,gamingdlg->height()*0.8-100);
-                    killaction->show();
-                    gamingdlg->update();
-                    killaction->KillAction(this->m_mapSeatIdToPosition[seatid][0]+290,this->m_mapSeatIdToPosition[seatid][1]-100);
-                }else{
-                    //显示攻击动画
-                    int seatid = FindSeatIdById(rq->m_userid);
-                    killaction->move(this->m_mapSeatIdToPosition[seatid][0]+290,this->m_mapSeatIdToPosition[seatid][1]);
-                    killaction->show();
-                    gamingdlg->update();
-                    killaction->KillAction(gamingdlg->width()*0.5-killaction->width()*0.5-50,gamingdlg->height()*0.8-100);
+                if(rq->isShow){
+                    if(rq->m_touser1id != this->m_id){
+                        //显示攻击动画
+                        int seatid = FindSeatIdById(rq->m_touser1id);
+                        killaction->move(gamingdlg->width()*0.5-killaction->width()*0.5-50,gamingdlg->height()*0.8-100);
+                        killaction->show();
+                        gamingdlg->update();
+                        killaction->KillAction(this->m_mapSeatIdToPosition[seatid][0]+290,this->m_mapSeatIdToPosition[seatid][1]-100);
+                    }else{
+                        //显示攻击动画
+                        int seatid = FindSeatIdById(rq->m_userid);
+                        killaction->move(this->m_mapSeatIdToPosition[seatid][0]+290,this->m_mapSeatIdToPosition[seatid][1]);
+                        killaction->show();
+                        gamingdlg->update();
+                        killaction->KillAction(gamingdlg->width()*0.5-killaction->width()*0.5-50,gamingdlg->height()*0.8-100);
+                    }
                 }
             }
 
@@ -373,16 +489,6 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
     }
     //如果被使用牌的是自己 弹出一个QLabel 并执行动画
     if(rq->m_touser1id == this->m_id){
-//        label = new QLabel;
-//        label->setText(QString("您需要出一张%1").arg(checkname));
-//        QFont font("华文行楷",20,QFont::Bold);
-//        label->setFont(font);
-//        label->setParent(gamingdlg);
-//        label->setStyleSheet("color:white;");
-//        label->setGeometry(800,800,250,250);
-
-//        label->show();
-//        gamingdlg->update();
         //显示出牌弃牌按钮
         ChuPai = new MyPushButton(":/res/icon/chupai.png",":/res/icon/chupai_1.png");
         BuChu = new MyPushButton(":/res/icon/buchu.png",":/res/icon/buchu_1.png");
@@ -975,6 +1081,7 @@ void CKernel::SLOT_DealAllSelHeroRs(char *buf,int nlen){
         this->m_mapSeatIdToHeroId[seatid] = rs->m_playerarr[i].hero_id;
         this->m_mapSeatIdToHp[seatid] = rs->m_playerarr[i].hp;
     }
+    this->myhp = this->m_mapSeatIdToHp[this->MySeatId];
     ShowHero();
     ShowHp();
 }

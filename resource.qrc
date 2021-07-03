@@ -260,5 +260,7 @@
         <file>res/icon/杀指向.png</file>
         <file>res/icon/buchu.png</file>
         <file>res/icon/buchu_1.png</file>
+        <file>res/icon/queding.png</file>
+        <file>res/icon/queding_1.png</file>
     </qresource>
 </RCC>

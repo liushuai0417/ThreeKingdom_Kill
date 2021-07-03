@@ -20,6 +20,7 @@
 #include<map>
 #include"cardbutton.h"
 #include<QLabel>
+#include<queue>
 class CKernel;
 typedef void (CKernel::*PFUN)(char*,int);
 class CKernel : public QObject
@@ -64,6 +65,7 @@ private:
     MyPushButton *identity;//身份牌
     MyPushButton *chupai;
     MyPushButton *qipai;
+    MyPushButton *queding;
     QLabel *label;//提示标签
     PFUN m_NetPackMap[DEF_PACK_COUNT];//协议映射数组
     RoomItem *item;
@@ -93,6 +95,7 @@ private:
     map<int,int>m_mapSeatIdToHp;//座位号和血量的映射
     map<int,int>m_mapSeatIdToId;//用户id和座位号的映射
     map<int,vector<int>>m_mapSeatIdToPosition;//座位号和位置坐标的映射
+    queue<CardButton*>m_queQuitCard;//弃牌队列
     int chooseid;//选择英雄的下标
     int m_roomid;//房间id
     int m_identity;//我的身份
@@ -108,9 +111,11 @@ private:
     int usecardtoid2;//出牌对象2
     STRU_CARD choosecard;//要打出的手牌结构体
     int cardnum;//手牌数量
+    int myhp;//我的血量
     CardButton *pushCard;//打出的牌
     int b_choosefirstpeople;//是否选择了第一个人
     bool b_flagpush;//是否主动出牌
+    bool b_isKill;//是否出过杀
 public slots:
     void SLOT_DealLoginRs(char *buf,int nlen);//处理登录回复槽函数
     void SLOT_DealRegisterRs(char *buf,int nlen);//处理注册回复槽函数
@@ -142,6 +147,7 @@ public slots:
     void SLOT_DealPostCardRs(char *buf,int nlen);//处理出牌回复
     void SLOT_DealReposeCardRq(char *buf,int nlen);//处理请求出牌
     void SLOT_CommitStatus(char *buf,int nlen);//同步血量
+    void SLOT_OffCardRq(char *buf,int nlen);//同步弃牌动画
 };
 
 #endif // CKERNEL_H
