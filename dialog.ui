@@ -298,7 +298,7 @@
          </size>
         </property>
         <property name="text">
-         <string>111</string>
+         <string>1</string>
         </property>
         <property name="echoMode">
          <enum>QLineEdit::Password</enum>

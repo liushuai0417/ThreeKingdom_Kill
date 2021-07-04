@@ -423,7 +423,51 @@ void CKernel::setNetPackMap(){
 
 //处理过河拆桥回复
 void CKernel::SLOT_GHCQ_Rs(char *buf,int nlen){
+    if(vec_otherpushcard.size()>0){
+        for(int i=0;i<vec_otherpushcard.size();i++){
+            vec_otherpushcard[i]->hide();
+            gamingdlg->update();
+        }
+    }
 
+    if(this->vec_pushcard.size()>0){
+        for(int i=0;i<vec_pushcard.size();i++){
+            vec_pushcard[i]->hide();
+            gamingdlg->update();
+        }
+    }
+    STRU_GHCQ_RS *rs = (STRU_GHCQ_RS*)buf;
+    if(rs->y_userid == this->m_id){
+        auto ite = this->vec_card.begin();
+        while(ite != this->vec_card.begin()){
+            if((*ite)->id == rs->m_card.id){
+                CardButton *button = *ite;
+                (*ite)->PushCard();
+                ite = this->vec_card.erase(ite);
+                gamingdlg->update();
+                this->cardnum--;
+                vec_pushcard.push_back(*ite);
+                InitCard();
+                break;
+            }
+            ++ite;
+        }
+    }else{
+        int seatid = FindSeatIdById(rs->y_userid);
+        QString path;
+        path = GetCardPath(rs->y_userid);
+        CardButton *card = new CardButton(path,"");
+        card->num = rs->m_card.num;
+        card->id = rs->m_card.id;
+        card->color = rs->m_card.col;
+        card->type = rs->m_card.type;
+        card->setParent(gamingdlg);
+        card->move(this->m_mapSeatIdToPosition[seatid][0]+290,this->m_mapSeatIdToPosition[seatid][1]);
+        card->show();
+        card->PushCard();
+        this->vec_otherpushcard.push_back(card);
+        gamingdlg->update();
+    }
 }
 
 //处理过河拆桥请求
@@ -503,28 +547,27 @@ void CKernel::SLOT_GHCQ_Rq(char *buf,int nlen){
             choosecard.col = card->color;
             choosecard.num = card->num;
         });
-
-        connect(queding,&MyPushButton::clicked,[=]()mutable{
-            STRU_GHCQ_RS rs;
-            rs.m_card = choosecard;
-            rs.m_userid = this->m_id;
-            if(choosecard.type == WUQI){
-                rs.n_lResult = wqpai;
-            }else if(choosecard.type == FANGJU){
-                rs.n_lResult = fjpai;
-            }else if(choosecard.type == JINGONGMA){
-                rs.n_lResult = jgmpai;
-            }else if(choosecard.type == FANGYUMA){
-                rs.n_lResult = fympai;
-            }else{
-                rs.n_lResult = shoupai;
-            }
-            rs.room_id = this->m_roomid;
-            rs.y_userid = yuserid;
-            m_tcpClient->SendData((char*)&rs,sizeof(rs));
-        });
-    }
+}
     showothercarddlg->show();
+    connect(queren,&MyPushButton::clicked,[=]()mutable{
+        STRU_GHCQ_RS rs;
+        rs.m_card = choosecard;
+        rs.m_userid = this->m_id;
+        if(choosecard.type == WUQI){
+            rs.n_lResult = wqpai;
+        }else if(choosecard.type == FANGJU){
+            rs.n_lResult = fjpai;
+        }else if(choosecard.type == JINGONGMA){
+            rs.n_lResult = jgmpai;
+        }else if(choosecard.type == FANGYUMA){
+            rs.n_lResult = fympai;
+        }else{
+            rs.n_lResult = shoupai;
+        }
+        rs.room_id = this->m_roomid;
+        rs.y_userid = yuserid;
+        m_tcpClient->SendData((char*)&rs,sizeof(rs));
+    });
 }
 
 //同步弃牌动画
