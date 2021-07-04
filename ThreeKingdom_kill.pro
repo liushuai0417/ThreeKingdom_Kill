@@ -35,7 +35,8 @@ SOURCES += main.cpp\
     zhaoyun.cpp \
     gamingdialog.cpp \
     herobutton.cpp \
-    cardbutton.cpp
+    cardbutton.cpp \
+    showothercard.cpp
 
 HEADERS  += dialog.h \
     mainscene.h \
@@ -60,7 +61,8 @@ HEADERS  += dialog.h \
     zhaoyun.h \
     gamingdialog.h \
     herobutton.h \
-    cardbutton.h
+    cardbutton.h \
+    showothercard.h
 
 FORMS    += dialog.ui \
     mainscene.ui \
@@ -74,7 +76,8 @@ FORMS    += dialog.ui \
     gaming.ui \
     gamingdialog.ui \
     gamedialog.ui \
-    gamescene.ui
+    gamescene.ui \
+    showothercard.ui
 
 RESOURCES += \
     resource.qrc

@@ -21,6 +21,7 @@
 #include"cardbutton.h"
 #include<QLabel>
 #include<queue>
+#include"showothercard.h"
 class CKernel;
 typedef void (CKernel::*PFUN)(char*,int);
 class CKernel : public QObject
@@ -62,6 +63,7 @@ private:
     JoinRoomDialog *joinDialog;//加入房间
     FriendList* friendlistDialog;//好友列表窗口
     GamingDialog *gamingdlg;//游戏界面指针
+    ShowOtherCard *showothercarddlg;
     MyPushButton *identity;//身份牌
     MyPushButton *chupai;
     MyPushButton *qipai;
@@ -150,6 +152,7 @@ public slots:
     void SLOT_DealReposeCardRq(char *buf,int nlen);//处理请求出牌
     void SLOT_CommitStatus(char *buf,int nlen);//同步血量
     void SLOT_OffCardRq(char *buf,int nlen);//同步弃牌动画
+    void SLOT_GHCQ_Rs(char *buf,int nlen);//处理过河拆桥
 };
 
 #endif // CKERNEL_H

@@ -263,5 +263,23 @@
         <file>res/icon/queding.png</file>
         <file>res/icon/queding_1.png</file>
         <file>res/icon/turnlogo.png</file>
+        <file>res/WUQI/八卦阵_1.png</file>
+        <file>res/WUQI/雌雄双剑_1.png</file>
+        <file>res/WUQI/方天画戟_1.png</file>
+        <file>res/WUQI/贯石斧_1.png</file>
+        <file>res/WUQI/寒冰剑_1.png</file>
+        <file>res/WUQI/麒麟弓_1.png</file>
+        <file>res/WUQI/青钢剑_1.png</file>
+        <file>res/WUQI/青龙偃月刀_1.png</file>
+        <file>res/WUQI/仁王盾_1.png</file>
+        <file>res/WUQI/丈八蛇矛_1.png</file>
+        <file>res/WUQI/诸葛连弩_1.png</file>
+        <file>res/MA/赤兔_1.png</file>
+        <file>res/MA/大宛_1.png</file>
+        <file>res/MA/的卢_1.png</file>
+        <file>res/MA/绝影_1.png</file>
+        <file>res/MA/爪黄飞电_1.png</file>
+        <file>res/MA/紫骍_1.png</file>
+        <file>res/PAI/背面.png</file>
     </qresource>
 </RCC>
