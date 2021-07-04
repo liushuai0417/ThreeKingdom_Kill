@@ -588,6 +588,9 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
     MyPushButton *BuChu;
     ChuPai = new MyPushButton(":/res/icon/chupai.png",":/res/icon/chupai_1.png");
     BuChu = new MyPushButton(":/res/icon/buchu.png",":/res/icon/buchu_1.png");
+    ChuPai->hide();
+    BuChu->hide();
+    gamingdlg->update();
     STRU_POSTCARD_RQ *rq = (STRU_POSTCARD_RQ *)buf;
     STRU_CARD killcard = rq->m_card;
     int m_userid = rq->m_userid;
