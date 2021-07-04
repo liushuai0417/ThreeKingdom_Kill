@@ -447,7 +447,7 @@ void CKernel::SLOT_GHCQ_Rq(char *buf,int nlen){
     MyPushButton *queren = new MyPushButton(":/res/icon/queding.png",":/res/icon/queding_1.png");
     queren->setParent(showothercarddlg);
     queren->move(showothercarddlg->width()*0.5-queren->width()*0.5,showothercarddlg->height()-40);
-    for(int i=0;i<count+4;i++){
+    for(int i=0;i<veccard.size();i++){
         QString path;
         if(i<count){
             path = QString(":/res/PAI/背面.png");
