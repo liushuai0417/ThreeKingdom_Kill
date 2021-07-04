@@ -242,6 +242,10 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     });
 
     connect(queding,&MyPushButton::clicked,[=](){
+        if(this->m_queQuitCard.size()>0){
+            while (!m_queQuitCard.empty())
+                m_queQuitCard.pop();
+        }
         STRU_OFFCARD_RQ rq;
         if(this->vec_pushcard.size()>0){
             for(int i=0;i<vec_pushcard.size();i++){
@@ -283,8 +287,9 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
             QMessageBox::about(gamingdlg,"提示","弃牌数量过少");
             return;
         }
+        int i=0;
         while(!m_queQuitCard.empty()){
-            int i=0;
+
             CardButton *pPush = this->m_queQuitCard.front();
             vec_card.erase(remove(vec_card.begin(),vec_card.end(),pPush),vec_card.end());
             this->cardnum--;
