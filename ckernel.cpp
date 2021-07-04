@@ -279,6 +279,10 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
                 }
             }
         }
+        if(m_queQuitCard.size()<needquit){
+            QMessageBox::about(gamingdlg,"提示","弃牌数量过少");
+            return;
+        }
         while(!m_queQuitCard.empty()){
             int i=0;
             CardButton *pPush = this->m_queQuitCard.front();
@@ -409,9 +413,15 @@ void CKernel::setNetPackMap(){
     NetPackMap(DEF_PACK_COMMIT_STATUS) = &CKernel::SLOT_CommitStatus;
     NetPackMap(DEF_PACK_OFFCARD_RQ) = &CKernel::SLOT_OffCardRq;
     NetPackMap(DEF_PACK_GHCQ_RQ) = &CKernel::SLOT_GHCQ_Rq;
+    NetPackMap(DEF_PACK_GHCQ_RS) = &CKernel::SLOT_GHCQ_Rs;
 }
 
-//处理过河拆桥
+//处理过河拆桥回复
+void CKernel::SLOT_GHCQ_Rs(char *buf,int nlen){
+
+}
+
+//处理过河拆桥请求
 void CKernel::SLOT_GHCQ_Rq(char *buf,int nlen){
     STRU_GHCQ_RQ *rs = (STRU_GHCQ_RQ *)buf;
     int yuserid = rs->y_userid;
@@ -1536,7 +1546,7 @@ void CKernel::SLOT_DealSelectHero(char *buf,int nlen){
     chooseheroattention->setParent(gamingdlg);
     MyPushButton *choosehero = new MyPushButton(":/res/icon/choosehero.png",":/res/icon/choosehero_1.png");
     choosehero->setParent(gamingdlg);
-    QTimer::singleShot(5000,this,[=]{
+    QTimer::singleShot(3000,this,[=]{
         chooseheroattention->move(gamingdlg->width()*0.5-chooseheroattention->width(),gamingdlg->height()*0.5);
         chooseheroattention->show();
         choosehero->move(gamingdlg->width()*0.5-choosehero->width()*0.5+100,gamingdlg->height()*0.5);
