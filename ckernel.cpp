@@ -41,6 +41,10 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     b_isKill = false;//默认没出过杀
     chupai = new MyPushButton(":/res/icon/chupai.png",":/res/icon/chupai_1.png");
     qipai = new MyPushButton(":/res/icon/qipai.png",":/res/icon/qipai_1.png");
+    chupai->setParent(gamingdlg);
+    qipai->setParent(gamingdlg);
+    chupai->hide();
+    qipai->hide();
     queding = new MyPushButton(":/res/icon/queding.png",":/res/icon/queding_1.png");
     b_choosefirstpeople = false;
     //窗口关闭槽函数
@@ -575,6 +579,7 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
                         pushCard = *ite;
                         pushCard->PushCard();
                         pushCard->setEnabled(true);
+                        InitCard();
                         this->vec_pushcard.push_back(pushCard);
                         ite = this->vec_card.erase(ite);
                         this->cardnum--;
@@ -584,6 +589,11 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
                 }
                 for(int i=0;i<this->vec_card.size();i++){
                     vec_card[i]->hide();
+                    gamingdlg->update();
+                }
+                for(int i=0;i<this->vec_otherpushcard.size();i++){
+                    vec_otherpushcard[i]->hide();
+                    gamingdlg->update();
                 }
                 InitCard();
                 ChuPai->hide();
@@ -832,7 +842,9 @@ void CKernel::SLOT_DealPostCardRs(char *buf,int nlen){
             gamingdlg->update();
         break;
         case POST_CARD_CONTINUE:
+        chupai->move(gamingdlg->width()*0.5-chupai->width()*0.5+40,gamingdlg->height()*0.8-150);
         chupai->show();
+        qipai->move(gamingdlg->width()*0.5-qipai->width()*0.5+200,gamingdlg->height()*0.8-150);
         qipai->show();
         gamingdlg->update();
         break;

@@ -95,7 +95,7 @@ private:
     map<int,int>m_mapSeatIdToHp;//座位号和血量的映射
     map<int,int>m_mapSeatIdToId;//用户id和座位号的映射
     map<int,vector<int>>m_mapSeatIdToPosition;//座位号和位置坐标的映射
-    nap<int,int>m_mapSeatIdToLength;//座位号和距离的映射
+    map<int,int>m_mapSeatIdToLength;//座位号和距离的映射
     queue<CardButton*>m_queQuitCard;//弃牌队列
     int chooseid;//选择英雄的下标
     int m_roomid;//房间id
