@@ -8,7 +8,7 @@ ShowOtherCard::ShowOtherCard(QWidget *parent) :
     ui->setupUi(this);
     //配置场景
     //设置固定大小
-    this->setFixedSize(800,200);
+    this->setFixedSize(800,300);
     //设置图标
     this->setWindowIcon(QIcon(":/res/icon/icon.png"));
     //设置窗口标题

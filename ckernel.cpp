@@ -263,17 +263,17 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
                 if((*ite)->b_flagchoose){
                     pushCard = *ite;
                     //放入弃牌队列
-                    this->m_queQuitCard.push(pushCard);
+                    this->m_queQuitCard.push(*ite);
                     //如果弃牌队列数量大于needquit
                     //删除队首 并让队首的牌向下移动
                     while(this->m_queQuitCard.size()>needquit){
                         CardButton *pMark = this->m_queQuitCard.front();
+                        pMark->b_flagchoose = !pMark->b_flagchoose;
                         this->m_queQuitCard.pop();
                         pMark->zoom1();
                     }
                     //删除牌
-                    ite = this->vec_card.erase(ite);
-                    this->cardnum--;
+                    ++ite;
                 }else{
                     ++ite;
                 }
@@ -282,6 +282,8 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
         while(!m_queQuitCard.empty()){
             int i=0;
             CardButton *pPush = this->m_queQuitCard.front();
+            vec_card.erase(remove(vec_card.begin(),vec_card.end(),pPush),vec_card.end());
+            this->cardnum--;
             //弃牌数组赋值
             rq.m_offcard[i].col = pPush->color;
             rq.m_offcard[i].id = pPush->id;
@@ -406,71 +408,105 @@ void CKernel::setNetPackMap(){
     NetPackMap(DEF_PACK_POSTCARD_RQ) = &CKernel::SLOT_DealReposeCardRq;
     NetPackMap(DEF_PACK_COMMIT_STATUS) = &CKernel::SLOT_CommitStatus;
     NetPackMap(DEF_PACK_OFFCARD_RQ) = &CKernel::SLOT_OffCardRq;
-    NetPackMap(DEF_PACK_GHCQ_RQ) = &CKernel::SLOT_GHCQ_Rs;
+    NetPackMap(DEF_PACK_GHCQ_RQ) = &CKernel::SLOT_GHCQ_Rq;
 }
 
 //处理过河拆桥
-void CKernel::SLOT_GHCQ_Rs(char *buf,int nlen){
+void CKernel::SLOT_GHCQ_Rq(char *buf,int nlen){
     STRU_GHCQ_RQ *rs = (STRU_GHCQ_RQ *)buf;
-
+    int yuserid = rs->y_userid;
     int count=0;
-    vector<STRU_CARD>beimian;
-    vector<STRU_CARD>othercard;
+    vector<STRU_CARD>veccard;
+    vector<CardButton*>vecCardButton;
     STRU_CARD fangju;
     STRU_CARD fangyuma;
     STRU_CARD jingongma;
     STRU_CARD wuqi;
     STRU_CARD choosecard;
     while(rs->m_card[count].id>0){
-        beimian.push_back(rs->m_card[count]);
+        veccard.push_back(rs->m_card[count]);
         count++;
     }
-    for(int i=0;i<count;i++){
-        CardButton *cardbeimian = new CardButton(":/res/PAI/背面.png");
-        cardbeimian->id = beimian[i].id;
-        cardbeimian->color = beimian[i].col;
-        cardbeimian->type = beimian[i].type;
-        cardbeimian->num = beimian[i].num;
-        cardbeimian->setParent(this->showothercarddlg);
-        cardbeimian->move(10+i*60,10);
-        connect(cardbeimian,&CardButton::clicked,[=]()mutable {
-            choosecard.col = cardbeimian->color;
-            choosecard.id = cardbeimian->id;
-            choosecard.type = cardbeimian->type;
-            choosecard.num = cardbeimian->num;
-        });
-    }
-    if(rs->fj.id!=0){
+    if(rs->fj.id>0){
         fangju = rs->fj;
-        othercard.push_back(fangju);
+        veccard.push_back(fangju);
 
     }
-    if(rs->fym.id!=0){
+    if(rs->fym.id>0){
         fangyuma = rs->fym;
-        othercard.push_back(fangyuma);
+        veccard.push_back(fangyuma);
     }
-    if(rs->jgm.id!=0){
+    if(rs->jgm.id>0){
         jingongma = rs->jgm;
-        othercard.push_back(jingongma);
+        veccard.push_back(jingongma);
     }
-    if(rs->wq.id!=0){
+    if(rs->wq.id>0){
         wuqi = rs->wq;
-        othercard.push_back(wuqi);
+        veccard.push_back(wuqi);
     }
-    for(int i=0;i<othercard.size();i++){
-        QString path = GetCardPath(othercard[i].id);
-        CardButton *other = new CardButton(path);
-        other->id = othercard[i].id;
-        other->color = othercard[i].col;
-        other->type = othercard[i].type;
-        other->num = othercard[i].num;
-        other->setParent(this->showothercarddlg);
-        other->move(10+(count+i)*60,10);
-        connect(other,&CardButton::clicked,[=]()mutable{
-            choosecard.col = other->color;
-            choosecard.id = other->id;
-            choosecard.type = other->type;
-            choosecard.num = other->num;
+    MyPushButton *queren = new MyPushButton(":/res/icon/queding.png",":/res/icon/queding_1.png");
+    queren->setParent(showothercarddlg);
+    queren->move(showothercarddlg->width()*0.5-queren->width()*0.5,showothercarddlg->height()-40);
+    for(int i=0;i<count+4;i++){
+        QString path;
+        if(i<count){
+            path = QString(":/res/PAI/背面.png");
+        }else{
+            path = GetCardPath(veccard[i].id);
+        }
+        CardButton *card = new CardButton(path);
+        card->id = veccard[i].id;
+        card->color = veccard[i].col;
+        card->type = veccard[i].type;
+        card->num = veccard[i].num;
+        card->setParent(this->showothercarddlg);
+        card->move(10+i*60,10);
+        vecCardButton.push_back(card);
+        connect(card,&CardButton::clicked,[=]()mutable {
+//            choosecard.col = card->color;
+//            choosecard.id = card->id;
+//            choosecard.type = card->type;
+//            choosecard.num = card->num;
+            if(card->b_flagchoose){
+                card->ChooseHero1();//向下
+            }else{
+                auto ite = vecCardButton.begin();
+                while(ite != vecCardButton.end()){
+                    if((*ite) != card){
+                        if((*ite)->b_flagchoose){
+                            (*ite)->ChooseHero1();
+                            (*ite)->b_flagchoose = !(*ite)->b_flagchoose;
+                        }
+                    }
+                    ++ite;
+                }
+                card->ChooseHero();//向上
+                card->b_flagchoose = true;
+            }
+            choosecard.id = card->id;
+            choosecard.type = card->type;
+            choosecard.col = card->color;
+            choosecard.num = card->num;
+        });
+
+        connect(queding,&MyPushButton::clicked,[=]()mutable{
+            STRU_GHCQ_RS rs;
+            rs.m_card = choosecard;
+            rs.m_userid = this->m_id;
+            if(choosecard.type == WUQI){
+                rs.n_lResult = wqpai;
+            }else if(choosecard.type == FANGJU){
+                rs.n_lResult = fjpai;
+            }else if(choosecard.type == JINGONGMA){
+                rs.n_lResult = jgmpai;
+            }else if(choosecard.type == FANGYUMA){
+                rs.n_lResult = fympai;
+            }else{
+                rs.n_lResult = shoupai;
+            }
+            rs.room_id = this->m_roomid;
+            rs.y_userid = yuserid;
+            m_tcpClient->SendData((char*)&rs,sizeof(rs));
         });
     }
     showothercarddlg->show();
@@ -540,6 +576,7 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
     STRU_POSTCARD_RQ *rq = (STRU_POSTCARD_RQ *)buf;
     STRU_CARD killcard = rq->m_card;
     int m_userid = rq->m_userid;
+    int y_userid = rq->m_touser1id;
     if((rq->m_card.type == FEIYANSHIJINNANG || rq->m_card.type == YANSHIJINNANG) && rq->m_userid != this->m_id){
         QLabel *label = new QLabel;
         QPalette label_pe;
@@ -550,7 +587,7 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
         label->setFont(ft);
         label->setText(QString("是否使用无懈可击?"));
         label->setParent(gamingdlg);
-        label->setGeometry(500,500,40,40);
+        label->setGeometry(500,500,200,200);
         label->show();
         ChuPai->setParent(this->gamingdlg);
         ChuPai->move(gamingdlg->width()*0.5-ChuPai->width()*0.5+40,gamingdlg->height()*0.8-150);
@@ -620,9 +657,9 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
             STRU_POSTCARD_RS_S rs;
             rs.m_lResult = post_failed;
             rs.room_id = this->m_roomid;
-            rs.user_id = rq->m_touser1id;
+            rs.user_id = y_userid;
             rs.y_card = killcard;
-            rs.y_user_id = rq->m_userid;
+            rs.y_user_id = m_userid;
             m_tcpClient->SendData((char*)&rs,sizeof(rs));
             ChuPai->hide();
             BuChu->hide();
@@ -1499,7 +1536,7 @@ void CKernel::SLOT_DealSelectHero(char *buf,int nlen){
     chooseheroattention->setParent(gamingdlg);
     MyPushButton *choosehero = new MyPushButton(":/res/icon/choosehero.png",":/res/icon/choosehero_1.png");
     choosehero->setParent(gamingdlg);
-    QTimer::singleShot(6000,this,[=]{
+    QTimer::singleShot(5000,this,[=]{
         chooseheroattention->move(gamingdlg->width()*0.5-chooseheroattention->width(),gamingdlg->height()*0.5);
         chooseheroattention->show();
         choosehero->move(gamingdlg->width()*0.5-choosehero->width()*0.5+100,gamingdlg->height()*0.5);
