@@ -111,6 +111,7 @@ private:
     QString myHeroPath;
     MyPushButton *turnlogo;//回合标识
     MyPushButton *killaction;//动画效果
+    MyPushButton *queren;//确认按钮
     int usecardtoid1;//出牌对象1
     int usecardtoid2;//出牌对象2
     STRU_CARD choosecard;//要打出的手牌结构体
@@ -120,6 +121,7 @@ private:
     int b_choosefirstpeople;//是否选择了第一个人
     bool b_flagpush;//是否主动出牌
     bool b_isKill;//是否出过杀
+    int yuserid;//被使用牌的id
 public slots:
     void SLOT_DealLoginRs(char *buf,int nlen);//处理登录回复槽函数
     void SLOT_DealRegisterRs(char *buf,int nlen);//处理注册回复槽函数

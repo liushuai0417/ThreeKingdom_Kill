@@ -48,6 +48,7 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     chupai->hide();
     qipai->hide();
     queding = new MyPushButton(":/res/icon/queding.png",":/res/icon/queding_1.png");
+    queren = new MyPushButton(":/res/icon/queding.png",":/res/icon/queding_1.png");
     b_choosefirstpeople = false;
     //窗口关闭槽函数
     connect(m_Dialog,&Dialog::SIG_CLOSE,[=](){
@@ -479,7 +480,7 @@ void CKernel::SLOT_SSQY_Rs(char *buf,int nlen){
 //处理顺手牵羊请求
 void CKernel::SLOT_SSQY_Rq(char *buf,int nlen){
     STRU_SSQY_RQ *rq = (STRU_SSQY_RQ *)buf;
-    int yuserid = rq->y_userid;
+    yuserid = rq->y_userid;
     int count=0;
     vector<STRU_CARD>veccard;
     vector<CardButton*>vecCardButton;
@@ -487,7 +488,7 @@ void CKernel::SLOT_SSQY_Rq(char *buf,int nlen){
     STRU_CARD fangyuma;
     STRU_CARD jingongma;
     STRU_CARD wuqi;
-    STRU_CARD choosecard;
+
     while(rq->m_card[count].id>0){
         veccard.push_back(rq->m_card[count]);
         count++;
@@ -509,7 +510,7 @@ void CKernel::SLOT_SSQY_Rq(char *buf,int nlen){
         wuqi = rq->wq;
         veccard.push_back(wuqi);
     }
-    MyPushButton *queren = new MyPushButton(":/res/icon/queding.png",":/res/icon/queding_1.png");
+    //MyPushButton *queren = new MyPushButton(":/res/icon/queding.png",":/res/icon/queding_1.png");
     queren->setParent(showothercarddlg);
     queren->move(showothercarddlg->width()*0.5-queren->width()*0.5,showothercarddlg->height()-40);
     for(int i=0;i<veccard.size();i++){
@@ -555,7 +556,7 @@ void CKernel::SLOT_SSQY_Rq(char *buf,int nlen){
         });
 }
     showothercarddlg->show();
-    connect(queren,&MyPushButton::clicked,[=]()mutable{
+    connect(this->queren,&MyPushButton::clicked,[=]()mutable{
         STRU_SSQY_RS rs;
         rs.m_card = choosecard;
         rs.m_userid = this->m_id;
@@ -573,6 +574,7 @@ void CKernel::SLOT_SSQY_Rq(char *buf,int nlen){
         rs.room_id = this->m_roomid;
         rs.y_userid = yuserid;
         m_tcpClient->SendData((char*)&rs,sizeof(rs));
+        showothercarddlg->close();
     });
 }
 
@@ -600,6 +602,7 @@ void CKernel::SLOT_GHCQ_Rs(char *buf,int nlen){
                 (*ite)->PushCard();
                 ite = this->vec_card.erase(ite);
                 gamingdlg->update();
+                qDebug()<<"1111";
                 this->cardnum--;
                 vec_pushcard.push_back(*ite);
                 InitCard();
@@ -621,6 +624,7 @@ void CKernel::SLOT_GHCQ_Rs(char *buf,int nlen){
         card->show();
         card->PushCard();
         this->vec_otherpushcard.push_back(card);
+        InitCard();
         gamingdlg->update();
     }
 }
@@ -628,7 +632,7 @@ void CKernel::SLOT_GHCQ_Rs(char *buf,int nlen){
 //处理过河拆桥请求
 void CKernel::SLOT_GHCQ_Rq(char *buf,int nlen){
     STRU_GHCQ_RQ *rs = (STRU_GHCQ_RQ *)buf;
-    int yuserid = rs->y_userid;
+    yuserid = rs->y_userid;
     int count=0;
     vector<STRU_CARD>veccard;
     vector<CardButton*>vecCardButton;
@@ -658,7 +662,7 @@ void CKernel::SLOT_GHCQ_Rq(char *buf,int nlen){
         wuqi = rs->wq;
         veccard.push_back(wuqi);
     }
-    MyPushButton *queren = new MyPushButton(":/res/icon/queding.png",":/res/icon/queding_1.png");
+
     queren->setParent(showothercarddlg);
     queren->move(showothercarddlg->width()*0.5-queren->width()*0.5,showothercarddlg->height()-40);
     for(int i=0;i<veccard.size();i++){
@@ -721,7 +725,9 @@ void CKernel::SLOT_GHCQ_Rq(char *buf,int nlen){
         }
         rs.room_id = this->m_roomid;
         rs.y_userid = yuserid;
+        qDebug()<<"ghcq111";
         m_tcpClient->SendData((char*)&rs,sizeof(rs));
+        showothercarddlg->close();
     });
 }
 
@@ -1470,6 +1476,8 @@ void CKernel::InitCard(){
         ++i;
         ++ite;
     }
+
+
 }
 
 QString CKernel::GetColorPath(int colorid){
