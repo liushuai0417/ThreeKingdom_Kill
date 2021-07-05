@@ -812,7 +812,7 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
     BuChu->hide();
     gamingdlg->update();
     STRU_POSTCARD_RQ *rq = (STRU_POSTCARD_RQ *)buf;
-    STRU_CARD killcard = rq->m_card;
+    killcard = rq->m_card;
     int m_userid = rq->m_userid;
     int y_userid = rq->m_touser1id;
 

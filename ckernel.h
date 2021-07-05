@@ -159,6 +159,7 @@ public slots:
     void SLOT_SSQY_Rq(char *buf,int nlen);//处理顺手牵羊请求
     void SLOT_SSQY_Rs(char *buf,int nlen);//处理顺手牵羊回复
     void SLOT_HILIGHT_Rq(char *buf,int nlen);
+    STRU_CARD killcard;
 };
 
 #endif // CKERNEL_H
