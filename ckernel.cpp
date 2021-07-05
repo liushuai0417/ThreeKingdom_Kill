@@ -468,9 +468,8 @@ void CKernel::SLOT_SSQY_Rs(char *buf,int nlen){
     //如果顺手牵羊对自己使用
     if(rs->y_userid == this->m_id){
         auto ite = this->vec_card.begin();
-        while(ite != this->vec_card.begin()){
+        while(ite != this->vec_card.end()){
             if((*ite)->id == rs->m_card.id){
-                CardButton *button = *ite;
                 (*ite)->PushCard();
                 ite = this->vec_card.erase(ite);
                 gamingdlg->update();
@@ -487,7 +486,7 @@ void CKernel::SLOT_SSQY_Rs(char *buf,int nlen){
         //使用顺手牵羊的座位号
         int m_seatid = FindSeatIdById(rs->m_userid);
         QString path;
-        path = GetCardPath(rs->y_userid);
+        path = GetCardPath(rs->m_card.id);
         CardButton *card = new CardButton(path,"");
         card->num = rs->m_card.num;
         card->id = rs->m_card.id;
@@ -498,6 +497,15 @@ void CKernel::SLOT_SSQY_Rs(char *buf,int nlen){
         card->show();
         card->CardAction(this->m_mapSeatIdToPosition[m_seatid][0]+290,this->m_mapSeatIdToPosition[m_seatid][1]);
         this->vec_otherpushcard.push_back(card);
+        InitCard();
+
+        QTimer::singleShot(2000,this,[=]{
+            for(int i=0;i<vec_otherpushcard.size();i++){
+                vec_otherpushcard[i]->hide();
+                delete vec_otherpushcard[i];
+                vec_otherpushcard[i] = NULL;
+            }
+        });
         gamingdlg->update();
     }
 }
@@ -554,10 +562,6 @@ void CKernel::SLOT_SSQY_Rq(char *buf,int nlen){
         card->move(10+i*60,10);
         vecCardButton.push_back(card);
         connect(card,&CardButton::clicked,[=]()mutable {
-//            choosecard.col = card->color;
-//            choosecard.id = card->id;
-//            choosecard.type = card->type;
-//            choosecard.num = card->num;
             if(card->b_flagchoose){
                 card->ChooseHero1();//向下
             }else{
@@ -574,24 +578,24 @@ void CKernel::SLOT_SSQY_Rq(char *buf,int nlen){
                 card->ChooseHero();//向上
                 card->b_flagchoose = true;
             }
-            choosecard.id = card->id;
-            choosecard.type = card->type;
-            choosecard.col = card->color;
-            choosecard.num = card->num;
+            choosecardofssqy.id = card->id;
+            choosecardofssqy.type = card->type;
+            choosecardofssqy.col = card->color;
+            choosecardofssqy.num = card->num;
         });
 }
     showothercarddlg->show();
     connect(this->queren,&MyPushButton::clicked,[=]()mutable{
         STRU_SSQY_RS rs;
-        rs.m_card = choosecard;
+        rs.m_card = choosecardofssqy;
         rs.m_userid = this->m_id;
-        if(choosecard.type == WUQI){
+        if(choosecardofssqy.type == WUQI){
             rs.n_lResult = wqpai;
-        }else if(choosecard.type == FANGJU){
+        }else if(choosecardofssqy.type == FANGJU){
             rs.n_lResult = fjpai;
-        }else if(choosecard.type == JINGONGMA){
+        }else if(choosecardofssqy.type == JINGONGMA){
             rs.n_lResult = jgmpai;
-        }else if(choosecard.type == FANGYUMA){
+        }else if(choosecardofssqy.type == FANGYUMA){
             rs.n_lResult = fympai;
         }else{
             rs.n_lResult = shoupai;
@@ -600,6 +604,22 @@ void CKernel::SLOT_SSQY_Rq(char *buf,int nlen){
         rs.y_userid = yuserid;
         m_tcpClient->SendData((char*)&rs,sizeof(rs));
         showothercarddlg->close();
+        QString path = GetCardPath(rs.m_card.id);
+        int seatid = FindSeatIdById(rs.y_userid);
+        CardButton *card = new CardButton(path);
+        CardButton *pMark = new CardButton(path);
+        pMark->color = rs.m_card.col;
+        pMark->num = rs.m_card.num;
+        pMark->type = rs.m_card.type;
+        pMark->id = rs.m_card.id;
+        card->setParent(gamingdlg);
+        card->move(this->m_mapSeatIdToPosition[seatid][0]+290,this->m_mapSeatIdToPosition[seatid][1]);
+        card->show();
+        card->CardAction(gamingdlg->width()*0.5-160+vec_card.size()*140,gamingdlg->height()*0.8-10);
+        gamingdlg->update();
+        this->vec_card.push_back(card);
+        InitCard();
+        gamingdlg->update();
     });
 }
 
@@ -627,7 +647,6 @@ void CKernel::SLOT_GHCQ_Rs(char *buf,int nlen){
                 (*ite)->PushCard();
                 ite = this->vec_card.erase(ite);
                 gamingdlg->update();
-                qDebug()<<"1111";
                 this->cardnum--;
                 vec_pushcard.push_back(*ite);
                 InitCard();
@@ -705,10 +724,6 @@ void CKernel::SLOT_GHCQ_Rq(char *buf,int nlen){
         card->move(10+i*60,10);
         vecCardButton.push_back(card);
         connect(card,&CardButton::clicked,[=]()mutable {
-//            choosecard.col = card->color;
-//            choosecard.id = card->id;
-//            choosecard.type = card->type;
-//            choosecard.num = card->num;
             if(card->b_flagchoose){
                 card->ChooseHero1();//向下
             }else{
@@ -749,9 +764,17 @@ void CKernel::SLOT_GHCQ_Rq(char *buf,int nlen){
         }
         rs.room_id = this->m_roomid;
         rs.y_userid = yuserid;
-        qDebug()<<"ghcq111";
         m_tcpClient->SendData((char*)&rs,sizeof(rs));
         showothercarddlg->close();
+        QString path = GetCardPath(rs.m_card.id);
+        int seatid = FindSeatIdById(rs.y_userid);
+        CardButton *card = new CardButton(path);
+        card->setParent(gamingdlg);
+        card->move(this->m_mapSeatIdToPosition[seatid][0]+290,this->m_mapSeatIdToPosition[seatid][1]);
+        card->show();
+        card->PushCard();
+        gamingdlg->update();
+        this->vec_otherpushcard.push_back(card);
     });
 }
 
@@ -980,8 +1003,11 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
             label->setFont(ft);
             label->setText(QString("是否使用无懈可击?"));
             label->setParent(gamingdlg);
-            label->setGeometry(500,500,200,200);
+            label->setGeometry(700,700,400,400);
             label->show();
+            QTimer::singleShot(3000,this,[=]{
+                label->hide();
+            });
             ChuPai->setParent(this->gamingdlg);
             ChuPai->move(gamingdlg->width()*0.5-ChuPai->width()*0.5+40,gamingdlg->height()*0.8-150);
             BuChu->setParent(this->gamingdlg);
