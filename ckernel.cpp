@@ -815,96 +815,7 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
     STRU_CARD killcard = rq->m_card;
     int m_userid = rq->m_userid;
     int y_userid = rq->m_touser1id;
-    if((rq->m_card.type == FEIYANSHIJINNANG || rq->m_card.type == YANSHIJINNANG) && rq->m_userid != this->m_id){
-        QLabel *label = new QLabel;
-        QPalette label_pe;
-        QFont ft;
-        ft.setPointSize(20);
-        label_pe.setColor(QPalette::WindowText, Qt::white);
-        label->setPalette(label_pe);
-        label->setFont(ft);
-        label->setText(QString("是否使用无懈可击?"));
-        label->setParent(gamingdlg);
-        label->setGeometry(500,500,200,200);
-        label->show();
-        ChuPai->setParent(this->gamingdlg);
-        ChuPai->move(gamingdlg->width()*0.5-ChuPai->width()*0.5+40,gamingdlg->height()*0.8-150);
-        BuChu->setParent(this->gamingdlg);
-        BuChu->move(gamingdlg->width()*0.5-BuChu->width()*0.5+200,gamingdlg->height()*0.8-150);
-        ChuPai->show();
-        BuChu->show();
-        gamingdlg->update();
-        connect(ChuPai,&MyPushButton::clicked,[=](){
-                if(this->vec_pushcard.size()>0){
-                    for(int i=0;i<vec_pushcard.size();i++){
-                        vec_pushcard[i]->hide();
-                        gamingdlg->update();
-                    }
-                }
-                if(this->vec_otherpushcard.size()>0){
-                    for(int i=0;i<vec_otherpushcard.size();i++){
-                        vec_otherpushcard[i]->hide();
-                        gamingdlg->update();
-                    }
-                }
-                STRU_POSTCARD_RS_S rs;
-                rs.m_lResult = post_success;
-                rs.m_card.col = this->choosecard.col;
-                rs.m_card.id = this->choosecard.id;
-                rs.m_card.num = this->choosecard.num;
-                rs.m_card.type = this->choosecard.type;
-                if(this->choosecard.id != WUXIEKEJI){
-                    return;
-                }
-                rs.room_id = this->m_roomid;
-                rs.user_id = this->m_id;
-                rs.y_card = killcard;
-                rs.y_user_id = rq->m_userid;
-                rs.m_lResult = 1;
-                m_tcpClient->SendData((char*)&rs,sizeof(rs));
-                //将出的牌弹到桌面中间
-                auto ite = this->vec_card.begin();
-                while(ite!=this->vec_card.end()){
-                    if((*ite)->b_flagchoose){
-                        pushCard = *ite;
-                        pushCard->PushCard();
-                        pushCard->setEnabled(true);
-                        InitCard();
-                        this->vec_pushcard.push_back(pushCard);
-                        ite = this->vec_card.erase(ite);
-                        this->cardnum--;
-                    }else{
-                        ++ite;
-                    }
-                }
-                for(int i=0;i<this->vec_card.size();i++){
-                    vec_card[i]->hide();
-                    gamingdlg->update();
-                }
-                for(int i=0;i<this->vec_otherpushcard.size();i++){
-                    vec_otherpushcard[i]->hide();
-                    gamingdlg->update();
-                }
-                InitCard();
-                ChuPai->hide();
-                BuChu->hide();
-                gamingdlg->update();
-        });
 
-        connect(BuChu,&MyPushButton::clicked,[=](){
-            STRU_POSTCARD_RS_S rs;
-            rs.m_lResult = post_failed;
-            rs.room_id = this->m_roomid;
-            rs.user_id = y_userid;
-            rs.y_card = killcard;
-            rs.y_user_id = m_userid;
-            m_tcpClient->SendData((char*)&rs,sizeof(rs));
-            ChuPai->hide();
-            BuChu->hide();
-            gamingdlg->update();
-            return;
-        });
-    }
 
     QString checkname = GetCardName(rq->m_card.id);
     //QString resposename = GetCardName(rq);
@@ -971,6 +882,7 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
     //如果被使用牌的是自己 弹出一个QLabel 并执行动画
     if(rq->m_touser1id == this->m_id){
         //显示出牌弃牌按钮
+
         ChuPai->setParent(this->gamingdlg);
         ChuPai->move(gamingdlg->width()*0.5-ChuPai->width()*0.5+40,gamingdlg->height()*0.8-150);
         BuChu->setParent(this->gamingdlg);
@@ -1053,13 +965,102 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
         gamingdlg->update();
         b_flagpush = false;//被动出牌
     }else{//如果不是对自己使用的牌 隐藏按钮
-        chupai->hide();
-        qipai->hide();
-        gamingdlg->update();
+        if(rq->m_card.type == FEIYANSHIJINNANG || rq->m_card.type == YANSHIJINNANG){
+            QLabel *label = new QLabel;
+            QPalette label_pe;
+            QFont ft;
+            ft.setPointSize(20);
+            label_pe.setColor(QPalette::WindowText, Qt::white);
+            label->setPalette(label_pe);
+            label->setFont(ft);
+            label->setText(QString("是否使用无懈可击?"));
+            label->setParent(gamingdlg);
+            label->setGeometry(500,500,200,200);
+            label->show();
+            ChuPai->setParent(this->gamingdlg);
+            ChuPai->move(gamingdlg->width()*0.5-ChuPai->width()*0.5+40,gamingdlg->height()*0.8-150);
+            BuChu->setParent(this->gamingdlg);
+            BuChu->move(gamingdlg->width()*0.5-BuChu->width()*0.5+200,gamingdlg->height()*0.8-150);
+            ChuPai->show();
+            BuChu->show();
+            gamingdlg->update();
+            connect(ChuPai,&MyPushButton::clicked,[=](){
+                    if(this->vec_pushcard.size()>0){
+                        for(int i=0;i<vec_pushcard.size();i++){
+                            vec_pushcard[i]->hide();
+                            gamingdlg->update();
+                        }
+                    }
+                    if(this->vec_otherpushcard.size()>0){
+                        for(int i=0;i<vec_otherpushcard.size();i++){
+                            vec_otherpushcard[i]->hide();
+                            gamingdlg->update();
+                        }
+                    }
+                    STRU_POSTCARD_RS_S rs;
+                    rs.m_lResult = post_success;
+                    rs.m_card.col = this->choosecard.col;
+                    rs.m_card.id = this->choosecard.id;
+                    rs.m_card.num = this->choosecard.num;
+                    rs.m_card.type = this->choosecard.type;
+                    if(this->choosecard.id != WUXIEKEJI){
+                        return;
+                    }
+                    rs.room_id = this->m_roomid;
+                    rs.user_id = this->m_id;
+                    rs.y_card = killcard;
+                    rs.y_user_id = rq->m_userid;
+                    rs.m_lResult = 1;
+                    m_tcpClient->SendData((char*)&rs,sizeof(rs));
+                    //将出的牌弹到桌面中间
+                    auto ite = this->vec_card.begin();
+                    while(ite!=this->vec_card.end()){
+                        if((*ite)->b_flagchoose){
+                            pushCard = *ite;
+                            pushCard->PushCard();
+                            pushCard->setEnabled(true);
+                            InitCard();
+                            this->vec_pushcard.push_back(pushCard);
+                            ite = this->vec_card.erase(ite);
+                            this->cardnum--;
+                        }else{
+                            ++ite;
+                        }
+                    }
+                    for(int i=0;i<this->vec_card.size();i++){
+                        vec_card[i]->hide();
+                        gamingdlg->update();
+                    }
+                    for(int i=0;i<this->vec_otherpushcard.size();i++){
+                        vec_otherpushcard[i]->hide();
+                        gamingdlg->update();
+                    }
+                    InitCard();
+                    ChuPai->hide();
+                    BuChu->hide();
+                    gamingdlg->update();
+            });
+
+            connect(BuChu,&MyPushButton::clicked,[=](){
+                STRU_POSTCARD_RS_S rs;
+                rs.m_lResult = post_failed;
+                rs.room_id = this->m_roomid;
+                rs.user_id = y_userid;
+                rs.y_card = killcard;
+                rs.y_user_id = m_userid;
+                m_tcpClient->SendData((char*)&rs,sizeof(rs));
+                ChuPai->hide();
+                BuChu->hide();
+                gamingdlg->update();
+                return;
+            });
+        }else{
+            chupai->hide();
+            qipai->hide();
+            gamingdlg->update();
+        }
+
     }
-
-
-
 }
 
 QString CKernel::GetCardPath(int cardid){
