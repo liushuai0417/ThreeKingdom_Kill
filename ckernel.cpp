@@ -721,24 +721,24 @@ void CKernel::SLOT_GHCQ_Rq(char *buf,int nlen){
                 card->ChooseHero();//向上
                 card->b_flagchoose = true;
             }
-            choosecard.id = card->id;
-            choosecard.type = card->type;
-            choosecard.col = card->color;
-            choosecard.num = card->num;
+            choosecardofghqc.id = card->id;
+            choosecardofghqc.type = card->type;
+            choosecardofghqc.col = card->color;
+            choosecardofghqc.num = card->num;
         });
 }
     showothercarddlg->show();
     connect(queren,&MyPushButton::clicked,[=]()mutable{
         STRU_GHCQ_RS rs;
-        rs.m_card = choosecard;
+        rs.m_card = choosecardofghqc;
         rs.m_userid = this->m_id;
-        if(choosecard.type == WUQI){
+        if(choosecardofghqc.type == WUQI){
             rs.n_lResult = wqpai;
-        }else if(choosecard.type == FANGJU){
+        }else if(choosecardofghqc.type == FANGJU){
             rs.n_lResult = fjpai;
-        }else if(choosecard.type == JINGONGMA){
+        }else if(choosecardofghqc.type == JINGONGMA){
             rs.n_lResult = jgmpai;
-        }else if(choosecard.type == FANGYUMA){
+        }else if(choosecardofghqc.type == FANGYUMA){
             rs.n_lResult = fympai;
         }else{
             rs.n_lResult = shoupai;

@@ -117,6 +117,7 @@ private:
     int usecardtoid1;//出牌对象1
     int usecardtoid2;//出牌对象2
     STRU_CARD choosecard;//要打出的手牌结构体
+    STRU_CARD choosecardofghqc;
     int cardnum;//手牌数量
     int myhp;//我的血量
     CardButton *pushCard;//打出的牌
