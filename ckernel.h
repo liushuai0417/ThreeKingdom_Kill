@@ -68,6 +68,8 @@ private:
     MyPushButton *chupai;
     MyPushButton *qipai;
     MyPushButton *queding;
+    MyPushButton *ChuPai;
+    MyPushButton *BuChu;
     QLabel *label;//提示标签
     PFUN m_NetPackMap[DEF_PACK_COUNT];//协议映射数组
     RoomItem *item;
