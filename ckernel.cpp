@@ -438,7 +438,7 @@ void CKernel::SLOT_SSQY_Rs(char *buf,int nlen){
             gamingdlg->update();
         }
     }
-    STRU_SSQY_RS *rs = (STRU_SSQY_RQ *)buf;
+    STRU_SSQY_RS *rs = (STRU_SSQY_RS *)buf;
     //如果顺手牵羊对自己使用
     if(rs->y_userid == this->m_id){
         auto ite = this->vec_card.begin();
