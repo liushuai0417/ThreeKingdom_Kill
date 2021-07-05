@@ -41,6 +41,10 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     usecardtoid2 = 0;//出牌对象2
     b_flagpush = true;
     b_isKill = false;//默认没出过杀
+    ChuPai = new MyPushButton(":/res/icon/chupai.png",":/res/icon/chupai_1.png");
+    BuChu = new MyPushButton(":/res/icon/buchu.png",":/res/icon/buchu_1.png");
+    ChuPai->hide();
+    BuChu->hide();
     chupai = new MyPushButton(":/res/icon/chupai.png",":/res/icon/chupai_1.png");
     qipai = new MyPushButton(":/res/icon/qipai.png",":/res/icon/qipai_1.png");
     chupai->setParent(gamingdlg);
@@ -804,17 +808,10 @@ void CKernel::SLOT_CommitStatus(char *buf,int nlen){
 
 //同步出牌动画
 void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
-    MyPushButton *ChuPai;
-    MyPushButton *BuChu;
-    ChuPai = new MyPushButton(":/res/icon/chupai.png",":/res/icon/chupai_1.png");
-    BuChu = new MyPushButton(":/res/icon/buchu.png",":/res/icon/buchu_1.png");
-    ChuPai->hide();
-    BuChu->hide();
-    gamingdlg->update();
     STRU_POSTCARD_RQ *rq = (STRU_POSTCARD_RQ *)buf;
     killcard = rq->m_card;
-    int m_userid = rq->m_userid;
-    int y_userid = rq->m_touser1id;
+    m_userid = rq->m_userid;
+    y_userid = rq->m_touser1id;
 
 
     QString checkname = GetCardName(rq->m_card.id);

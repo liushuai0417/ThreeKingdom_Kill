@@ -122,6 +122,9 @@ private:
     bool b_flagpush;//是否主动出牌
     bool b_isKill;//是否出过杀
     int yuserid;//被使用牌的id
+    STRU_CARD killcard;
+    int m_userid;
+    int y_userid;
 public slots:
     void SLOT_DealLoginRs(char *buf,int nlen);//处理登录回复槽函数
     void SLOT_DealRegisterRs(char *buf,int nlen);//处理注册回复槽函数
@@ -159,7 +162,7 @@ public slots:
     void SLOT_SSQY_Rq(char *buf,int nlen);//处理顺手牵羊请求
     void SLOT_SSQY_Rs(char *buf,int nlen);//处理顺手牵羊回复
     void SLOT_HILIGHT_Rq(char *buf,int nlen);
-    STRU_CARD killcard;
+
 };
 
 #endif // CKERNEL_H
