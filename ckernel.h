@@ -153,7 +153,9 @@ public slots:
     void SLOT_CommitStatus(char *buf,int nlen);//同步血量
     void SLOT_OffCardRq(char *buf,int nlen);//同步弃牌动画
     void SLOT_GHCQ_Rq(char *buf,int nlen);//处理过河拆桥
-    void SLOT_GHCQ_Rs(char *buf,int nlen);//处理过河拆桥回复4
+    void SLOT_GHCQ_Rs(char *buf,int nlen);//处理过河拆桥回复
+    void SLOT_SSQY_Rq(char *buf,int nlen);//处理顺手牵羊请求
+    void SLOT_SSQY_Rs(char *buf,int nlen);//处理顺手牵羊回复
 };
 
 #endif // CKERNEL_H
