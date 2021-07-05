@@ -153,3 +153,19 @@ void CardButton::PushCard(){
     //执行动画
     animation->start();
 }
+
+//手牌移动执行动画
+void CardButton::CardAction(int x,int y){
+    //创建动画对象
+    QPropertyAnimation *animation = new QPropertyAnimation(this,"geometry");
+    //设置动画时间间隔
+
+    //设置起始位置
+    animation->setStartValue(QRect(this->x(),this->y(),this->width(),this->height()));
+    //结束位置
+    animation->setEndValue(QRect(x,y,this->width(),this->height()));
+    //设置弹跳曲线
+    animation->setEasingCurve(QEasingCurve::OutBounce);
+    //执行动画
+    animation->start();
+}

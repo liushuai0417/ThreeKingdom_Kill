@@ -18,6 +18,7 @@ public:
     void ChooseHero();//选择牌
     void ChooseHero1();//选择牌
     void PushCard();//出牌
+    void CardAction(int x,int y);
 public:
     bool b_flagchoose;//是否是选中状态
     int color;//花色

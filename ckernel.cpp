@@ -419,6 +419,161 @@ void CKernel::setNetPackMap(){
     NetPackMap(DEF_PACK_OFFCARD_RQ) = &CKernel::SLOT_OffCardRq;
     NetPackMap(DEF_PACK_GHCQ_RQ) = &CKernel::SLOT_GHCQ_Rq;
     NetPackMap(DEF_PACK_GHCQ_RS) = &CKernel::SLOT_GHCQ_Rs;
+    NetPackMap(DEF_PACK_SSQY_RQ) = &CKernel::SLOT_SSQY_Rq;
+    NetPackMap(DEF_PACK_SSQY_RS) = &CKernel::SLOT_SSQY_Rs;
+}
+
+//处理顺手牵羊回复
+void CKernel::SLOT_SSQY_Rs(char *buf,int nlen){
+    if(vec_otherpushcard.size()>0){
+        for(int i=0;i<vec_otherpushcard.size();i++){
+            vec_otherpushcard[i]->hide();
+            gamingdlg->update();
+        }
+    }
+
+    if(this->vec_pushcard.size()>0){
+        for(int i=0;i<vec_pushcard.size();i++){
+            vec_pushcard[i]->hide();
+            gamingdlg->update();
+        }
+    }
+    STRU_SSQY_RS *rs = (STRU_SSQY_RQ *)buf;
+    //如果顺手牵羊对自己使用
+    if(rs->y_userid == this->m_id){
+        auto ite = this->vec_card.begin();
+        while(ite != this->vec_card.begin()){
+            if((*ite)->id == rs->m_card.id){
+                CardButton *button = *ite;
+                (*ite)->PushCard();
+                ite = this->vec_card.erase(ite);
+                gamingdlg->update();
+                this->cardnum--;
+                vec_pushcard.push_back(*ite);
+                InitCard();
+                break;
+            }
+            ++ite;
+        }
+    }else{
+        //被使用顺手牵羊的座位号
+        int y_seatid = FindSeatIdById(rs->y_userid);
+        //使用顺手牵羊的座位号
+        int m_seatid = FindSeatIdById(rs->m_userid);
+        QString path;
+        path = GetCardPath(rs->y_userid);
+        CardButton *card = new CardButton(path,"");
+        card->num = rs->m_card.num;
+        card->id = rs->m_card.id;
+        card->color = rs->m_card.col;
+        card->type = rs->m_card.type;
+        card->setParent(gamingdlg);
+        card->move(this->m_mapSeatIdToPosition[y_seatid][0]+290,this->m_mapSeatIdToPosition[y_seatid][1]);
+        card->show();
+        card->CardAction(this->m_mapSeatIdToPosition[m_seatid][0]+290,this->m_mapSeatIdToPosition[m_seatid][1]);
+        this->vec_otherpushcard.push_back(card);
+        gamingdlg->update();
+    }
+}
+
+//处理顺手牵羊请求
+void CKernel::SLOT_SSQY_Rq(char *buf,int nlen){
+    STRU_SSQY_RQ *rq = (STRU_SSQY_RQ *)buf;
+    int yuserid = rq->y_userid;
+    int count=0;
+    vector<STRU_CARD>veccard;
+    vector<CardButton*>vecCardButton;
+    STRU_CARD fangju;
+    STRU_CARD fangyuma;
+    STRU_CARD jingongma;
+    STRU_CARD wuqi;
+    STRU_CARD choosecard;
+    while(rq->m_card[count].id>0){
+        veccard.push_back(rq->m_card[count]);
+        count++;
+    }
+    if(rq->fj.id>0){
+        fangju = rq->fj;
+        veccard.push_back(fangju);
+
+    }
+    if(rq->fym.id>0){
+        fangyuma = rq->fym;
+        veccard.push_back(fangyuma);
+    }
+    if(rq->jgm.id>0){
+        jingongma = rq->jgm;
+        veccard.push_back(jingongma);
+    }
+    if(rq->wq.id>0){
+        wuqi = rq->wq;
+        veccard.push_back(wuqi);
+    }
+    MyPushButton *queren = new MyPushButton(":/res/icon/queding.png",":/res/icon/queding_1.png");
+    queren->setParent(showothercarddlg);
+    queren->move(showothercarddlg->width()*0.5-queren->width()*0.5,showothercarddlg->height()-40);
+    for(int i=0;i<veccard.size();i++){
+        QString path;
+        if(i<count){
+            path = QString(":/res/PAI/背面.png");
+        }else{
+            path = GetCardPath(veccard[i].id);
+        }
+        CardButton *card = new CardButton(path);
+        card->id = veccard[i].id;
+        card->color = veccard[i].col;
+        card->type = veccard[i].type;
+        card->num = veccard[i].num;
+        card->setParent(this->showothercarddlg);
+        card->move(10+i*60,10);
+        vecCardButton.push_back(card);
+        connect(card,&CardButton::clicked,[=]()mutable {
+//            choosecard.col = card->color;
+//            choosecard.id = card->id;
+//            choosecard.type = card->type;
+//            choosecard.num = card->num;
+            if(card->b_flagchoose){
+                card->ChooseHero1();//向下
+            }else{
+                auto ite = vecCardButton.begin();
+                while(ite != vecCardButton.end()){
+                    if((*ite) != card){
+                        if((*ite)->b_flagchoose){
+                            (*ite)->ChooseHero1();
+                            (*ite)->b_flagchoose = !(*ite)->b_flagchoose;
+                        }
+                    }
+                    ++ite;
+                }
+                card->ChooseHero();//向上
+                card->b_flagchoose = true;
+            }
+            choosecard.id = card->id;
+            choosecard.type = card->type;
+            choosecard.col = card->color;
+            choosecard.num = card->num;
+        });
+}
+    showothercarddlg->show();
+    connect(queren,&MyPushButton::clicked,[=]()mutable{
+        STRU_SSQY_RS rs;
+        rs.m_card = choosecard;
+        rs.m_userid = this->m_id;
+        if(choosecard.type == WUQI){
+            rs.n_lResult = wqpai;
+        }else if(choosecard.type == FANGJU){
+            rs.n_lResult = fjpai;
+        }else if(choosecard.type == JINGONGMA){
+            rs.n_lResult = jgmpai;
+        }else if(choosecard.type == FANGYUMA){
+            rs.n_lResult = fympai;
+        }else{
+            rs.n_lResult = shoupai;
+        }
+        rs.room_id = this->m_roomid;
+        rs.y_userid = yuserid;
+        m_tcpClient->SendData((char*)&rs,sizeof(rs));
+    });
 }
 
 //处理过河拆桥回复
