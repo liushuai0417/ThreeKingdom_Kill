@@ -882,7 +882,6 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
     //如果被使用牌的是自己 弹出一个QLabel 并执行动画
     if(rq->m_touser1id == this->m_id){
         //显示出牌弃牌按钮
-
         ChuPai->setParent(this->gamingdlg);
         ChuPai->move(gamingdlg->width()*0.5-ChuPai->width()*0.5+40,gamingdlg->height()*0.8-150);
         BuChu->setParent(this->gamingdlg);
@@ -912,6 +911,11 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
                 rs.m_card.type = this->choosecard.type;
                 if(rq->m_card.id == SHA){
                     if(this->choosecard.id != SHAN){
+                        return;
+                    }
+                }
+                if(rq->m_card.id == GUOHECHAIQIAO){
+                    if(this->choosecard.id!=WUXIEKEJI){
                         return;
                     }
                 }
