@@ -640,7 +640,6 @@ void CKernel::SLOT_GHCQ_Rq(char *buf,int nlen){
     STRU_CARD fangyuma;
     STRU_CARD jingongma;
     STRU_CARD wuqi;
-    STRU_CARD choosecard;
     while(rs->m_card[count].id>0){
         veccard.push_back(rs->m_card[count]);
         count++;
