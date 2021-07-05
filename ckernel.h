@@ -158,6 +158,7 @@ public slots:
     void SLOT_GHCQ_Rs(char *buf,int nlen);//处理过河拆桥回复
     void SLOT_SSQY_Rq(char *buf,int nlen);//处理顺手牵羊请求
     void SLOT_SSQY_Rs(char *buf,int nlen);//处理顺手牵羊回复
+    void SLOT_HILIGHT_Rq(char *buf,int nlen);
 };
 
 #endif // CKERNEL_H

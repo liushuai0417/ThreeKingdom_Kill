@@ -49,6 +49,7 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
     qipai->hide();
     queding = new MyPushButton(":/res/icon/queding.png",":/res/icon/queding_1.png");
     queren = new MyPushButton(":/res/icon/queding.png",":/res/icon/queding_1.png");
+    turnlogo = new MyPushButton(":/res/icon/turnlogo.png","");
     b_choosefirstpeople = false;
     //窗口关闭槽函数
     connect(m_Dialog,&Dialog::SIG_CLOSE,[=](){
@@ -422,6 +423,22 @@ void CKernel::setNetPackMap(){
     NetPackMap(DEF_PACK_GHCQ_RS) = &CKernel::SLOT_GHCQ_Rs;
     NetPackMap(DEF_PACK_SSQY_RQ) = &CKernel::SLOT_SSQY_Rq;
     NetPackMap(DEF_PACK_SSQY_RS) = &CKernel::SLOT_SSQY_Rs;
+    NetPackMap(DEF_PACK_HILIGHT_RQ) = &CKernel::SLOT_HILIGHT_Rq;
+}
+
+void CKernel::SLOT_HILIGHT_Rq(char *buf,int nlen){
+    STRU_HILIGHT_RQ *rq = (STRU_HILIGHT_RQ *)buf;
+    int seatid = FindSeatIdById(rq->m_userid);
+    turnlogo->hide();
+
+    turnlogo->setParent(gamingdlg);
+    if(seatid == this->MySeatId){
+        turnlogo->move(gamingdlg->width()*0.5-turnlogo->width()*0.5-445,gamingdlg->height()*0.8-55);
+    }else{
+        turnlogo->move(this->m_mapSeatIdToPosition[seatid][0]+55,this->m_mapSeatIdToPosition[seatid][1]);
+    }
+    turnlogo->show();
+    gamingdlg->update();
 }
 
 //处理顺手牵羊回复
@@ -885,8 +902,10 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
             ChuPai->hide();
             BuChu->hide();
             gamingdlg->update();
+            return;
         });
     }
+
     QString checkname = GetCardName(rq->m_card.id);
     //QString resposename = GetCardName(rq);
     auto ite = this->m_mapSeatIdToId.begin();
@@ -1298,7 +1317,6 @@ void CKernel::SLOT_DealTurnBeginRs(char *buf,int nlen){
 
     //设置头像框
     int curseatid = FindSeatIdById(rs->user_id);
-    turnlogo = new MyPushButton(":/res/icon/turnlogo.png","");
     turnlogo->setParent(gamingdlg);
     if(curseatid == this->MySeatId){
         turnlogo->move(gamingdlg->width()*0.5-turnlogo->width()*0.5-445,gamingdlg->height()*0.8-55);
