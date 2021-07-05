@@ -82,4 +82,4 @@ FORMS    += dialog.ui \
 RESOURCES += \
     resource.qrc
 CONFIG+=resources_big
-QMAKE_CXXFLAGS += -gstabs+
+

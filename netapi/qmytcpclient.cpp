@@ -63,9 +63,6 @@ int QMyTcpClient::ConnectToServer( char* szBufIP)
 
 void QMyTcpClient::DealData(char* szbuf , int nLen)
 {
-    qDebug()<<"QMyTcpClient"<< QThread::currentThreadId();
-    STRU_LOGIN_RS *rs = (STRU_LOGIN_RS *)szbuf;
-    qDebug()<<rs->m_nType;
     emit SIG_ReadyData(szbuf,nLen);
 }
 int QMyTcpClient::IsConnected()
