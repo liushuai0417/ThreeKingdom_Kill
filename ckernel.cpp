@@ -18,7 +18,19 @@
 #include"herobutton.h"
 #include"cardbutton.h"
 #include"showothercard.h"
+#define MD5_KEY "1234"
+#include"QCryptographicHash"
 #define NetPackMap(a) m_NetPackMap[(a)-DEF_PACK_BASE]
+static QByteArray GetMD5( QString val)
+{
+    QCryptographicHash hash(QCryptographicHash::Md5);
+    QString tmp = QString( "%1_%2").arg(val).arg(MD5_KEY);
+
+    hash.addData( tmp.toStdString().c_str() , strlen(tmp.toStdString().c_str()) );
+    QByteArray  result = hash.result();
+
+    return result.toHex();
+}
 CKernel::CKernel(QObject *parent) : QObject(parent)
 {
     //初始化指针
@@ -80,8 +92,8 @@ CKernel::CKernel(QObject *parent) : QObject(parent)
         STRU_REGISTER_RQ rq;
         strcpy(rq.m_szUser,username.toStdString().c_str());
         strcpy(rq.m_szEmall,email.toStdString().c_str());
-        strcpy(rq.m_szPassword,password.toStdString().c_str());
-        qDebug()<<rq.m_szUser<<rq.m_szEmall<<rq.m_szPassword;
+        QByteArray array = GetMD5(password);
+        memcpy(rq.m_szPassword,array.data(),array.size());
         //通过kernel类发送包
         m_tcpClient->SendData((char*)&rq,sizeof(rq));
     });
