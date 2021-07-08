@@ -917,6 +917,24 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
 
     //如果被使用牌的是自己 弹出一个QLabel 并执行动画
     if(rq->m_touser1id == this->m_id){
+        if(rq->m_card.type == YANSHIJINNANG || rq->m_card.type == FEIYANSHIJINNANG){
+            int flag = false;
+            for(int i=0;i<vec_card.size();i++){
+                if(vec_card[i]->id == WUXIEKEJI){
+                    flag = true;
+                }
+            }
+            if(flag == false){
+                STRU_POSTCARD_RS_S rs;
+                rs.m_lResult = post_failed;
+                rs.room_id = this->m_roomid;
+                rs.user_id = y_userid;
+                rs.y_card = killcard;
+                rs.y_user_id = m_userid;
+                m_tcpClient->SendData((char*)&rs,sizeof(rs));
+                return;
+            }
+        }
         //显示出牌弃牌按钮
         ChuPai->setParent(this->gamingdlg);
         ChuPai->move(gamingdlg->width()*0.5-ChuPai->width()*0.5+40,gamingdlg->height()*0.8-150);
@@ -1024,13 +1042,6 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
                 label->setParent(gamingdlg);
                 label->setGeometry(700,700,400,400);
                 label->show();
-                int count = 0;
-                for(int i=0;i<vec_card.size();i++){
-                    if(vec_card[i]->id == WUXIEKEJI){
-                        count++;
-                    }
-                }
-
                 QTimer::singleShot(3000,this,[=]{
                     label->hide();
                 });
