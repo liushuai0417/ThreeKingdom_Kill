@@ -1017,17 +1017,24 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
             label->setParent(gamingdlg);
             label->setGeometry(700,700,400,400);
             label->show();
+            int count = 0;
             QTimer::singleShot(3000,this,[=]{
                 label->hide();
             });
-            ChuPai->setParent(this->gamingdlg);
-            ChuPai->move(gamingdlg->width()*0.5-ChuPai->width()*0.5+40,gamingdlg->height()*0.8-150);
-            BuChu->setParent(this->gamingdlg);
-            BuChu->move(gamingdlg->width()*0.5-BuChu->width()*0.5+200,gamingdlg->height()*0.8-150);
-            ChuPai->show();
-            BuChu->show();
-            gamingdlg->update();
-            connect(ChuPai,&MyPushButton::clicked,[=](){
+            for(int i=0;i<vec_card.size();i++){
+                if(vec_card[i]->id == WUXIEKEJI){
+                    count++;
+                }
+            }
+            if(count !=0){
+                ChuPai->setParent(this->gamingdlg);
+                ChuPai->move(gamingdlg->width()*0.5-ChuPai->width()*0.5+40,gamingdlg->height()*0.8-150);
+                BuChu->setParent(this->gamingdlg);
+                BuChu->move(gamingdlg->width()*0.5-BuChu->width()*0.5+200,gamingdlg->height()*0.8-150);
+                ChuPai->show();
+                BuChu->show();
+                gamingdlg->update();
+                connect(ChuPai,&MyPushButton::clicked,[=](){
                     if(this->vec_pushcard.size()>0){
                         for(int i=0;i<vec_pushcard.size();i++){
                             vec_pushcard[i]->hide();
@@ -1082,26 +1089,37 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
                     ChuPai->hide();
                     BuChu->hide();
                     gamingdlg->update();
-            });
+                });
 
-            connect(BuChu,&MyPushButton::clicked,[=](){
-                STRU_POSTCARD_RS_S rs;
-                rs.m_lResult = post_failed;
-                rs.room_id = this->m_roomid;
-                rs.user_id = y_userid;
-                rs.y_card = killcard;
-                rs.y_user_id = m_userid;
-                m_tcpClient->SendData((char*)&rs,sizeof(rs));
-                ChuPai->hide();
-                BuChu->hide();
+                connect(BuChu,&MyPushButton::clicked,[=](){
+                    STRU_POSTCARD_RS_S rs;
+                    rs.m_lResult = post_failed;
+                    rs.room_id = this->m_roomid;
+                    rs.user_id = y_userid;
+                    rs.y_card = killcard;
+                    rs.y_user_id = m_userid;
+                    m_tcpClient->SendData((char*)&rs,sizeof(rs));
+                    ChuPai->hide();
+                    BuChu->hide();
+                    gamingdlg->update();
+                    return;
+                });
+            }else{
+                chupai->hide();
+                qipai->hide();
                 gamingdlg->update();
-                return;
-            });
+            }
         }else{
-            chupai->hide();
-            qipai->hide();
-            gamingdlg->update();
+            STRU_POSTCARD_RS_S rs;
+            rs.m_lResult = post_failed;
+            rs.room_id = this->m_roomid;
+            rs.user_id = y_userid;
+            rs.y_card = killcard;
+            rs.y_user_id = m_userid;
+            m_tcpClient->SendData((char*)&rs,sizeof(rs));
         }
+
+
 
     }
 }
