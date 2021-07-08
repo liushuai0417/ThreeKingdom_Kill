@@ -351,12 +351,16 @@ void CKernel::SLOT_CHUPAI(){
                 rq1.last_cardnum = this->cardnum;
                 this->b_choosefirstpeople = false;
                 m_tcpClient->SendData((char*)&rq1,sizeof(rq1));
+                if(rq1.m_card.id == SHA){
+                    b_isKill = true;
+                }
                 for(int i=0;i<this->vec_card.size();i++){
                     vec_card[i]->hide();
                 }
                 InitCard();
                 break;
             }
+            return;
         }else{
             ++ite;
         }
@@ -679,6 +683,18 @@ void CKernel::SLOT_GHCQ_Rs(char *buf,int nlen){
         card->move(this->m_mapSeatIdToPosition[seatid][0]+290,this->m_mapSeatIdToPosition[seatid][1]);
         card->show();
         card->PushCard();
+        connect(card,&CardButton::clicked,[=](){
+            if(card->b_flagchoose){
+                card->ChooseHero1();//向下
+            }else{
+                card->ChooseHero();//向上
+            }
+            card->b_flagchoose = !card->b_flagchoose;
+            choosecard.id = card->id;
+            choosecard.num = card->num;
+            choosecard.col = card->color;
+            choosecard.type = card->type;
+        });
         this->vec_otherpushcard.push_back(card);
         InitCard();
         gamingdlg->update();
@@ -852,7 +868,8 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
     m_userid = rq->m_userid;
     y_userid = rq->m_touser1id;
 
-
+    ChuPai->hide();
+    BuChu->hide();
     QString checkname = GetCardName(rq->m_card.id);
     //QString resposename = GetCardName(rq);
     auto ite = this->m_mapSeatIdToId.begin();
@@ -917,6 +934,7 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
 
     //如果被使用牌的是自己 弹出一个QLabel 并执行动画
     if(rq->m_touser1id == this->m_id){
+
         if(rq->m_card.type == YANSHIJINNANG || rq->m_card.type == FEIYANSHIJINNANG){
             int flag = false;
             for(int i=0;i<vec_card.size();i++){
@@ -936,15 +954,17 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
             }
         }
         //显示出牌弃牌按钮
-        ChuPai->setParent(this->gamingdlg);
-        ChuPai->move(gamingdlg->width()*0.5-ChuPai->width()*0.5+40,gamingdlg->height()*0.8-150);
-        BuChu->setParent(this->gamingdlg);
-        BuChu->move(gamingdlg->width()*0.5-BuChu->width()*0.5+200,gamingdlg->height()*0.8-150);
-        ChuPai->show();
-        BuChu->show();
+        MyPushButton *cp = new MyPushButton(":/res/icon/chupai.png",":/res/icon/chupai_1.png");
+        MyPushButton *bc = new MyPushButton(":/res/icon/buchu.png",":/res/icon/buchu_1.png");
+        cp->setParent(this->gamingdlg);
+        cp->move(gamingdlg->width()*0.5-ChuPai->width()*0.5+40,gamingdlg->height()*0.8-150);
+        bc->setParent(this->gamingdlg);
+        bc->move(gamingdlg->width()*0.5-BuChu->width()*0.5+200,gamingdlg->height()*0.8-150);
+        cp->show();
+        bc->show();
         gamingdlg->update();
         //出牌按钮的槽函数
-        connect(ChuPai,&MyPushButton::clicked,[=](){
+        connect(cp,&MyPushButton::clicked,[=](){
                 if(this->vec_pushcard.size()>0){
                     for(int i=0;i<vec_pushcard.size();i++){
                         vec_pushcard[i]->hide();
@@ -1008,7 +1028,7 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
                 gamingdlg->update();
         });
 
-        connect(BuChu,&MyPushButton::clicked,[=](){
+        connect(bc,&MyPushButton::clicked,[=]()mutable{
             STRU_POSTCARD_RS_S rs;
             rs.m_lResult = post_failed;
             rs.room_id = this->m_roomid;
@@ -1016,8 +1036,8 @@ void CKernel::SLOT_DealReposeCardRq(char *buf,int nlen){
             rs.y_card = killcard;
             rs.y_user_id = m_userid;
             m_tcpClient->SendData((char*)&rs,sizeof(rs));
-            ChuPai->hide();
-            BuChu->hide();
+            bc->hide();
+            cp->hide();
             gamingdlg->update();
         });
         gamingdlg->update();
@@ -1368,6 +1388,7 @@ void CKernel::SLOT_DealPostCardRs(char *buf,int nlen){
 
 //处理回合开始
 void CKernel::SLOT_DealTurnBeginRs(char *buf,int nlen){
+    b_isKill = false;
     if(turnlogo){
         turnlogo->hide();
         gamingdlg->update();
