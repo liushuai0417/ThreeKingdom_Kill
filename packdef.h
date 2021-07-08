@@ -94,6 +94,11 @@ typedef enum Net_PACK
 
     DEF_PACK_HILIGHT_RQ,                        //高亮
 
+    DEF_PACK_HEALPLAYER_RQ,                     //治疗请求
+    DEF_PACK_HEALPLAYER_RS,
+
+    DEF_PACK_PLAYER_DIE,
+
 }Net_PACK;
 
 //注册请求结果
@@ -1025,5 +1030,44 @@ typedef struct STRU_HILIGHT_RQ
     PackType m_nType;
     int m_userid;
 }STRU_HILIGHT_RQ;
+
+typedef struct STRU_HEAL_PLAYER_RQ
+{
+    STRU_HEAL_PLAYER_RQ()
+    {
+        m_nType = DEF_PACK_HEALPLAYER_RQ;
+    }
+    PackType m_nType;
+    int die_userid;
+}STRU_HEAL_PLAYER_RQ;
+typedef struct STRU_HEAL_PLAYER_RS
+{
+    STRU_HEAL_PLAYER_RS()
+    {
+        m_nType = DEF_PACK_HEALPLAYER_RS;
+        n_lResult = false;
+        roomid = 0;
+        user_id = 0;
+        die_userid = 0;
+    }
+    PackType m_nType;
+    bool n_lResult;         //治疗还是不治疗
+    int roomid;
+    int user_id;
+    int die_userid;
+}STRU_HEAL_PLAYER_RS;
+//玩家阵亡
+typedef struct STRU_PLAYER_DIE
+{
+    STRU_PLAYER_DIE()
+    {
+        m_nType = DEF_PACK_PLAYER_DIE;
+        die_userid = 0;
+        iddentity = 0;
+    }
+    PackType m_nType;
+    int die_userid;
+    int iddentity;
+}STRU_PLAYER_DIE;
 
 #endif

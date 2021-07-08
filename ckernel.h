@@ -168,6 +168,8 @@ public slots:
     void SLOT_HILIGHT_Rq(char *buf,int nlen);
     void SLOT_CHUPAI();
     void SLOT_QUEDING();
+    void SLOT_HEALPLAYER_RQ(char *buf,int nlen);//濒死
+    void SLOT_PLAYERDIE(char *buf,int nlen);
 };
 
 #endif // CKERNEL_H

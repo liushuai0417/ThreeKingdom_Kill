@@ -281,5 +281,6 @@
         <file>res/MA/爪黄飞电_1.png</file>
         <file>res/MA/紫骍_1.png</file>
         <file>res/PAI/背面.png</file>
+        <file>res/icon/die.png</file>
     </qresource>
 </RCC>

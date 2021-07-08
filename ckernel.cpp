@@ -447,8 +447,107 @@ void CKernel::setNetPackMap(){
     NetPackMap(DEF_PACK_GHCQ_RS) = &CKernel::SLOT_GHCQ_Rs;
     NetPackMap(DEF_PACK_SSQY_RQ) = &CKernel::SLOT_SSQY_Rq;
     NetPackMap(DEF_PACK_SSQY_RS) = &CKernel::SLOT_SSQY_Rs;
-    NetPackMap(DEF_PACK_HILIGHT_RQ) = &CKernel::SLOT_HILIGHT_Rq;
+    NetPackMap(DEF_PACK_HEALPLAYER_RQ) = &CKernel::SLOT_HILIGHT_Rq;
+    NetPackMap(DEF_PACK_HEALPLAYER_RS) = &CKernel::SLOT_HEALPLAYER_RQ;
+    NetPackMap(DEF_PACK_PLAYER_DIE) = &CKernel::SLOT_PLAYERDIE;
 }
+
+void CKernel::SLOT_PLAYERDIE(char *buf,int nlen){
+    STRU_PLAYER_DIE* rq = (STRU_PLAYER_DIE*)buf;
+    int seatid = FindSeatIdById(rq->die_userid);
+    MyPushButton *attention = new MyPushButton(":/res/icon/die.png",":/res/icon/die.png");
+    attention->setParent(gamingdlg);
+    attention->move(m_mapSeatIdToPosition[seatid][0],m_mapSeatIdToPosition[seatid][1]+50);
+    attention->show();
+    gamingdlg->update();
+    MyPushButton *identity;
+    switch(rq->iddentity){
+        case zhugong:
+        {
+            identity = new MyPushButton(":/res/Shenfen/主公.png");
+        }
+        break;
+        case zhongchen:
+        {
+            identity = new MyPushButton(":/res/Shenfen/忠臣.png");
+        }
+        break;
+        case neijian:
+        {
+            identity = new MyPushButton(":/res/Shenfen/内奸.png");
+        }
+        break;
+        case fanzei:
+        {
+            identity = new MyPushButton(":/res/Shenfen/反贼.png");
+        }
+        break;
+    }
+    identity->setParent(gamingdlg);
+    identity->move(m_mapSeatIdToPosition[seatid][0],m_mapSeatIdToPosition[seatid][1]);
+    identity->show();
+    gamingdlg->update();
+}
+
+void CKernel::SLOT_HEALPLAYER_RQ(char *buf,int nlen){
+    STRU_HEAL_PLAYER_RQ *rq = (STRU_HEAL_PLAYER_RQ *)buf;
+    int seatid = FindSeatIdById(rq->die_userid);
+    int dieuserid = rq->die_userid;
+    bool flag = false;
+    for(int i=0;i<vec_card.size();i++){
+        if(vec_card[i]->id == TAO)
+            flag = true;
+    }
+    if(flag){
+        QLabel *label = new QLabel;
+        QPalette label_pe;
+        QFont ft;
+        ft.setPointSize(20);
+        label_pe.setColor(QPalette::WindowText, Qt::white);
+        label->setPalette(label_pe);
+        label->setFont(ft);
+        label->setText(QString("是否使用桃?"));
+        label->setParent(gamingdlg);
+        label->setGeometry(700,700,400,400);
+        label->show();
+        QTimer::singleShot(3000,this,[=]{
+            label->hide();
+        });
+        MyPushButton *cp = new MyPushButton(":/res/icon/chupai.png",":/res/icon/chupai_1.png");
+        MyPushButton *bc = new MyPushButton(":/res/icon/buchu.png",":/res/icon/buchu_1.png");
+        cp->setParent(this->gamingdlg);
+        cp->move(gamingdlg->width()*0.5-ChuPai->width()*0.5+40,gamingdlg->height()*0.8-150);
+        bc->setParent(this->gamingdlg);
+        bc->move(gamingdlg->width()*0.5-BuChu->width()*0.5+200,gamingdlg->height()*0.8-150);
+        cp->show();
+        bc->show();
+        gamingdlg->update();
+        connect(cp,&MyPushButton::clicked,[=](){
+            STRU_HEAL_PLAYER_RS rs;
+            rs.die_userid = dieuserid;
+            rs.n_lResult = post_success;
+            rs.user_id = this->m_userid;
+            rs.roomid = this->m_roomid;
+            m_tcpClient->SendData((char*)&rs,sizeof(rs));
+        });
+        connect(bc,&MyPushButton::clicked,[=](){
+            STRU_HEAL_PLAYER_RS rs;
+            rs.die_userid = dieuserid;
+            rs.n_lResult = post_failed;
+            rs.user_id = this->m_userid;
+            rs.roomid = this->m_roomid;
+            m_tcpClient->SendData((char*)&rs,sizeof(rs));
+        });
+    }else{
+        STRU_HEAL_PLAYER_RS rs;
+        rs.die_userid = dieuserid;
+        rs.n_lResult = post_failed;
+        rs.user_id = this->m_userid;
+        rs.roomid = this->m_roomid;
+        m_tcpClient->SendData((char*)&rs,sizeof(rs));
+    }
+}
+
 
 void CKernel::SLOT_HILIGHT_Rq(char *buf,int nlen){
     STRU_HILIGHT_RQ *rq = (STRU_HILIGHT_RQ *)buf;
